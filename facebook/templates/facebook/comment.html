@@ -1,0 +1,13 @@
+{% extends "facebook/base.html" %}
+ {% block comment %}
+
+            <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ post.username }}</a>
+              <small class="text-muted">{{ post.date_posted }}</small>
+            </div>
+            <p class="article-content">{{ post.status }}</p>
+          </div>
+        </article>
+{% endblock %}

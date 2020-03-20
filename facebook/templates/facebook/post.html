@@ -1,0 +1,64 @@
+{% extends "facebook/base.html" %}
+
+
+{% block jquery1 %}
+alert("hello")
+{% endblock %}
+
+ {% block content %}
+
+
+{% for post in posts %}
+
+<div class="card" style="width: 35rem;">
+<!--  <img class="card-img-top" src="..." alt="Card image cap">-->
+
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ post.username }}</a>
+              <small class="text-muted">{{ post.date_posted }}</small>
+            </div>
+            <p class="article-content">{{ post.status }}</p>
+          </div>
+        </article>
+
+        <small class="text-muted">Comments:</small>
+<!--          Need To See how to do comments in post! -->
+<!--        <article class="media content-section">-->
+<!--          <div class="media-body">-->
+<!--            <div class="article-metadata">-->
+<!--              <a class="mr-2" href="#">{{ post.username }}</a>-->
+<!--              <small class="text-muted">{{ post.date_posted }}</small>-->
+<!--            </div>-->
+<!--            <p class="article-content">{{ post.status }}</p>-->
+<!--          </div>-->
+<!--        </article>-->
+
+
+  <div class="card-body">
+    <button type="button" class="btn bg-light">Like</button>
+    <a href="#" class="card-link"></a>  <!-- create empty space -->
+
+  <div class="btn-group">
+      <button type="button" class="btn bg-light">Comment</button>
+      <button type="button" class="btn bg-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">Action</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">Another action</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">Something else here</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">Separated link</a>
+      </div>
+  </div>
+
+
+  </div>
+
+</div>
+    {% endfor %}
+
+{% endblock %}
