@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 
 class Post(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE)
-
     status = 'I like Pizza'
     status1 = 'Hello World'
     status2 = 'What is coronavirus'

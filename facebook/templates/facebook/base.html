@@ -25,30 +25,32 @@
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark fixed-top " style="background-color: #3B5998;">
         <div class="container">
-          <a class="navbar-brand mr-4" href="{% url 'facebook-home' %}">Facebook</a>
+          <a class="navbar-brand mr-4" style="color: aliceblue;">Facebook</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="{% url 'facebook-home' %}">Home</a>
-              <a class="nav-item nav-link" href="{% url 'facebook-create-post' %}">Profile</a>
+              <!-- <a class="nav-item nav-link" href="{% url 'facebook-home' %}">Home</a> -->
+              <!-- <a class="nav-item nav-link" href="{% url 'facebook-create-post' %}">Profile</a> -->
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
-              <a class="nav-item nav-link" href="#">Login</a>
-<!--              <a class="nav-item nav-link" href="#">Register</a>-->
+              {% if user.is_authenticated %}
+              <a class="nav-item nav-link" href="{% url 'facebook-home' %}">Home</a>
+              <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+              {% else %}
+                <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+              {% endif %}
             </div>
           </div>
         </div>
       </nav>
 
-<div class="progress" style="height: 1px;">
-  <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-</div>
-<div class="progress" style="height: 20px;">
-  <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-</div>
+      <div class="ui teal progress" data-percent="74" id="example1">
+        <div class="bar"></div>
+        <div class="label">74% Funded</div>
+      </div>
 
         <!--                start  left bar            -->
         <div class="container">
@@ -98,7 +100,8 @@
                 <div class="col-md-6">
                     <div class="row">
 
-                        {% block content %}{% endblock %}
+                        {% block content %}
+                        {% endblock %}
 
                     </div>
 
@@ -135,10 +138,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script>
-        $(document).ready(function(){
-            {% block jquery1 %}
-            {% endblock %}
-        });
     </script>
 </body>
 </html>
