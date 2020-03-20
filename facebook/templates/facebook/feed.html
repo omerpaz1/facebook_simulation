@@ -1,12 +1,7 @@
 {% extends "facebook/base.html" %}
-
-
-{% block jquery1 %}
-alert("hello")
-{% endblock %}
+{% load crispy_forms_tags %}
 
  {% block content %}
-
 
 {% for post in posts %}
 
