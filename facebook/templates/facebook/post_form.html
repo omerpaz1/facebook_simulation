@@ -5,23 +5,20 @@
     <!--  <img class="card-img-top" src="..." alt="Card image cap">-->
     
             <article class="media content-section">
-              <img class="rounded-circle article-img" src="{{ object.username.profile.image.url }}">
+              <img class="rounded-circle article-img" src="{{ user.profile.image.url }}">
               <div class="media-body">
                 <div class="article-metadata">
                   <a class="mr-2" href="#">{{ user.username }}</a>
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn bg-light">What's on your mind, {{user.username}}?</button>
-                    <button type="button" class="btn bg-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn bg-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     </button>
                     <div class="dropdown-menu">
-                      <a class="dropdown-item" href="#">Action</a>
+                      {% for comment in comments %}
+                      <a class="dropdown-item" href="#">{{ comment.option_1 }} ( PS: {{comment.PS}} , Burden: {{comment.burden}} , Benefit: {{comment.benefit}} )</a>
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#">Another action</a>
-                      <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#">Something else here</a>
-                      <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#">Separated link</a>
+                      {% endfor%}
                     </div>
                   </div>
                 </div>

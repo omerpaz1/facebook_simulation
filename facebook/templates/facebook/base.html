@@ -58,7 +58,7 @@
                     <div class="card">
                         <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
                             <img src="images/Downloads-icon.png" class="rounded-circle" style="width: 22px; margin-right: 4px"/>
-                            username
+                            {{user.username}}
                         </a>
                         <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
                             <div class="fc-icon fc-icon-feeds"><span>Feed</span></div>
@@ -94,23 +94,21 @@
                     </div>
                 </div>
 <!--            start posts-->
-                {% if title %}  
                 <!-- if we on the create post page!  -->
-                <div class="col-md-6">
+                
+                <div class="col-md">
                     <div class="row">
                       {% block createpost %}
                       {% endblock %}
                     </div>
+                    <div class="col-md">
+                      <div class="row">
+                        {% block content%}
+                        {% endblock %}
+                      </div>
                 </div>
-                {% else %}
-                <div class="col-md-6">
-                  <div class="row">
-                    {% block content%}
-                    {% endblock %}
-                  </div>
-                </div>
-                {% endif %}
 
+                </div>
 
 <!--            end posts-->
 

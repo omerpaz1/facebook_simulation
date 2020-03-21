@@ -8,10 +8,10 @@
           <img class="rounded-circle article-img" src="{{ object.username.profile.image.url }}">
           <div class="media-body">
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{ object.username }}</a>
-              <small class="text-muted">{{ object.date_posted }}</small>
+              <a class="mr-2" href="#">{{ post.username }}</a>
+              <small class="text-muted">{{ post.date_posted }}</small>
             </div>
-            <p class="article-content">{{ object.status }}</p>
+            <p class="article-content">{{ post.status }}</p>
           </div>
         </article>
 
@@ -27,13 +27,10 @@
         <button type="button" class="btn bg-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         </button>
         <div class="dropdown-menu">
-          <a class="dropdown-item" href="#">Action</a>
+          {% for comment in comments %}
+          <a class="dropdown-item" href="#">{{ comment.option_1 }} ( PS: {{comment.PS}} , Burden: {{comment.burden}} , Benefit: {{comment.benefit}} )</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Separated link</a>
+          {% endfor%}
         </div>
       </div>
   </div>

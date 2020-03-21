@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Post
+from .models import Comment
 from django.views.generic import ListView,DeleteView,DetailView,CreateView
 from django.contrib.auth.decorators import login_required
 
@@ -9,11 +10,17 @@ def home(request):
     context = {
         'posts' : Post.objects.all()
     }
-    return render(request,'facebook/feed.html',{'title': 'feed'})
+    return render(request,'facebook/feed.html',context)
 
 @login_required
 def create_post(request):
-    return render(request,'facebook/post_form.html',{'title': 'create post'})
+    context = {
+        'comments' : Comment.objects.all(),
+        'posts' : Post.objects.all()
+
+    }
+    return render(request,'facebook/post_form.html',context)
+
 
 
 class PostListView(ListView):
@@ -22,9 +29,21 @@ class PostListView(ListView):
     context_object_name = 'posts'
     ordering = ['-date_posted']
 
+    def get_context_data(self, **kwargs):
+        context = super(PostListView, self).get_context_data(**kwargs)
+        context['comments'] = Comment.objects.all()
+
+        return context
+
 class PostDetailView(DetailView):
     model = Post
 
+    def get_context_data(self, **kwargs):
+        context = super(PostDetailView, self).get_context_data(**kwargs)
+        context['comments'] = Comment.objects.all()
+        return context
+
+
 class PostCreateView(CreateView):
     model = Post
-    fields = ['username','status']
+    # fields = ['username','status']
