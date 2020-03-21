@@ -51,6 +51,7 @@
 
        <!-- PROGRESS BAR! end -->
 
+
         <!--                start  left bar            -->
         <div class="container">
             <div class="row">
@@ -95,16 +96,23 @@
                     </div>
                 </div>
 <!--            start posts-->
-
+                {% if title %}  
+                <!-- if we on the create post page! -->
                 <div class="col-md-6">
                     <div class="row">
-
-                        {% block content %}
-                        {% endblock %}
-
+                      {% block createpost %}
+                      {% endblock %}
                     </div>
-
                 </div>
+                {% else %}
+                <div class="col-md-6">
+                  <div class="row">
+                      {% block content%}
+                      {% endblock %}
+                  </div>
+                </div>
+
+                {% endif %}
 <!--            end posts-->
 
 <!--            start  right bar-->
