@@ -1,13 +1,17 @@
-{% extends "facebook/base.html" %}
+{% extends "facebook/feed.html" %}
  {% block comment %}
-
-            <article class="media content-section">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="#">{{ post.username }}</a>
-              <small class="text-muted">{{ post.date_posted }}</small>
-            </div>
-            <p class="article-content">{{ post.status }}</p>
-          </div>
-        </article>
+ <div class="btn-group">
+  <button type="button" class="btn bg-light">Comment</button>
+  <button type="button" class="btn bg-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  </button>
+  <div class="dropdown-menu">
+    <a class="dropdown-item" href="#">Action</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#">Another action</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#">Something else here</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#">Separated link</a>
+  </div>
+</div>
 {% endblock %}
