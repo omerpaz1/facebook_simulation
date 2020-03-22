@@ -53,7 +53,7 @@ class Comment(models.Model):
     #     choices=all_comments,
     #     default='Nice Post!',
     # )
-    option_1 = models.CharField(max_length=50,)
+    comment_name = models.CharField(max_length=50,)
 
 
     PS = '0$'
@@ -104,7 +104,7 @@ class Comment(models.Model):
         default='0$',
     )
     def __str__(self):
-        return self.option_1
+        return self.comment_name
 
 
 class Status(models.Model):
@@ -161,5 +161,6 @@ class Status(models.Model):
     def __str__(self):
         return self.status_1
 
-
+class Post_Comments(models.Model):
+    
 
