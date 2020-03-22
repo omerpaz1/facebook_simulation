@@ -1,11 +1,10 @@
 {% extends "facebook/feed.html" %}
  {% block my_comment  %}
 >
-  <div class="dropdown-menu">
-    {% for comment in comments %}
-    <a class="dropdown-item" href="#">{{ comment.option_1 }} ( PS: {{comment.PS}} , Burden: {{comment.burden}} , Benefit: {{comment.benefit}} )</a>
-    <div class="dropdown-divider"></div>
-    {% endfor%}
-  </div>
+<select class="form-control form-control" name='user_option'>
+  {% for status in mystatus %}
+  <option value ='{{ status.status_1 }}'>{{ status.status_1 }} ( PS: {{status.PS}} , Burden: {{status.burden}} , Benefit: {{status.benefit}} )</option>
+  {% endfor%}
+</select>
 
 {% endblock %}

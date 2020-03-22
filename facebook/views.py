@@ -5,14 +5,15 @@ from django.views.generic import ListView,DeleteView,DetailView,CreateView
 from django.contrib.auth.decorators import login_required
 
 
-@login_required
-def home(request):
-    context = {
-        'posts' : Post.objects.all()
-    }
-    return render(request,'facebook/feed.html',context)
+# @login_required
+# def home(request):
+#     context = {
+#         'posts' : Post.objects.all()
+#     }
+#     return render(request,'facebook/feed.html',context)
 
 @login_required
+# function to create post
 def create_post(request):
     context = {
         'mystatus' : Status.objects.all(),
@@ -30,6 +31,7 @@ def create_post(request):
         return render(request,'facebook/post_form.html',context)
 
 
+# list all the post in the home page
 
 class PostListView(ListView):
     model = Post
@@ -40,8 +42,11 @@ class PostListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(PostListView, self).get_context_data(**kwargs)
         context['comments'] = Comment.objects.all()
-
+        context['mystatus'] =  Status.objects.all()
         return context
+
+
+# info of the current post
 
 class PostDetailView(DetailView):
     model = Post
@@ -51,7 +56,3 @@ class PostDetailView(DetailView):
         context['comments'] = Comment.objects.all()
         return context
 
-
-class PostCreateView(CreateView):
-    model = Post
-    # fields = ['username','status']

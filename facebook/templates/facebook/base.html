@@ -26,6 +26,7 @@
       <nav class="navbar navbar-expand-md navbar-dark fixed-top " style="background-color: #3B5998;">
         <div class="container">
           <a class="navbar-brand mr-4" style="color: aliceblue;">Facebook</a>
+          <a class="navbar-brand mr-10" href='{% url 'facebook-create-post' %}' style="color: black;">Create Post</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
           </button>
@@ -101,7 +102,9 @@
                       {% block createpost %}
                       {% endblock %}
                     </div>
+                    
                     <div class="col-md">
+                      
                       <div class="row">
                         {% block content%}
                         {% endblock %}
