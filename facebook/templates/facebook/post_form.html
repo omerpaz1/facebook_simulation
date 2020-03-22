@@ -7,15 +7,15 @@
             <article class="media content-section">
               <img class="rounded-circle article-img" src="{{ user.profile.image.url }}">
               <div class="media-body">
-                <div class="article-metadata"
+                <div class="article-metadata">
                   <a class="mr-2" href="#">{{ user.username }}</a>
                 </div>
                 <div>What's on your mind, {{user.username}}?</div>
               </br>
                 <div class="btn-group">
                   <select class="form-control form-control" name='user_option'>
-                    {% for comment in comments %}
-                    <option value ='{{ comment.option_1 }}'>{{ comment.option_1 }} ( PS: {{comment.PS}} , Burden: {{comment.burden}} , Benefit: {{comment.benefit}} )</option>
+                    {% for status in mystatus %}
+                    <option value ='{{ status.status_1 }}'>{{ status.status_1 }} ( PS: {{status.PS}} , Burden: {{status.burden}} , Benefit: {{status.benefit}} )</option>
                     {% endfor%}
                   </select>
                   </div>
