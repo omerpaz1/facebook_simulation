@@ -16,23 +16,36 @@
         </article>
 
         <small class="text-muted">Comments:</small>
+        <div class="dropdown-divider"></div>
+
           <!-- need to see here all the commpets of the post. -->
 
 
   <div class="card-body">
-    <button type="button" class="btn bg-light" >Like</button>
+    
+    <button class="fc-btn fc-btn-white">
+      <div class="fc-icon fc-icon-comentar">
+        <svg class="bi bi-heart-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" clip-rule="evenodd"/>
+        </svg>
+          <label>Like</label>
+      </div>                                    
+    </button>
     <a href="#" class="card-link"></a>  <!-- create empty space -->
     <div class="btn-group">
-        <button type="button" class="btn bg-light">Comment</button>
-        <button type="button" class="btn bg-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         </button>
-        <div class="dropdown-menu">
-          {% for comment in comments %}
-          <a class="dropdown-item" href="#">{{ comment.option_1 }} ( PS: {{comment.PS}} , Burden: {{comment.burden}} , Benefit: {{comment.benefit}} )</a>
-          <div class="dropdown-divider"></div>
-          {% endfor%}
-        </div>
-      </div>
+        <select class="btn-sm bg-light" >
+          <option>Comment</option>
+            {% for comment in comments %}
+          <option value ='{{ comment.comment_name }}'>{{ comment.comment_name }} ( PS: {{comment.PS}} , Burden: {{comment.burden}} , Benefit: {{comment.benefit}} )</option>
+            {% endfor%}
+        </select>
+    </div>
+    </div>
+    <div class="form-group">
+      <div class="text-center"> 
+      <button class="btn btn-outline-info" type="submit">Submit Comment</button>
+    </div>
   </div>
 </div>
 

@@ -29,7 +29,7 @@ def create_post(request):
        return redirect('/home')
     else:
         return render(request,'facebook/post_form.html',context)
-
+        
 
 # list all the post in the home page
 
@@ -50,6 +50,7 @@ class PostListView(ListView):
 
 class PostDetailView(DetailView):
     model = Post
+    template_name  = 'facebook/post_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super(PostDetailView, self).get_context_data(**kwargs)

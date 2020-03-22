@@ -162,5 +162,6 @@ class Status(models.Model):
         return self.status_1
 
 class Post_Comments(models.Model):
-    
-
+    post_id = models.CharField(max_length=100)
+    user_commented_name = models.CharField(max_length=100)
+    comment_name = models.CharField(max_length=100)
