@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
-    path('create-post/',include('facebook.urls')), # Navigate to create post first!
+    path('',include('facebook.urls')), # Navigate to create post first!
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
 ]
 

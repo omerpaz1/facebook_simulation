@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render , redirect
 from .models import Post
 from .models import Comment
 from django.views.generic import ListView,DeleteView,DetailView,CreateView
@@ -17,9 +17,14 @@ def create_post(request):
     context = {
         'comments' : Comment.objects.all(),
         'posts' : Post.objects.all()
-
     }
-    return render(request,'facebook/post_form.html',context)
+    if request.method == 'POST':
+       user_post_option = request.POST.get('user_option',False) 
+       pick = Comment.objects.get(option_1 = user_post_option)
+       print(f'my pick is: {pick}')
+       return redirect('/')
+    else:
+        return render(request,'facebook/post_form.html',context)
 
 
 
