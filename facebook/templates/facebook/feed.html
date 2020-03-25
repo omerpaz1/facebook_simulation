@@ -1,13 +1,42 @@
 {% extends "facebook/base.html" %}
+
 {% load crispy_forms_tags %}
 
 
 
 
  {% block content %} 
-
+ 
+ <form action='' method="POST">
+  {% csrf_token %}
+ <div class="card" style="width: 35rem;">    
+            <article class="media content-section">
+              <img class="rounded-circle article-img" src="{{ user.profile.image.url }}">
+              <div class="media-body">
+                <div class="article-metadata">
+                  <a class="mr-2" href="#">{{ user.username }}</a>
+                </div>
+                <div >What's on your mind, {{user.username}}?</div>
+              </br>
+                <div class="btn-group">
+                  <select class="form-control form-control" name='user_option_on_feed'>
+                    {% for status in mystatus %}
+                    <option value ='{{ status.status_1 }}'>{{ status.status_1 }} ( PS: {{status.PS}} , Burden: {{status.burden}} , Benefit: {{status.benefit}} )</option>
+                    {% endfor%}
+                  </select>
+                  </div>
+                </div>
+            </article>
+            <div class="form-group">
+                <div class="text-center"> 
+                <button class="btn btn-outline-info" type="submit">Publish</button>
+                </div>
+            </div>
+</div>
+</form>
 
 <div class="mx-auto" class="text-center">Feed</div>  
+
 
 {% for post in posts %}
 
@@ -19,15 +48,12 @@
               <a class="mr-2">{{ post.username }}</a>
               <small class="text-muted">{{ post.date_posted }}</small>
             </div>
-            <a class="article-content" href="{% url 'post-detail' post.id %}">{{ post.status }}</a>
-          </div>
-          
+            <a class="article-content">{{ post.status }}</a>
+            <!-- if we want with like to post-detail -->
+           </div>
+        
         </article>
-
-        <small class="text-muted">Comments:</small>
         <div class="dropdown-divider"></div>
-
-          <!-- need to see here all the commpets of the post. -->
 
 
 
