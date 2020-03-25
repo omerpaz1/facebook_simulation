@@ -5,10 +5,11 @@ from django.views.generic import ListView,DeleteView,CreateView
 from django.contrib.auth.decorators import login_required
 
 
+
 @login_required
 def home(request):
     context = {
-        'posts' : Post.objects.all(),
+        'posts' : Post.objects.order_by('-date_posted'),
         'mystatus' : Status.objects.all()
     }
     if request.method == 'POST':
@@ -18,12 +19,10 @@ def home(request):
     # helping to see the values:   print(f'my pick is: {pick} , and username: {user_post_name}')
        new_post = Post(username = user_post_name ,status =user_post_option)
        new_post.save()
-       print("here!")
-       return redirect('')
-    else:
-        return render(request,'facebook/feed.html',context)
+    return render(request,'facebook/feed.html',context)
 
-        
+
+
 @login_required
 # function to create post
 def create_post(request):
