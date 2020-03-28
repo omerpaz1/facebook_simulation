@@ -19,7 +19,7 @@ all_status = [
 (status3, 'What is the meaning of life'),
 ]
 
-class Test(models.Model):
+class Friends(models.Model):
     userid = models.ForeignKey(User,on_delete=models.CASCADE)
     myfriends = ArrayField(
         ArrayField(

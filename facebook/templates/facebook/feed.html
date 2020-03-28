@@ -45,7 +45,7 @@
           <div class="media-body">
             <div class="article-metadata">
               <a class="mr-2">{{ post.username }}</a>
-              {% if post.username_id in t.myfriends %}
+              {% if post.username_id in friends.myfriends %}
               <button type="button" class="btn-sm btn-info float-right"> <svg class="bi bi-person-check-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 100-6 3 3 0 000 6zm9.854-2.854a.5.5 0 010 .708l-3 3a.5.5 0 01-.708 0l-1.5-1.5a.5.5 0 01.708-.708L12.5 7.793l2.646-2.647a.5.5 0 01.708 0z" clip-rule="evenodd"/>
               </svg> Is Your Friend
@@ -57,20 +57,21 @@
            </div>
         
         </article>
-  <div class="card-body">
-    <button type="button" class="btn bg-light" >Like</button>
-    {% if post.username_id not in t.myfriends %}
-      {% if post.username_id is not user.id %}
-    <button type="button" name='add_friend_btn' class="btn bg-light"> <svg class="bi bi-person-plus-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 100-6 3 3 0 000 6zm7.5-3a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-2a.5.5 0 010-1H13V5.5a.5.5 0 01.5-.5z" clip-rule="evenodd"/>
-      <path fill-rule="evenodd" d="M13 7.5a.5.5 0 01.5-.5h2a.5.5 0 010 1H14v1.5a.5.5 0 01-1 0v-2z" clip-rule="evenodd"/>
-    </svg> Add Friend
-    </button>
-      {% endif%}
-    {%endif%}
-
-
-  </div>
+        <form method="get" action="{% url 'confirm_friend' operation='friend_requset' pk=post.username_id  %}">
+        <div class="card-body">
+      <button type="button" class="btn bg-light" >Like</button>
+      {% if post.username_id not in friends.myfriends %}
+        {% if post.username_id is not user.id %}
+      <button type="submit" name='add_friend_btn' class="btn bg-light"> <svg class="bi bi-person-plus-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 100-6 3 3 0 000 6zm7.5-3a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-2a.5.5 0 010-1H13V5.5a.5.5 0 01.5-.5z" clip-rule="evenodd"/>
+        <path fill-rule="evenodd" d="M13 7.5a.5.5 0 01.5-.5h2a.5.5 0 010 1H14v1.5a.5.5 0 01-1 0v-2z" clip-rule="evenodd"/>
+        </svg> Add Friend
+      </button>
+    </a>
+        {% endif%}
+      {%endif%}
+     </div>
+  </form>
 
 </div>
     {% endfor %}

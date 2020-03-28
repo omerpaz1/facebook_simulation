@@ -1,11 +1,12 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
-# from .views import PostListView
+from django.conf.urls import url
+
 
 urlpatterns = [
     path('home/', views.home, name='facebook-home'),
-    # path('home/', PostListView.as_view(), name='facebook-home'),
-    # path('post/<int:pk>', PostDetailView.as_view(), name='post-detail'),
     path('create_post/', views.create_post, name='facebook-create-post'),
+    url(r'^connent/(?P<operation>.+)/(?P<pk>\d+)/$', views.confirm_friend, name='confirm_friend'),
 
 ]
+

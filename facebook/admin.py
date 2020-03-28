@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Post,Status,Test
+from .models import Post,Status,Friends
 
 admin.site.register(Post)
 admin.site.register(Status)
-admin.site.register(Test)
+admin.site.register(Friends)
