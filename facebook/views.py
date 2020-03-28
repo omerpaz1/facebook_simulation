@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from .models import Post,Status,Friends
+from .models import Post,Status,Friends,Friend_requsts
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
 from django.contrib.auth.decorators import login_required
@@ -12,7 +12,8 @@ def home(request):
     context = {
         'posts' : Post.objects.order_by('-date_posted'),
         'mystatus' : Status.objects.all(),
-        'friends' : Friends.objects.filter(userid_id=request.user.id).first()
+        'friends' : Friends.objects.filter(userid_id=request.user.id).first(),
+        'friends_requset' : Friend_requsts.objects.filter(userid_id=request.user.id).first()
     }
     if request.method == 'POST':
        user_post_option = request.POST.get('user_option_on_feed',False) 
@@ -44,10 +45,16 @@ def create_post(request):
     else:
         return render(request,'facebook/post_form.html',context)
         
-def confirm_friend(request,operation,pk):
-    name_requst_to_add_to_friends = User.objects.get(pk=pk)
+def manage_friends(request,operation,pk):
+    user_requsted = User.objects.get(pk=pk)
+    
+    print(request.user.username)
     if operation =='friend_requset':
-      print(f'friend_id_to_add = {name_requst_to_add_to_friends.id}')
+      current_user_table = Friend_requsts.objects.filter(userid_id=user_requsted.id).first()
+      current_user_table.myfriends_requsts.append(request.user.id)
+      current_user_table.save()
+    if operation == 'friend_confirm':
+       print(f'here! = {user_requsted}')
     return redirect('/home')
 
 

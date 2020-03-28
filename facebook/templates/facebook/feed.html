@@ -57,7 +57,7 @@
            </div>
         
         </article>
-        <form method="get" action="{% url 'confirm_friend' operation='friend_requset' pk=post.username_id  %}">
+        <form method="get" action="{% url 'manage_friends' operation='friend_requset' pk=post.username_id  %}">
         <div class="card-body">
       <button type="button" class="btn bg-light" >Like</button>
       {% if post.username_id not in friends.myfriends %}

@@ -29,6 +29,16 @@ class Friends(models.Model):
         size=8,
     )
 
+class Friend_requsts(models.Model):
+    userid = models.ForeignKey(User,on_delete=models.CASCADE)
+    myfriends_requsts = ArrayField(
+    ArrayField(
+        models.IntegerField(),
+        size=8,
+        ),
+    size=8,
+    )
+
 # end Post status options
 
 class Post(models.Model):

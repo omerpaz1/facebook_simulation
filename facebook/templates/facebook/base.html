@@ -119,10 +119,13 @@
 <!--            start  right bar-->
                   <div class="content-section">
                     <h3>Friend Requests</h3>
-                    <p class='text-muted'>If You want to become friend click confirm.
+                    <p class='text-muted'>If You want to become friends click 'confirm'.
                       <ul class="list-group">
-                        {% for friend in friends.myfriends%}
-                        <li class="list-group-item list-group-item-light">{{friend}}</li>
+                        {% for friend_request in friends_requset.myfriends_requsts%}
+                        <form method="get" action="{% url 'manage_friends' operation='friend_confirm' pk=friend_request%}">
+                        <li class="list-group-item list-group-item-light">{{friend_request}}
+                          <button type="submit" class="btn-sm btn-dark float-right">Confirm</button>
+                        </li>
                         {% endfor %}
                       </ul>
                     </p>
