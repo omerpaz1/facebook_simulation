@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from .models import Post,Status
+from .models import Post,Status,Test
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
 from django.contrib.auth.decorators import login_required
@@ -11,11 +11,13 @@ import time
 def home(request):
     context = {
         'posts' : Post.objects.order_by('-date_posted'),
-        'mystatus' : Status.objects.all()
+        'mystatus' : Status.objects.all(),
+        't' : Test.objects.filter(userid_id=request.user.id).first()
     }
     if request.method == 'POST':
        user_post_option = request.POST.get('user_option_on_feed',False) 
        user_post_name = request.user
+       print(f'userid requset = {request.user.id}')
        pick = Status.objects.get(status_1 = user_post_option)
     # helping to see the values:   print(f'my pick is: {pick} , and username: {user_post_name}')
        new_post = Post(username = user_post_name ,status =user_post_option)

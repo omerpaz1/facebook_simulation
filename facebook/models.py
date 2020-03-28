@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
+
 
 
 # Post status options
@@ -16,6 +18,16 @@ all_status = [
 (status2, 'What is coronavirus'),
 (status3, 'What is the meaning of life'),
 ]
+
+class Test(models.Model):
+    userid = models.ForeignKey(User,on_delete=models.CASCADE)
+    myfriends = ArrayField(
+        ArrayField(
+            models.IntegerField(),
+            size=8,
+        ),
+        size=8,
+    )
 
 # end Post status options
 
