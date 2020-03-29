@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from .models import Post,Status,Friends,Friend_requsts
+from .models import Post,Status,Friends,Friend_req
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
 from django.contrib.auth.decorators import login_required
@@ -9,11 +9,13 @@ import time
 
 @login_required
 def home(request):
+    f = Friend_req.objects.filter(userid_id=request.user.id).first()
+    f =list(set(f.myfriends_req))
     context = {
         'posts' : Post.objects.order_by('-date_posted'),
         'mystatus' : Status.objects.all(),
         'friends' : Friends.objects.filter(userid_id=request.user.id).first(),
-        'friends_requset' : Friend_requsts.objects.filter(userid_id=request.user.id).first(),
+        'friends_requst' : f,
         'users' : User.objects.all()
     }
     if request.method == 'POST':
@@ -21,7 +23,6 @@ def home(request):
        user_post_name = request.user
        print(f'userid requset = {request.user.id}')
        pick = Status.objects.get(status_1 = user_post_option)
-    # helping to see the values:   print(f'my pick is: {pick} , and username: {user_post_name}')
        new_post = Post(username = user_post_name ,status =user_post_option)
        new_post.save()
     return render(request,'facebook/feed.html',context)
@@ -39,7 +40,6 @@ def create_post(request):
        user_post_option = request.POST.get('user_option',False) 
        user_post_name = request.user
        pick = Status.objects.get(status_1 = user_post_option)
-    # helping to see the values:   print(f'my pick is: {pick} , and username: {user_post_name}')
        new_post = Post(username = user_post_name ,status =user_post_option)
        new_post.save()
        return redirect('/home')
@@ -51,11 +51,23 @@ def manage_friends(request,operation,pk):
         
     print(request.user.username)
     if operation =='friend_requset':
-      current_user_table = Friend_requsts.objects.filter(userid_id=user_requsted.id).first()
-      current_user_table.myfriends_requsts.append(request.user.id)
+      current_user_table = Friend_req.objects.filter(userid_id=user_requsted.id).first()
+      current_user_table.myfriends_req.append(request.user.id)
       current_user_table.save()
     if operation == 'friend_confirm':
        print(f'here! = {user_requsted}')
+       # remove from Friend_requsts table the requset
+       current_user_table = Friend_req.objects.filter(userid_id=request.user.id).first()
+       current_user_table.myfriends_req.remove(user_requsted.pk)
+       current_user_table.save()
+       # add to the friends table of both sides.
+       current_user_table = Friends.objects.filter(userid_id=request.user.id).first()
+       current_user_table.myfriends.append(user_requsted.pk)
+       user_confirm = Friends.objects.filter(userid_id=user_requsted.pk).first()
+       user_confirm.myfriends.append(request.user.id)
+       current_user_table.save()
+       user_confirm.save()
+
     return redirect('/home')
 
 

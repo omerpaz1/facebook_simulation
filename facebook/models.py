@@ -29,11 +29,11 @@ class Friends(models.Model):
         size=8,
     )
 
-class Friend_requsts(models.Model):
+class Friend_req(models.Model):
     userid = models.ForeignKey(User,on_delete=models.CASCADE)
-    myfriends_requsts = ArrayField(
+    myfriends_req = ArrayField(
     ArrayField(
-        models.IntegerField(),
+        models.IntegerField(unique=True,blank=True),
         size=8,
         ),
     size=8,

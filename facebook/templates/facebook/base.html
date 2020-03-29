@@ -121,10 +121,10 @@
                     <h3>Friend Requests</h3>
                     <p class='text-muted'>If You want to become friends click 'confirm'.
                       <ul class="list-group">
-                        {% for friend_request in friends_requset.myfriends_requsts%}
-                        <form method="get" action="{% url 'manage_friends' operation='friend_confirm' pk=friend_request%}">
+                        {% for friend in friends_requst%}
+                        <form method="get" action="{% url 'manage_friends' operation='friend_confirm' pk=friend%}">
                           {% for user in users %}
-                            {% if user.pk == friend_request%}
+                            {% if user.pk == friend%}
                         <li class="list-group-item list-group-item-light">{{user.username}}
                           {% endif %}
                           {% endfor %}
