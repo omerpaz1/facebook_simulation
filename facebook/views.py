@@ -13,7 +13,8 @@ def home(request):
         'posts' : Post.objects.order_by('-date_posted'),
         'mystatus' : Status.objects.all(),
         'friends' : Friends.objects.filter(userid_id=request.user.id).first(),
-        'friends_requset' : Friend_requsts.objects.filter(userid_id=request.user.id).first()
+        'friends_requset' : Friend_requsts.objects.filter(userid_id=request.user.id).first(),
+        'users' : User.objects.all()
     }
     if request.method == 'POST':
        user_post_option = request.POST.get('user_option_on_feed',False) 
@@ -47,7 +48,7 @@ def create_post(request):
         
 def manage_friends(request,operation,pk):
     user_requsted = User.objects.get(pk=pk)
-    
+        
     print(request.user.username)
     if operation =='friend_requset':
       current_user_table = Friend_requsts.objects.filter(userid_id=user_requsted.id).first()
