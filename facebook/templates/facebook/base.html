@@ -22,20 +22,31 @@
     {% endif %}
 </head>
 <body>
-    <header class="site-header">
-      <nav class="navbar navbar-expand-md navbar-dark fixed-top " style="background-color: #3B5998;">
-        <div class="container">
-          <a class="navbar-brand mr-4" style="color: aliceblue;">Facebook</a>
+  <header class="site-header">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top " style="background-color: #3B5998;">
+      <div class="container">
+        <a class="navbar-brand mr-4" style="color: aliceblue;">Facebook Simulator</a>
+        <div class="progress-bar progress" role='progressbar' style="width: 0px; margin-top:10px">
+          <div class="bar" style="width: 0%;"></div>
+      </div>
+      </div>
+        </div>
+        <!-- PROGRESS BAR! Start -->
+        <!-- <div class="progress">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+       </div> -->
+       <!-- PROGRESS BAR! end -->
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+          
           <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <!-- <a class="nav-item nav-link" href="{% url 'facebook-home' %}">Home</a> -->
-              <!-- <a class="nav-item nav-link" href="{% url 'facebook-create-post' %}">Profile</a> -->
+         
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
+              <a class="navbar-brand mr-4" style="color: aliceblue;">Login as: {{user.username}}</a>
               {% if user.is_authenticated %}
               <a class="nav-item nav-link" href="{% url 'facebook-home' %}">Home</a>
               <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
@@ -47,34 +58,10 @@
         </div>
       </nav>
 
-        <!-- PROGRESS BAR! Start -->
-        <div class="progress">
-          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
-        </div>
-       <!-- PROGRESS BAR! end -->
         <!--                start  left bar            -->
         <div class="container">
             <div class="row">
                 <div class="col-md-2">
-
-                    <div class="card">
-                        <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
-                            <!-- <img src="images/Downloads-icon.png" class="rounded-circle" style="width: 22px; margin-right: 4px"/> -->
-                            {{user.username}}
-                        </a>
-                        <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
-                            <div class="fc-icon fc-icon-feeds"><span>Feed</span></div>
-                        </a>
-                        <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
-                            <div class="fc-icon fc-icon-messenger"><span>Messenger</span></div>
-                        </a>
-                        <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
-                            <div class="fc-icon fc-icon-watch"><span>Watch</span></div>
-                        </a>
-                        <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
-                            <div class="fc-icon fc-icon-marketplace"><span>Marketplace</span></div>
-                        </a>
-                    </div>
                     <label class="fc-label">Explorar</label>
                     <div class="list-group">
                         <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
@@ -95,56 +82,91 @@
                         <a href="#" class="list-group-item fc-list-group-item list-group-item-action">Ver mais...</a>
                     </div>
                 </div>
+                
+                
 <!--            start posts-->
                 <!-- if we on the create post page!  -->
                 
                 <div class="col-md">
+                  <div class="row">
+                    {% block createpost %}
+                    {% endblock %}
+                  </div>
+                  
+                  <div class="col-md">
+                    
                     <div class="row">
-                      {% block createpost %}
+                      {% block content%}
                       {% endblock %}
                     </div>
-                    
-                    <div class="col-md">
-                      
-                      <div class="row">
-                        {% block content%}
-                        {% endblock %}
-                      </div>
+              </div>
+
+              </div>
+              <!--            start  right bar-->
+            <div class="col"> 
+              <div class="row">
+              <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  <h5 class="card-title">Friend Requests</h5>
+                  <ul class="list-group">
+                    {% for friend in friends_requst%}
+                    <form method="get" action="{% url 'manage_friends' operation='friend_confirm' pk=friend%}">
+                      {% for user in users %}
+                        {% if user.pk == friend%}
+                    <li class="list-group-item list-group-item-light">{{user.username}}
+                      {% endif %}
+                      {% endfor %}
+                      <button type="submit" class="btn-sm btn-dark float-right">Confirm</button>
+                    </li>
+                  </form>
+
+                    {% endfor %}
+                  </ul>
                 </div>
-
+              </div>
+              <div class="card mt-3" style="width: 18rem;">
+                <div class="card-body">
+                  <h5 class="card-title">People you my know</h5>
+                  <ul class="list-group">
+                    {% for people in people_my_know %}
+                    <form method="get" action="{% url 'manage_friends' operation='friend_requset' pk=people %}">
+                      <li class="list-group-item list-group-item-light">{{people}}
+                        <button type="submit" id="mybtn" name='people_my_know' class="btn-sm btn-dark float-right">Add Friend</button>
+                     </form>
+                    {% endfor %}
+                    </li>
+                  </ul>
                 </div>
-
-<!--            end posts-->
-
-<!--            start  right bar-->
-                  <div class="content-section">
-                    <h3>Friend Requests</h3>
-                    <p class='text-muted'>If You want to become friends click 'confirm'.
-                      <ul class="list-group">
-                        {% for friend in friends_requst%}
-                        <form method="get" action="{% url 'manage_friends' operation='friend_confirm' pk=friend%}">
-                          {% for user in users %}
-                            {% if user.pk == friend%}
-                        <li class="list-group-item list-group-item-light">{{user.username}}
-                          {% endif %}
-                          {% endfor %}
-                          <button type="submit" class="btn-sm btn-dark float-right">Confirm</button>
-                        </li>
-                        {% endfor %}
-                      </ul>
-                    </p>
-                  </div>
-                <!--            end  right bar-->
-
-                </div>
-          <div class="col-md-4">
-        </div>
+              </div>
+            </div>
+                <!-- <h3>Friend Requests</h3>
+                <p class='text-muted'>If You want to become friends click 'confirm'.
+                  <ul class="list-group">
+                    {% for friend in friends_requst%}
+                    <form method="get" action="{% url 'manage_friends' operation='friend_confirm' pk=friend%}">
+                      {% for user in users %}
+                        {% if user.pk == friend%}
+                    <li class="list-group-item list-group-item-light">{{user.username}}
+                      {% endif %}
+                      {% endfor %}
+                      <button type="submit" class="btn-sm btn-dark float-right">Confirm</button>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </p> -->
+              </div>
+            <!--            end  right bar-->
 
             </div>
-        </div>
-        <!--               end left bar            -->
+      <div class="col-md-4">
+    </div>
 
+        </div>
+    </div>
+                
+              
     </header>
+    
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -154,7 +176,7 @@
     <script>
       flag = false; // for debug mode - put it false
       if(flag)
-      var progressBar = $('.progress-bar');
+      var progressBar = $('.progress');
       var progressNumber = 0;
       if(location =='http://localhost:8000/create_post/'){
         StartBarProgres();
@@ -166,6 +188,8 @@
               progressNumber++;
               progressBar.css('width',progressNumber + '%');
               progressBar.attr('aria-valuenow',progressNumber);
+              progressBar.attr('value',progressNumber);
+
                 if(progressNumber == 125 ){
                   $(location).prop('href','/home');
                 }
@@ -173,6 +197,8 @@
       }
 
     </script>
+
+
     </script>
 </body>
 </html>

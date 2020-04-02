@@ -31,25 +31,16 @@ class Friends(models.Model):
 
 class Friend_req(models.Model):
     userid = models.ForeignKey(User,on_delete=models.CASCADE)
-    myfriends_req = ArrayField(
-    ArrayField(
-        models.IntegerField(unique=True,blank=True),
-        size=8,
-        ),
-    size=8,
-    )
+    myfriends_req = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=8,),size=8,)
 
 # end Post status options
 
 class Post(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(
-        max_length=50,
-        choices=all_status,
-        default='I like Pizza',
-    )
+    status = models.CharField(max_length=50,choices=all_status,default='I like Pizza',)
     date_posted = models.DateTimeField(default=timezone.now)
-
+    likes = models.ManyToManyField(User,related_name='likes',blank=True)
+    
     def __str__(self):
         return self.status
 
