@@ -129,9 +129,9 @@
                   <h5 class="card-title">People you my know</h5>
                   <ul class="list-group">
                     {% for people in people_my_know %}
-                    <form method="get" action="{% url 'manage_friends' operation='friend_requset' pk=people %}">
+                    <form method="get" action="{% url 'manage_friends' operation='friend_requset' pk=people.pk %}">
                       <li class="list-group-item list-group-item-light">{{people}}
-                        <button type="submit" id="mybtn" name='people_my_know' class="btn-sm btn-dark float-right">Add Friend</button>
+                        <button type="submit" id="mybtn" name='people_my_know ' class="btn-sm btn-dark float-right">Add Friend</button>
                      </form>
                     {% endfor %}
                     </li>

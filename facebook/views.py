@@ -60,26 +60,12 @@ def like_post(request):
 
 
 def manage_friends(request,operation,pk):
+    print(pk)
     user_requsted = User.objects.get(pk=pk)
     if operation =='friend_requset':
-      print(f'friend_requset operation = {user_requsted}')
-      current_user_table = Friend_req.objects.filter(userid_id=user_requsted.id).first()
-      if request.user.id not in current_user_table.myfriends_req:
-        current_user_table.myfriends_req.append(request.user.id)
-        current_user_table.save()
+        addfriend(request,user_requsted)
     if operation == 'friend_confirm':
-       # remove from Friend_requsts table the requset
-       current_user_table = Friend_req.objects.filter(userid_id=request.user.id).first()
-       current_user_table.myfriends_req.remove(user_requsted.pk)
-       current_user_table.save()
-       # add to the friends table of both sides.
-       current_user_table = Friends.objects.filter(userid_id=request.user.id).first()
-       current_user_table.myfriends.append(user_requsted.pk)
-       user_confirm = Friends.objects.filter(userid_id=user_requsted.pk).first()
-       user_confirm.myfriends.append(request.user.id)
-       current_user_table.save()
-       user_confirm.save()
-
+        confirm_friends(request,user_requsted)
     return redirect('/home')
 
 
@@ -95,3 +81,30 @@ def helper(request):
                 if c_user.pk != request.user.id:
                     friend_my_know.append(c_user)
     return friend_my_know
+# user_requsted = the user that i want to add to my friends.
+
+def addfriend(request ,user_requsted): 
+    current_user = Friend_req.objects.filter(userid_id=request.user.id).first()
+    if user_requsted.pk in current_user.myfriends_req: # if 3 in 5
+        confirm_friends(request,user_requsted)
+    else:
+        print(f"user_requsted.id = {user_requsted.id}")
+        print(f"current_user.myfriends_req = {current_user.id}")
+        user_requsted = Friend_req.objects.filter(userid_id=user_requsted.id).first()
+        if current_user.userid_id not in user_requsted.myfriends_req:
+            user_requsted.myfriends_req.append(request.user.id)
+            user_requsted.save()
+
+# comfirm both friend in the tables
+def confirm_friends(request,user_requsted):
+    current_user_table = Friend_req.objects.filter(userid_id=request.user.id).first()
+    current_user_table.myfriends_req.remove(user_requsted.pk)
+    current_user_table.save()
+
+    # add to the friends table of both sides.
+    current_user_table = Friends.objects.filter(userid_id=request.user.id).first()
+    current_user_table.myfriends.append(user_requsted.pk)
+    user_confirm = Friends.objects.filter(userid_id=user_requsted.pk).first()
+    user_confirm.myfriends.append(request.user.id)
+    current_user_table.save()
+    user_confirm.save()

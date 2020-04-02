@@ -18,15 +18,14 @@ from django.contrib.auth.models import User
 friends = Friends.objects.filter(userid_id=1).first().myfriends
 friends_requst = list(set(Friend_req.objects.filter(userid_id=1).first().myfriends_req))
 users = User.objects.all()
-friend_my_know = []
-for c_user in users:
-    if c_user.pk not in friends_requst:
-        if c_user.pk not in friends:
-            if c_user.pk != 2:
-                friend_my_know.append(c_user.pk)
 
-print(friends_requst)
-print(friend_my_know)
 
-# user_requsted = User.objects.get(id=4)
-# print(f"user_requsted = {user_requsted}")
+current_user_table = Friend_req.objects.filter(userid_id=5).first()
+# x = len(current_user_table.myfriends_req)
+# for _ in range(1,x):
+#     if current_user_table.myfriends_req[_] == 1:
+#         print(_)
+to_delete = []
+for friendid in current_user_table.myfriends_req:
+    if friendid == 1:
+        to_delete.append(friendid)
