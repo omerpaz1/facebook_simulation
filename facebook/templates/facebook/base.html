@@ -62,25 +62,6 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-2">
-                    <label class="fc-label">Explorar</label>
-                    <div class="list-group">
-                        <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
-                            <div class="fc-icon fc-icon-lembrancas"><span>Pages</span></div>
-                        </a>
-                        <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
-                            <div class="fc-icon fc-icon-salvos"><span>Salvos</span></div>
-                        </a>
-                        <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
-                            <div class="fc-icon fc-icon-grupos"><span>Grupos</span></div>
-                        </a>
-                        <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
-                            <div class="fc-icon fc-icon-paginas"><span>Páginas</span></div>
-                        </a>
-                        <a href="#" class="list-group-item fc-list-group-item list-group-item-action">
-                            <div class="fc-icon fc-icon-eventos"><span>Eventos</span></div>
-                        </a>
-                        <a href="#" class="list-group-item fc-list-group-item list-group-item-action">Ver mais...</a>
-                    </div>
                 </div>
                 
                 
@@ -109,18 +90,22 @@
                 <div class="card-body">
                   <h5 class="card-title">Friend Requests</h5>
                   <ul class="list-group">
+                    {% if friends_requst|length > 0 %}
                     {% for friend in friends_requst%}
                     <form method="get" action="{% url 'manage_friends' operation='friend_confirm' pk=friend%}">
                       {% for user in users %}
                         {% if user.pk == friend%}
                     <li class="list-group-item list-group-item-light">{{user.username}}
-                      {% endif %}
+                      {%endif%}
                       {% endfor %}
                       <button type="submit" class="btn-sm btn-dark float-right">Confirm</button>
                     </li>
                   </form>
-
                     {% endfor %}
+                    {%else%}
+                    <!-- <li class="list-group-item list-group-item-light">There are no friend suggestions to confirm -->
+                    {% endif %}
+
                   </ul>
                 </div>
               </div>

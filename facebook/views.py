@@ -7,14 +7,19 @@ import time
 import logging
 import sys
 
-
-textvalue = "its a Test"
-
+list_friend_req_O = []
+list_friend_req_A = []
+list_friend_req_B = []
+list_friend_req_C = []
+list_friend_req_D = []
 
 @login_required
 def home(request):    
     user_liked = posts_user_liked(request)
     people_my_know = helper(request)
+    list_friend_req = myreq(request.user.id)
+    print(f"list_friend_req = {list_friend_req}")
+
     context = {
         'posts' : Post.objects.order_by('-date_posted'),
         'mystatus' : Status.objects.all(),
@@ -23,6 +28,7 @@ def home(request):
         'people_my_know' : people_my_know,
         'users' : User.objects.all(),
         'posts_user_liked' : user_liked,
+        'list_friend_req' : list_friend_req
     }
     if request.method == 'POST':
        user_post_option = request.POST.get('user_option_on_feed',False) 
@@ -87,20 +93,22 @@ def helper(request):
     return friend_my_know
 # user_requsted = the user that i want to add to my friends.
 
-def addfriend(request ,user_requsted): 
+def addfriend(request ,user_requsted):
+    list_current_friend_req = myreq(request.user.id)
+    
     current_user = Friend_req.objects.filter(userid_id=request.user.id).first()
     if user_requsted.pk in current_user.myfriends_req: # if 3 in 5
         confirm_friends(request,user_requsted)
     else:
-        print(f"user_requsted.id = {user_requsted.id}")
-        print(f"current_user.myfriends_req = {current_user.id}")
         user_requsted = Friend_req.objects.filter(userid_id=user_requsted.id).first()
         if current_user.userid_id not in user_requsted.myfriends_req:
+            list_current_friend_req.append(user_requsted.userid_id) # adding to list of user requsted
             user_requsted.myfriends_req.append(request.user.id)
             user_requsted.save()
 
 # comfirm both friend in the tables
 def confirm_friends(request,user_requsted):
+    list_current_friend_req = myreq(user_requsted.pk)
     current_user_table = Friend_req.objects.filter(userid_id=request.user.id).first()
     current_user_table.myfriends_req.remove(user_requsted.pk)
     current_user_table.save()
@@ -110,6 +118,8 @@ def confirm_friends(request,user_requsted):
     current_user_table.myfriends.append(user_requsted.pk)
     user_confirm = Friends.objects.filter(userid_id=user_requsted.pk).first()
     user_confirm.myfriends.append(request.user.id)
+    list_current_friend_req.remove(current_user_table.userid_id)
+
     current_user_table.save()
     user_confirm.save()
 
@@ -121,3 +131,17 @@ def posts_user_liked(request):
             post_i_liked = p.likes.filter(id=request.user.id).values_list('likes', flat=True).first()
             liked_posts.append(post_i_liked)
     return liked_posts
+
+
+    # get in instance of the current user list of friend req
+def myreq(id):
+    if id == 1:
+        return list_friend_req_O
+    if id == 2:
+        return list_friend_req_A
+    if id == 3:
+        return list_friend_req_B
+    if id == 4:
+        return list_friend_req_C
+    if id == 5:
+        return list_friend_req_D
