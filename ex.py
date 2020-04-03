@@ -5,6 +5,11 @@ django.setup()
 from facebook.models import Post,Status,Friends,Friend_req
 from django.contrib.auth.models import User
 
-friend_req = [1,2,3]
-friend_req.remove(2)
-print(friend_req)
+posts = Post.objects.all()
+liked_posts = []
+for p in posts:
+    if p.likes.filter(id=2).values_list('likes', flat=True).first() is not None:
+        post_i_liked = p.likes.filter(id=2).values_list('likes', flat=True).first()
+        liked_posts.append(post_i_liked)
+
+print(liked_posts)

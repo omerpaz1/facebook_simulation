@@ -127,7 +127,7 @@ def posts_user_liked(request):
     posts = Post.objects.all()
     liked_posts = []
     for p in posts:
-        if p.likes.filter(id=1).values_list('likes', flat=True).first() is not None:
+        if p.likes.filter(id=request.user.id).values_list('likes', flat=True).first() is not None:
             post_i_liked = p.likes.filter(id=request.user.id).values_list('likes', flat=True).first()
             liked_posts.append(post_i_liked)
     return liked_posts
