@@ -43,6 +43,9 @@ class Post(models.Model):
     
     def __str__(self):
         return self.status
+    
+    def total_likes(self):
+        return self.likes.count()
 
 class Status(models.Model):
 

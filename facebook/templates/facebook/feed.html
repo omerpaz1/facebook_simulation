@@ -75,11 +75,13 @@
     <div class="card-body">
   <form action="{% url 'like_post' %}" method="POST">
     {% csrf_token %}
-      {% if is_liked %}
-        <button type="submit" name='post_id' value="{{ post.id }}" class="btn bg-light" >Liked</button>
-      {% else %}
-        <button type="submit" name='post_id' value="{{ post.id }}" class="btn bg-light" >Like</button>
-      {%endif%}
+    {%if post.id not in posts_user_liked %}
+    <button type="submit" name='post_id' value="{{ post.id }}" class="btn btn-outline-secondary" >Like </button>
+    {{post.total_likes}}
+    {%else%}
+    <button type="button" class="btn btn-outline-success">Liked</button>
+    {{post.total_likes}}
+    {%endif%}
   </form>
   </div>
 
@@ -88,7 +90,6 @@
 
 </div>
     {% endfor %}
-
     
 
 {% endblock %}

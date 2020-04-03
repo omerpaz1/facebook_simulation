@@ -13,6 +13,7 @@ textvalue = "its a Test"
 
 @login_required
 def home(request):    
+    user_liked = posts_user_liked(request)
     people_my_know = helper(request)
     context = {
         'posts' : Post.objects.order_by('-date_posted'),
@@ -20,7 +21,8 @@ def home(request):
         'friends' : Friends.objects.filter(userid_id=request.user.id).first().myfriends,
         'friends_requst' : list(set(Friend_req.objects.filter(userid_id=request.user.id).first().myfriends_req)),
         'people_my_know' : people_my_know,
-        'users' : User.objects.all()
+        'users' : User.objects.all(),
+        'posts_user_liked' : user_liked,
     }
     if request.method == 'POST':
        user_post_option = request.POST.get('user_option_on_feed',False) 
@@ -48,6 +50,8 @@ def create_post(request):
        return redirect('/home')
     else:
         return render(request,'facebook/post_form.html',context)
+    
+# function when user click on the "like" btn.
 
 def like_post(request):
     if request.method == 'POST':
@@ -108,3 +112,12 @@ def confirm_friends(request,user_requsted):
     user_confirm.myfriends.append(request.user.id)
     current_user_table.save()
     user_confirm.save()
+
+def posts_user_liked(request):
+    posts = Post.objects.all()
+    liked_posts = []
+    for p in posts:
+        if p.likes.filter(id=1).values_list('likes', flat=True).first() is not None:
+            post_i_liked = p.likes.filter(id=request.user.id).values_list('likes', flat=True).first()
+            liked_posts.append(post_i_liked)
+    return liked_posts

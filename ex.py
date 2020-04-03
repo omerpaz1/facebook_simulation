@@ -15,17 +15,23 @@ from django.contrib.auth.models import User
     #     'friends_requst' : list(set(Friend_req.objects.filter(userid_id=request.user.id).first().myfriends_req)),
     #     'users' : User.objects.all()
     # }
-friends = Friends.objects.filter(userid_id=1).first().myfriends
-friends_requst = list(set(Friend_req.objects.filter(userid_id=1).first().myfriends_req))
-users = User.objects.all()
+# friends = Friends.objects.filter(userid_id=1).first().myfriends
+# friends_requst = list(set(Friend_req.objects.filter(userid_id=1).first().myfriends_req))
+# users = User.objects.all()
+# u = []
+# posts = Post.objects.all()
+# for post in posts:
+#     u.append(post.likes.filter(id=1).values_list('post', flat=True).first())
 
+# print(u)
 
-current_user_table = Friend_req.objects.filter(userid_id=5).first()
-# x = len(current_user_table.myfriends_req)
-# for _ in range(1,x):
-#     if current_user_table.myfriends_req[_] == 1:
-#         print(_)
-to_delete = []
-for friendid in current_user_table.myfriends_req:
-    if friendid == 1:
-        to_delete.append(friendid)
+posts = Post.objects.all()
+u = []
+for p in posts:
+    if p.likes.filter(id=1).values_list('likes', flat=True).first() is not None:
+        post_i_liked = p.likes.filter(id=1).values_list('likes', flat=True).first()
+        u.append(post_i_liked)
+
+for post in posts:
+    if post.id in u:
+        print(post.id)
