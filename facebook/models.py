@@ -9,7 +9,7 @@ from django.contrib.postgres.fields import ArrayField
 
 status = 'I like Pizza'
 status1 = 'Hello World'
-status2 = 'What is coronavirus wwww.coronavirus.com'
+status2 = 'What is coronavirus www.coronavirus.com'
 status3 = 'What is the meaning of life'
 
 all_status = [
