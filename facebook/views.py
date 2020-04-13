@@ -12,6 +12,7 @@ list_friend_req_A = []
 list_friend_req_B = []
 list_friend_req_C = []
 list_friend_req_D = []
+list_friend_req_E = []
 
 @login_required
 def home(request):    
@@ -145,3 +146,5 @@ def myreq(id):
         return list_friend_req_C
     if id == 5:
         return list_friend_req_D
+    if id == 6:
+        return list_friend_req_E

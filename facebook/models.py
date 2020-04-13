@@ -9,14 +9,14 @@ from django.contrib.postgres.fields import ArrayField
 
 status = 'I like Pizza'
 status1 = 'Hello World'
-status2 = 'What is coronavirus'
+status2 = 'What is coronavirus wwww.coronavirus.com'
 status3 = 'What is the meaning of life'
 
 all_status = [
-(status, 'I like Pizza'),
-(status1, 'Hello World'),
-(status2, 'What is coronavirus'),
-(status3, 'What is the meaning of life'),
+(status, status),
+(status1, status1),
+(status2, status2),
+(status3, status3),
 ]
 
 class Friends(models.Model):
@@ -35,35 +35,25 @@ class Friend_req(models.Model):
 
 # end Post status options
 
-class Post(models.Model):
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.CharField(max_length=50,choices=all_status,default='I like Pizza',)
-    date_posted = models.DateTimeField(default=timezone.now)
-    likes = models.ManyToManyField(User,related_name='likes',blank=True)
-    
-    def __str__(self):
-        return self.status
-    
-    def total_likes(self):
-        return self.likes.count()
 
 class Status(models.Model):
 
-    status_1 = models.CharField(max_length=50)
+    status = models.CharField(max_length=50,choices=all_status,default='I like Pizza',)
+    has_link = models.BooleanField(default=False)
 
-    PS = '0$'
-    PS1 = '1$'
-    PS2 = '2$'
+    PrivacyLoss = '0$'
+    PrivacyLoss1 = '1$'
+    PrivacyLoss2 = '2$'
 
-    all_PS = [
-        (PS, '0$'),
-        (PS1, '1$'),
-        (PS2, '2$'),
+    all_PrivacyLoss = [
+        (PrivacyLoss, '0$'),
+        (PrivacyLoss1, '1$'),
+        (PrivacyLoss2, '2$'),
 
     ]
-    PS = models.CharField(
+    PrivacyLoss = models.CharField(
         max_length=50,
-        choices=all_PS,
+        choices=all_PrivacyLoss,
         default='0$',
     )
 
@@ -99,4 +89,16 @@ class Status(models.Model):
         default='0$',
     )
     def __str__(self):
-        return self.status_1
+        return self.status
+
+class Post(models.Model):
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    date_posted = models.DateTimeField(default=timezone.now)
+    likes = models.ManyToManyField(User,related_name='likes',blank=True)
+    
+    def __str__(self):
+        return str(self.status)
+    
+    def total_likes(self):
+        return self.likes.count()

@@ -111,7 +111,7 @@
               </div>
               <div class="card mt-3" style="width: 18rem;">
                 <div class="card-body">
-                  <h5 class="card-title">People you my know</h5>
+                  <h5 class="card-title">People you may know</h5>
                   <ul class="list-group">
                     {% for people in people_my_know %}
                     {% if people.pk not in list_friend_req %}
@@ -183,7 +183,7 @@
               progressBar.attr('aria-valuenow',progressNumber);
               progressBar.attr('value',progressNumber);
 
-                if(progressNumber == 125 ){
+                if(progressNumber == 110 ){
                   $(location).prop('href','/home');
                 }
             },50);

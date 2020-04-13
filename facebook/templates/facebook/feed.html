@@ -14,14 +14,14 @@
               <img class="rounded-circle article-img" src="{{ user.profile.image.url }}">
               <div class="media-body">
                 <div class="article-metadata">
-                  <a class="mr-2" >{{ user.username }}</a>
+                  <a class="mr-2" >Create Post</a>
                 </div>
                 <div >What's on your mind, {{user.username}}?</div>
               </br>
                 <div class="btn-group">
                   <select class="form-control form-control" name='user_option_on_feed'>
                     {% for status in mystatus %}
-                    <option value ='{{ status.status_1 }}'>{{ status.status_1 }} ( PS: {{status.PS}} , Burden: {{status.burden}} , Benefit: {{status.benefit}} )</option>
+                    <option value ='{{ status.status_1 }}'> {{ status.status_1 }} ( PrivacyLoss: {{status.PrivacyLoss}} , Burden: {{status.burden}} , Benefit: {{status.benefit}} )</option>
                     {% endfor%}
                   </select>
                   </div>
@@ -38,8 +38,10 @@
 </form>
 
 
-{% for post in posts %}
 
+{% for f in friends %}
+  {% for post in posts %}
+    {% if post.username_id == f %}
 <div class="card mb-3"  style="width: 35rem">
         <article class="media content-section">
           <img class="rounded-circle article-img" src="{{ post.username.profile.image.url }}">
@@ -54,7 +56,7 @@
                 </svg> Is Your Friend
                 </button>
                 {%endif%}
-                {% if post.username_id is not user.id and post.username_id not in list_friend_req and post.username_id not in friends %}
+                <!-- {% if post.username_id is not user.id and post.username_id not in list_friend_req and post.username_id not in friends %}
               <button type="submit" id='mybtn' name='add_friend_btn' class="btn btn-outline-info float-center"> <svg class="bi bi-person-plus-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 100-6 3 3 0 000 6zm7.5-3a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-2a.5.5 0 010-1H13V5.5a.5.5 0 01.5-.5z" clip-rule="evenodd"/>
                 <path fill-rule="evenodd" d="M13 7.5a.5.5 0 01.5-.5h2a.5.5 0 010 1H14v1.5a.5.5 0 01-1 0v-2z" clip-rule="evenodd"/>
@@ -66,11 +68,11 @@
                   <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 100-6 3 3 0 000 6zm9.854-2.854a.5.5 0 010 .708l-3 3a.5.5 0 01-.708 0l-1.5-1.5a.5.5 0 01.708-.708L12.5 7.793l2.646-2.647a.5.5 0 01.708 0z" clip-rule="evenodd"/>
                 </svg> Friend requst Sent
                 </button>
-              {% endif%}
+              {% endif%} -->
               
             </form>
           </div>
-            <a class="article-content">{{ post.status }}</a>
+            <a class="article-content">{{ post.status }} </a>
             <!-- if we want with like to post-detail -->
            </div>
         
@@ -88,12 +90,15 @@
     {%endif%}
   </form>
   </div>
+  {%if post.status.has_link %}
+  <div class="text-center">This post has link</div>
+  {%endif%}
 
 </div>
-
-
 </div>
+        {%endif%}
     {% endfor %}
-    
+  {% endfor %}
+
 
 {% endblock %}
