@@ -1,84 +1,57 @@
-body {
-  background: #fafafa;
-  color: #333333;
-  margin-top: 5rem;
+.progress-title{
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: 2px;
+  margin: 0 0 15px;
 }
-
-h1, h2, h3, h4, h5, h6 {
-  color: #444444;
+.progress{
+  height: 26px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 0;
+  box-shadow: none;
+  margin-bottom: 40px;
+  overflow: visible;
+  position: relative;
 }
-
-ul {
-  margin: 0;
+.progress .progress-bar{
+  box-shadow: none;
+  border-radius: 0;
+  position: relative;
+  -webkit-animation: 2s linear 0s normal none infinite running progress-bar-stripes,animate-positive 1s;
+  animation: 2s linear 0s normal none infinite running progress-bar-stripes,animate-positive 1s;
 }
-
-.bg-steel {
-  background-color: #5f788a;
+.progress-bar .progress-value{
+  width: 50px;
+  height: 100%;
+  background: #000;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  position: absolute;
+  line-height: 27px;
+  top: 0;
+  left: 0;
 }
-
-.site-header .navbar-nav .nav-link {
-  color: #cbd5db;
+.progress:after,
+.progress .progress-bar:after,
+.progress .progress-value:after{
+  content: "";
+  border-left: 13px solid rgba(0,0,0,0.1);
+  border-top: 13px solid transparent;
+  border-bottom: 13px solid transparent;
+  position: absolute;
+  top: 0;
+  right: -13px;
 }
-
-.site-header .navbar-nav .nav-link:hover {
-  color: #ffffff;
+.progress.red .progress-bar:after{ border-left-color: #d9534f; }
+.progress .progress-value:after{ border-left: 13px solid #000; }
+.progress.blue .progress-bar:after{ border-left-color: #5bc0de; }
+.progress.yellow .progress-bar:after{ border-left-color: #f0ad4e; }
+.progress.green .progress-bar:after{ border-left-color: #5cb85c; }
+@-webkit-keyframes animate-positive{
+  0%{ width: 0; }
 }
-
-.site-header .navbar-nav .nav-link.active {
-  font-weight: 500;
-}
-
-.content-section {
-  background: #ffffff;
-  padding: 10px 20px;
-  border: 1px solid #dddddd;
-  border-radius: 3px;
-  margin-bottom: 20px;
-}
-
-.article-title {
-  color: #444444;
-}
-
-a.article-title:hover {
-  color: #428bca;
-  text-decoration: none;
-}
-
-.article-content {
-  white-space: pre-line;
-}
-
-.article-img {
-  height: 65px;
-  width: 65px;
-  margin-right: 16px;
-}
-
-.article-metadata {
-  padding-bottom: 1px;
-  margin-bottom: 4px;
-  border-bottom: 1px solid #e3e3e3
-}
-
-.article-metadata a:hover {
-  color: #333;
-  text-decoration: none;
-}
-
-.article-svg {
-  width: 25px;
-  height: 25px;
-  vertical-align: middle;
-}
-
-.account-img {
-  height: 125px;
-  width: 125px;
-  margin-right: 20px;
-  margin-bottom: 16px;
-}
-
-.account-heading {
-  font-size: 2.5rem;
+@keyframes animate-positive{
+  0%{ width: 0; }
 }
