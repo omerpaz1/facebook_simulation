@@ -4,7 +4,7 @@
  {% block createpost %}
 <form action='' method="POST">
   {% csrf_token %}
- <div class="card text-white bg-secondary mr-3" style="width: 35rem;">    
+ <div class="card text-white bg-secondary mr-3" style="width: 35rem ; margin-top: 1.5em;">    
             <article class="media content-section text-white bg-secondary mb-3">
               <img class="rounded-circle article-img" src="{{ user.profile.image.url }}">
               <div class="media-body">
