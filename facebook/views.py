@@ -4,22 +4,19 @@ from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
 from django.contrib.auth.decorators import login_required
 import time
+import facebook.algoritem as algo
 import logging
 import sys
 
-list_friend_req_O = []
-list_friend_req_A = []
-list_friend_req_B = []
-list_friend_req_C = []
-list_friend_req_D = []
-list_friend_req_E = []
+
 
 @login_required
-def home(request):    
+def home(request):   
+    algo.hello(0)
     user_liked = posts_user_liked(request)
     people_my_know = helper(request)
     list_friend_req = myreq(request.user.id)
-    print(f"list_friend_req = {list_friend_req}")
+    # print(f"list_friend_req = {list_friend_req}")
 
     context = {
         'posts' : Post.objects.order_by('-date_posted'),
@@ -34,8 +31,8 @@ def home(request):
     if request.method == 'POST':
        user_post_option = request.POST.get('user_option_on_feed',False) 
        user_post_name = request.user
-       pick = Status.objects.get(status_1 = user_post_option)
-       new_post = Post(username = user_post_name ,status =user_post_option)
+       pick = Status.objects.get(status = user_post_option)
+       new_post = Post(username = user_post_name ,status =pick)
        new_post.save()
     return render(request,'facebook/feed.html',context)
 
@@ -133,6 +130,7 @@ def posts_user_liked(request):
             liked_posts.append(post_i_liked)
     return liked_posts
 
+# helping for friend managment:
 
     # get in instance of the current user list of friend req
 def myreq(id):
@@ -148,3 +146,10 @@ def myreq(id):
         return list_friend_req_D
     if id == 6:
         return list_friend_req_E
+
+list_friend_req_O = []
+list_friend_req_A = []
+list_friend_req_B = []
+list_friend_req_C = []
+list_friend_req_D = []
+list_friend_req_E = []

@@ -4,11 +4,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
 from facebook.models import Post,Status,Friends,Friend_req
 from django.contrib.auth.models import User
+import threading 
 
 
-posts = Post.objects.all()
-mystatus = Status.objects.all()
-for p in posts:
-        if p.status.has_link:
-            print(p.status)
+def gfg(): 
+    print("GeeksforGeeks\n") 
+  
+timer = threading.Timer(10.0, gfg) 
+timer.start() 
+print("Exit\n") 
 

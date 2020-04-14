@@ -21,7 +21,7 @@
                 <div class="btn-group">
                   <select class="form-control form-control" name='user_option_on_feed'>
                     {% for status in mystatus %}
-                    <option value ='{{ status.status_1 }}'> {{ status.status_1 }} ( PrivacyLoss: {{status.PrivacyLoss}} , Burden: {{status.burden}} , Benefit: {{status.benefit}} )</option>
+                    <option value ='{{ status.status }}'> {{ status.status }} ( PrivacyLoss: {{status.PrivacyLoss}} , Burden: {{status.burden}} , Benefit: {{status.benefit}} )</option>
                     {% endfor%}
                   </select>
                   </div>

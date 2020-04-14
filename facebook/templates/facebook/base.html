@@ -175,7 +175,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     
     <script>
-      flag = false; // for debug mode - put it false
+      flag = flase; // for debug mode - put it false
       if(flag)
       var progressBar = $('.progress-bar');
       var progressNumber = 0;
@@ -186,17 +186,21 @@
       }
       function StartBarProgres() {
             progressNumber = 0
+
             setInterval(function(){
               progressBar.css('width',progressNumber +'%');
-              document.getElementById('output').innerHTML = progressNumber+ "%"
-              progressBar.attr('aria-valuenow',progressNumber);
-              progressNumber++;
+              // if (progressNumber > 100){
+                // document.getElementById('output').innerHTML = 100+ "%"
+                // document.getElementById('output').innerHTML = progressNumber+ "%"
+              // progressBar.attr('aria-valuenow',progressNumber);
               console.log(progressNumber)
 
-                if(progressNumber == 101){
+                if(progressNumber == 105){
                   $(location).prop('href','/home');
                 }
-            },200);
+                progressNumber++;
+
+            },100);
       }
 
     </script>
