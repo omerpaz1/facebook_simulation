@@ -2,7 +2,7 @@ import os
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.models import Post,Status,Friends,Friend_req,Round
+from facebook.models import Post,Status,Friends,Friend_req,Rounds
 from django.contrib.auth.models import User
 
 def delete_like():
@@ -64,14 +64,11 @@ def delete_friend_req():
     friends6.save()
 
 def delete_all_rounds():
-    Round.objects.all().delete()
-
-def delete_all_posts():
-    Post.objects.all().delete()
+    Rounds.objects.all().delete()
 
 
 if __name__ == "__main__":
     delete_all_rounds()
-    # delete_friend_req()
-    # delete_friends()
-    delete_all_posts()    
+
+
+    

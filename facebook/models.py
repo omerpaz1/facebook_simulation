@@ -102,3 +102,10 @@ class Post(models.Model):
     
     def total_likes(self):
         return self.likes.count()
+
+
+
+class Round(models.Model):
+    round_number = models.IntegerField(default=0)
+    posts_id = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=8,),size=8,)
+    likes_id = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=8,),size=8,)

@@ -8,12 +8,13 @@ import facebook.algoritem as algo
 import logging
 import sys
 
-
+num = 0
 
 @login_required
 def home(request):   
-    algo.hello(0)
-    user_liked = posts_user_liked(request)
+    algo.Post_on_feed(request.user.id)
+
+    user_liked = posts_user_liked(request.user.id)
     people_my_know = helper(request)
     list_friend_req = myreq(request.user.id)
     # print(f"list_friend_req = {list_friend_req}")
@@ -48,8 +49,8 @@ def create_post(request):
     if request.method == 'POST':
        user_post_option = request.POST.get('user_option',False) 
        user_post_name = request.user
-       pick = Status.objects.get(status_1 = user_post_option)
-       new_post = Post(username = user_post_name ,status =user_post_option)
+       pick = Status.objects.get(status = user_post_option)
+       new_post = Post(username = user_post_name ,status =pick)
        new_post.save()
        return redirect('/home')
     else:
@@ -121,12 +122,12 @@ def confirm_friends(request,user_requsted):
     current_user_table.save()
     user_confirm.save()
 
-def posts_user_liked(request):
+def posts_user_liked(user_id):
     posts = Post.objects.all()
     liked_posts = []
     for p in posts:
-        if p.likes.filter(id=request.user.id).values_list('likes', flat=True).first() is not None:
-            post_i_liked = p.likes.filter(id=request.user.id).values_list('likes', flat=True).first()
+        if p.likes.filter(id=user_id).values_list('likes', flat=True).first() is not None:
+            post_i_liked = p.likes.filter(id=user_id).values_list('likes', flat=True).first()
             liked_posts.append(post_i_liked)
     return liked_posts
 

@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'facebook_simulation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'facebook_db',
+        'NAME': 'facebook_database',
         'USER': 'postgres',
         'PASSWORD': '1234',
         'HOST': 'localhost'
