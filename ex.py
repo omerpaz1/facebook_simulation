@@ -1,5 +1,6 @@
 import os
 import django
+import simulator
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
 from facebook.models import Post,Status,Friends,Friend_req,Round
@@ -14,36 +15,42 @@ def Post_on_feed(user_id):
 
 
 def add_posts_to_current_round(user_id):
-    r = Round.objects.all()
-    r = Round(round_number=len(r)+1,posts_id=[],likes_id=[])
-    r.save()
+    all_rounds = Round.objects.all()
+    new_round = Round(round_number=len(all_rounds)+1,posts_id=[],likes_id=[])
+    new_round.save()
+    current_round = Round.objects.filter(round_number=len(all_rounds)).first()
     # take all the posts id
     all_posts = Post.objects.all()
+    all_likes = Post.likes.through.objects.all()
+
     posts_list = []
-    all_posts = Post.objects.all()
     for p in all_posts:
         posts_list.append(p.id)
-    new_posts = get_new_posts(all_posts) 
-    for i in new_posts:
-        r.posts_id.append(i)
-    r.save()
 
-    print(f'round number: {r.round_number} , posts_id_list = {r.posts_id}')
+    new_posts = get_new_posts(all_posts,all_rounds,current_round) 
+    new_likes = get_new_likes(all_likes,all_rounds,current_round)
+
+    for i in new_posts:
+        new_round.posts_id.append(i)
+    new_round.save()
+
+    for i in new_likes:
+        new_round.likes_id.append(i)
+    new_round.save()
+
+    print(f'round number: {new_round.round_number} , posts_id_list = {new_round.posts_id} , likes_id_list = {new_round.likes_id}')
     # ---------------------
     # take all the likes id
     # likes = posts_user_liked(user_id)
     # ---------------------
 
 
-def get_new_posts(all_posts):
+def get_new_posts(all_posts,all_rounds,current_round):
     new_posts = []
-    all_rounds = Round.objects.all()
-    current_round = Round.objects.filter(round_number=len(all_rounds)).first()
     for post in all_posts:
         flag = True
         for r_i in all_rounds:
             if post.id in r_i.posts_id:
-                print(f"{post.id} all ready in the list!")
                 flag = False
                 break
         if flag:
@@ -51,34 +58,36 @@ def get_new_posts(all_posts):
 
     return new_posts
 
-        
+def get_new_likes(all_likes,all_rounds,current_round):
+    new_likes = []
+    for like in all_likes:
+        flag = True
+        for r_i in all_rounds:
+            if like.pk in r_i.likes_id:
+                flag = False
+                break
+        if flag:
+            new_likes.append(like.pk)
+    return new_likes
 
+def my_likes_on_LC(LC,all_rounds,current_round):
+    count_round = current_round.round_number
+    if count_round < LC:
+        start_LC = 0
+    else:
+        start_LC = count_round - LC
+    
+    end_LC = count_round
+    print(f"Start = {start_LC}")
+    print(f"end = {end_LC}")
 
-def simulator():
-    posts = Post.objects.all()
-    # print(posts)        
-    for p in posts:
-        t = list(p.likes.values('id'))
-        print(t)
-    # p1 = Post(status_id=1,username_id=1)
-    # p2 = Post(status_id=1,username_id=2)
-    # p1.save()
-    # p2.save()
-    # Post_on_feed(1)
-    # p3 = Post(status_id=2,username_id=3)
-    # p4 = Post(status_id=2,username_id=4)
-    # p3.save()
-    # p4.save()
-    # Post_on_feed(1)
-    # p5 = Post(status_id=3,username_id=5)
-    # p6 = Post(status_id=3,username_id=2)
-    # p7 = Post(status_id=3,username_id=1)
-    # p5.save()
-    # p6.save()
-    # p7.save()
-    # Post_on_feed(1)     
 
 
 if __name__ == '__main__':
-    simulator()
-
+    # simulator.simulator()
+    # all_likes = Post.likes.through.objects.all()
+    # for l in all_likes:
+    #     print(l.pk)
+    all_rounds = Round.objects.all()
+    current_round = Round.objects.filter(round_number=len(all_rounds)).first()
+    my_likes_on_LC(LC,all_rounds,current_round)

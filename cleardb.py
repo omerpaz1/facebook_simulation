@@ -69,9 +69,13 @@ def delete_all_rounds():
 def delete_all_posts():
     Post.objects.all().delete()
 
+def delete_all_likes():
+    Post.likes.through.objects.all().delete()
+
 
 if __name__ == "__main__":
     delete_all_rounds()
+    delete_all_posts()    
+    delete_all_likes()
     # delete_friend_req()
     # delete_friends()
-    delete_all_posts()    
