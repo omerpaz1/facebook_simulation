@@ -15,9 +15,9 @@ def Post_on_feed(user_id):
 
 
 def add_posts_to_current_round(user_id):
-    all_rounds = Round.objects.all()
-    new_round = Round(round_number=len(all_rounds)+1,posts_id=[],likes_id=[])
+    new_round = Round(round_number=len(Round.objects.all())+1,posts_id=[],likes_id=[])
     new_round.save()
+    all_rounds = Round.objects.all()
     current_round = Round.objects.filter(round_number=len(all_rounds)).first()
     # take all the posts id
     all_posts = Post.objects.all()
@@ -39,11 +39,8 @@ def add_posts_to_current_round(user_id):
     new_round.save()
 
     print(f'round number: {new_round.round_number} , posts_id_list = {new_round.posts_id} , likes_id_list = {new_round.likes_id}')
-    # ---------------------
-    # take all the likes id
-    # likes = posts_user_liked(user_id)
-    # ---------------------
-
+    likes_LC = likes_on_LC(user_id,LC,all_rounds,current_round,True)
+    no_likes_LC = likes_on_LC(user_id,LC,all_rounds,current_round,False)
 
 def get_new_posts(all_posts,all_rounds,current_round):
     new_posts = []
@@ -70,16 +67,66 @@ def get_new_likes(all_likes,all_rounds,current_round):
             new_likes.append(like.pk)
     return new_likes
 
-def my_likes_on_LC(LC,all_rounds,current_round):
+def likes_on_LC(user_id,LC,all_rounds,current_round,like_post):
+    user_likes_per_round = {}
+    user_no_like_per_round = {}
     count_round = current_round.round_number
-    if count_round < LC:
-        start_LC = 0
+    if count_round <= LC:
+        start_LC = 1
     else:
         start_LC = count_round - LC
-    
     end_LC = count_round
-    print(f"Start = {start_LC}")
-    print(f"end = {end_LC}")
+    # get the current round start and end for the right LC rounds.
+    start_round_LC = Round.objects.filter(round_number=(start_LC)).first()
+    end_round_LC = Round.objects.filter(round_number=(end_LC)).first()
+
+    begin = start_round_LC.round_number
+    end = end_round_LC.round_number
+    print(f'begin = {begin}')
+    print(f'end = {end}')
+    LC_rounds = get_the_LC_rounds(begin,end)
+
+    if like_post:
+        for r_i in LC_rounds:
+            for l_i in r_i.likes_id:
+                if user_id == get_user_like_id(l_i):
+                    user_likes_per_round.update({get_post_like_id(l_i) : r_i.round_number})
+        return user_likes_per_round        
+    else:
+        user_friends = Friends.objects.filter(userid_id=user_id).first().myfriends    
+        for r_i in LC_rounds:
+            for f_i in user_friends:
+                posts_f_i = list(Post.objects.values_list('id', flat=True).filter(username_id=f_i))
+                for p_i in  r_i.posts_id:
+                    if p_i in posts_f_i:
+                        user_no_like_per_round.update({p_i : -1})
+                        # print(f'round_number = {r_i.round_number},  f_i = {f_i} , p_i = {p_i}')
+        return user_no_like_per_round
+
+
+# get the right rounds for the current LC rounds.
+def get_the_LC_rounds(begin,end):
+    LC_rounds = []
+    for i in range(begin,end+1):
+        round_i = Round.objects.filter(round_number=(i)).first()
+        LC_rounds.append(round_i)
+    return LC_rounds
+
+# return the user_id of the current like_id
+def get_user_like_id(like_id):
+    all_likes = Post.likes.through.objects.all()
+    for l_i in all_likes:
+        if l_i.pk == like_id:
+            return l_i.user_id
+
+# return the current post_id of the like_id
+def get_post_like_id(like_id):
+    all_likes = Post.likes.through.objects.all()
+    for l_i in all_likes:
+        if l_i.pk == like_id:
+            return l_i.post_id
+
+
 
 
 
@@ -88,6 +135,20 @@ if __name__ == '__main__':
     # all_likes = Post.likes.through.objects.all()
     # for l in all_likes:
     #     print(l.pk)
+    # get_pk_per_like(60)
     all_rounds = Round.objects.all()
     current_round = Round.objects.filter(round_number=len(all_rounds)).first()
-    my_likes_on_LC(LC,all_rounds,current_round)
+    l1 = likes_on_LC(1,LC,all_rounds,current_round,False)
+    l2 = likes_on_LC(1,LC,all_rounds,current_round,True)
+
+    list_a = {595: -1, 596: -1, 598: -1, 600: -1}
+    list_b = {596: 2, 598: 3}
+
+    for x in list_b:
+        if x in list_a:
+            list_a.pop(x)
+    
+    print(list_a)
+    print(list_b)
+    # p = list(Post.objects.values_list('id', flat=True).filter(username_id=3))
+    # print(p)
