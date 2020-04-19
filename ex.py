@@ -7,11 +7,16 @@ from facebook.models import Post,Status,Friends,Friend_req,Round
 from django.contrib.auth.models import User
 import threading 
 from facebook.views import posts_user_liked
+import random
 
 LC = 3
 
 def Post_on_feed(user_id):  
-    add_posts_to_current_round(user_id)
+    posts_id_to_show = add_posts_to_current_round(user_id)
+    # now here need to get the posts it slef.
+    # p = Post.objects.all()
+    # for... if i in posts_id_to_show in p ...
+    # then return the list.
 
 
 def add_posts_to_current_round(user_id):
@@ -48,6 +53,10 @@ def add_posts_to_current_round(user_id):
 
     print(f'likes_LC = {likes_LC}')
     print(f'no_likes_LC = {no_likes_LC}')
+    print('**********************************')
+
+    return cal_prob(no_likes_LC,likes_LC)
+
 
 def get_new_posts(all_posts,all_rounds,current_round):
     new_posts = []
@@ -133,6 +142,10 @@ def get_post_like_id(like_id):
         if l_i.pk == like_id:
             return l_i.post_id
 
+def cal_prob(no_likes_LC,likes_LC):
+    
+    for post_no_liked in no_likes_LC:
+        pass
 
 
 
