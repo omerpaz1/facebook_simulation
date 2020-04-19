@@ -10,6 +10,8 @@ from facebook.views import posts_user_liked
 import random
 
 LC = 3
+MORE_THEN_5 = 0.1
+
 
 def Post_on_feed(user_id):  
     posts_id_to_show = add_posts_to_current_round(user_id)
@@ -143,40 +145,26 @@ def get_post_like_id(like_id):
             return l_i.post_id
 
 def cal_prob(no_likes_LC,likes_LC):
-    
+    posts_ans = []
     for post_no_liked in no_likes_LC:
-        pass
-
-
+        random_num = random.uniform(0,1)
+        print(f'random_num = {random_num}')
+        if random_num <= 0.1: # prob of 0.1
+            posts_ans.append(post_no_liked)
+    print(posts_ans)
 
 
 if __name__ == '__main__':
-    simulator.simulator()
+    # simulator.simulator()
     # all_likes = Post.likes.through.objects.all()
     # for l in all_likes:
     #     print(l.pk)
     # get_pk_per_like(60)
     # all_rounds = Round.objects.all()
     # current_round = Round.objects.filter(round_number=len(all_rounds)).first()
-    # no_likes_LC = likes_on_LC(1,LC,all_rounds,current_round,False)
-    # likes_LC = likes_on_LC(1,LC,all_rounds,current_round,True)
 
-    # # for post in no_likes_LC:
-    # #     if post in likes_LC:
-    # #         likes_LC.pop(post)
-
-    # print(f'likes_LC = {likes_LC}')
-    # print(f'no_likes_LC = {no_likes_LC}')
-    # p = list(Post.objects.values_list('id', flat=True).filter(username_id=3))
-    # print(p)
-    # list_a = {'omer' : 1 , 'snir' : 2}
-    # list_b = {'yossi' : 1 , 'snir' : 2 ,'omer' : 1}
-
-    # for x in list_a:
-    #     if x in list_b:
-    #         list_b.pop(x)
-
-    # print(list_a)
-    # print(list_b)
-
-    
+    likes_LC = {1122: 2, 1124: 3}
+    no_likes_LC = {1126: -1, 1128: -1}
+    for i in range(10):
+        cal_prob(likes_LC,no_likes_LC)
+ 
