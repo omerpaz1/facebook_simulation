@@ -25,9 +25,7 @@ def simulator():
     # Round n2:
     p5 = Post(status_id=2,username_id=3)
     p5.save()
-    l1 = Post.likes.through(post_id=p2.pk,user_id=1) # r2 = posts =[p5] , likes = [L(p2) , L(p4)]
     l2 = Post.likes.through(post_id=p4.pk,user_id=2)
-    l1.save()
     l2.save()
     ex.Post_on_feed(1)
     # Round n3:
@@ -50,7 +48,10 @@ def simulator():
     p10 = Post(status_id=4,username_id=1) # r4 = posts =[p10] , likes = []
     p10.save()
     ex.Post_on_feed(1)   
-
+    # # Round n7:
+    l1 = Post.likes.through(post_id=p2.pk,user_id=1) # r2 = posts =[p5] , likes = [L(p2) , L(p4)]
+    l1.save()
+    ex.Post_on_feed(1)   
 
 
 
