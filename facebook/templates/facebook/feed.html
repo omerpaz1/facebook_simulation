@@ -71,7 +71,11 @@
   <form action="{% url 'like_post' %}" method="POST">
     {% csrf_token %}
     {%if post.id not in posts_user_liked %}
+    {%if post.username_id is not user.id%}
     <button type="submit" name='post_id' value="{{ post.id }}" class="btn btn-outline-secondary" >Like </button>
+    {%else%}
+    <button type="button" name='post_id' value="{{ post.id }}" class="btn btn-outline-primary" >Likes </button>
+    {%endif%}
     {{post.total_likes}}
     {%else%}
     <button type="button" class="btn btn-outline-success">Liked</button>
