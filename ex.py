@@ -40,8 +40,8 @@ def add_posts_to_current_round(user_id):
     for p in all_posts:
         posts_list.append(p.id)
 
-    new_posts = get_new_posts(all_posts,all_rounds,current_round) 
-    new_likes = get_new_likes(all_likes,all_rounds,current_round)
+    new_posts = get_new_posts(all_posts,all_rounds) 
+    new_likes = get_new_likes(all_likes,all_rounds)
 
     for i in new_posts:
         new_round.posts_id.append(i)
@@ -65,7 +65,7 @@ def add_posts_to_current_round(user_id):
     return cal_prob(no_likes_LC,likes_LC)
 
 
-def get_new_posts(all_posts,all_rounds,current_round):
+def get_new_posts(all_posts,all_rounds):
     new_posts = []
     for post in all_posts:
         flag = True
@@ -78,7 +78,7 @@ def get_new_posts(all_posts,all_rounds,current_round):
 
     return new_posts
 
-def get_new_likes(all_likes,all_rounds,current_round):
+def get_new_likes(all_likes,all_rounds):
     new_likes = []
     for like in all_likes:
         flag = True
@@ -109,7 +109,10 @@ def likes_on_LC(user_id,like_post):
                 posts_f_i = list(Post.objects.values_list('id', flat=True).filter(username_id=f_i))
                 for p_i in  r_i.posts_id:
                     if p_i in posts_f_i:
-                        user_no_like_per_round.update({p_i : -1})
+                        if f_i is user_id:
+                            user_no_like_per_round.update({p_i : 0})
+                        else: 
+                            user_no_like_per_round.update({p_i : -1})
         return user_no_like_per_round
 
 
@@ -174,11 +177,14 @@ def get_LC_rounds():
 def cal_prob(no_likes_LC,likes_LC):
     posts_ans = []
     for post_no_liked in no_likes_LC: # about post with no like. same probability.
-        # random number between [0,1]
-        random_num = random.uniform(0,1)
-        random_num = float('{0:.1f}'.format(random.uniform(0,1)))
-        if random_num <= BETWEEN_5_TO_LC: # prob of 0.1
+        if no_likes_LC[post_no_liked] == 0:
             posts_ans.append(post_no_liked)
+        else:    
+        # random number between [0,1]
+            random_num = random.uniform(0,1)
+            random_num = float('{0:.1f}'.format(random.uniform(0,1)))
+            if random_num <= BETWEEN_5_TO_LC: # prob of 0.1
+                posts_ans.append(post_no_liked)
     
     # for the post in the LC.
     for post_like in likes_LC:
@@ -201,11 +207,12 @@ def cal_prob(no_likes_LC,likes_LC):
             if random_num <= BETWEEN_5_TO_LC:
                 posts_ans.append(post_like)
                 # print(f' LL = {LL} , random_num <= RANGE_PROB_BETWEEN_5_TO_LC -> {random_num}')
-    print(posts_ans)    
+    print(f"Posts picks = {posts_ans}")
+    print("________________________end round________________________")
 
 
 if __name__ == '__main__':
-    # simulator.simulator()
+    simulator.simulator()
     # all_likes = Post.likes.through.objects.all()
     # for l in all_likes:
     #     print(l.pk)
@@ -214,9 +221,9 @@ if __name__ == '__main__':
     # current_round = Round.objects.filter(round_number=len(all_rounds)).first()
     # LC = 10
     # 3
-    likes_LC = {1329: 3, 1327: 7}
-    no_likes_LC = {1326: -1, 1331: -1, 1333: -1, 1334: -1, 1335: -1}
-    cal_prob(no_likes_LC,likes_LC)
+    # likes_LC = {1329: 3, 1327: 7}
+    # no_likes_LC = {1326: -1, 1331: -1, 1333: -1, 1334: -1, 1335: -1}
+    # cal_prob(no_likes_LC,likes_LC)
 
     # print('RANGE_PROB_BETWEEN_1_TO_2:')
     # for i in RANGE_PROB_BETWEEN_1_TO_2:
