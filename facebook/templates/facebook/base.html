@@ -56,9 +56,9 @@
 
       <div class="container" style="flex-wrap: wrap;" id="sim-progress">
         <div class="col-12 float-none">
-          <h>Time left to complete action</h>
+          <h style="color: darkgoldenrod;">Time left to complete action</h>
           <div class="progress">
-            <div class="progress-bar" id="output" role="progressbar" style="width: 0%;" 
+            <div class="progress-bar bg-warning" id="output" role="progressbar" style="width: 0%;" 
             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
           </div>
@@ -186,12 +186,11 @@
       }
       function StartBarProgres() {
             progressNumber = 0
-
             setInterval(function(){
               progressBar.css('width',progressNumber +'%');
               // if (progressNumber > 100){
                 // document.getElementById('output').innerHTML = 100+ "%"
-                // document.getElementById('output').innerHTML = progressNumber+ "%"
+                document.getElementById('output').innerHTML = progressNumber+ "%"
               // progressBar.attr('aria-valuenow',progressNumber);
               console.log(progressNumber)
 
@@ -199,7 +198,6 @@
                   $(location).prop('href','/home');
                 }
                 progressNumber++;
-
             },100);
       }
 

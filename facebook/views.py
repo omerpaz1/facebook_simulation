@@ -12,7 +12,7 @@ num = 0
 
 @login_required
 def home(request):   
-    algo.Post_on_feed(request.user.id)
+    # posts = algo.Post_on_feed(request.user.id)
 
     user_liked = posts_user_liked(request.user.id)
     people_my_know = helper(request)

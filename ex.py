@@ -20,11 +20,7 @@ RANGE_PROB_BETWEEN_3_TO_5 = range(3,5+1)
 RANGE_PROB_BETWEEN_5_TO_LC = range(5,LC+1)
 
 def Post_on_feed(user_id):  
-    posts_id_to_show = add_posts_to_current_round(user_id)
-    # now here need to get the posts it slef.
-    # p = Post.objects.all()
-    # for... if i in posts_id_to_show in p ...
-    # then return the list.
+    return add_posts_to_current_round(user_id)
 
 
 def add_posts_to_current_round(user_id):
@@ -209,10 +205,20 @@ def cal_prob(no_likes_LC,likes_LC):
                 # print(f' LL = {LL} , random_num <= RANGE_PROB_BETWEEN_5_TO_LC -> {random_num}')
     print(f"Posts picks = {posts_ans}")
     print("________________________end round________________________")
+    return convert_posts(posts_ans)
+
+# covert from post id to post object
+def convert_posts(posts_LC):
+    posts_as_querySet = []
+    all_posts = Post.objects.all()
+    for p in all_posts:
+        if p.id in posts_LC:
+            posts_as_querySet.append(p)
+    return posts_as_querySet
 
 
 if __name__ == '__main__':
-    simulator.simulator()
+    # simulator.simulator()
     # all_likes = Post.likes.through.objects.all()
     # for l in all_likes:
     #     print(l.pk)
@@ -221,19 +227,7 @@ if __name__ == '__main__':
     # current_round = Round.objects.filter(round_number=len(all_rounds)).first()
     # LC = 10
     # 3
-    # likes_LC = {1329: 3, 1327: 7}
-    # no_likes_LC = {1326: -1, 1331: -1, 1333: -1, 1334: -1, 1335: -1}
-    # cal_prob(no_likes_LC,likes_LC)
-
-    # print('RANGE_PROB_BETWEEN_1_TO_2:')
-    # for i in RANGE_PROB_BETWEEN_1_TO_2:
-    #     print(i)
-    # print('***************************')
-    # print('RANGE_PROB_BETWEEN_3_TO_5:')
-    # for i in RANGE_PROB_BETWEEN_3_TO_5:
-    #     print(i)
-    # print('***************************')
-    # print('RANGE_PROB_BETWEEN_5_TO_LC:')
-    # for i in RANGE_PROB_BETWEEN_5_TO_LC:
-    #     print(i)
-    # print('***************************')
+    likes_LC = {1466: 3, 1464: 7}
+    no_likes_LC = {1463: 0, 1468: -1, 1470: -1, 1471: -1, 1472: 0}
+    l = cal_prob(no_likes_LC,likes_LC)
+    print(l)

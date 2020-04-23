@@ -50,15 +50,6 @@
               <form method="get" action="{% url 'manage_friends' operation='friend_requset' pk=post.username_id  %}">
                 <!-- adding here the add friend button -->
                 <a class="mr-2">{{ post.username }} </a>
-                {% if post.username_id in friends %}
-                  {%if post.username_id is not user.id %}
-                <button type="button" class="btn btn-outline-success float-center"> <svg class="bi bi-person-check-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 100-6 3 3 0 000 6zm9.854-2.854a.5.5 0 010 .708l-3 3a.5.5 0 01-.708 0l-1.5-1.5a.5.5 0 01.708-.708L12.5 7.793l2.646-2.647a.5.5 0 01.708 0z" clip-rule="evenodd"/>
-                </svg> Is Your Friend
-                </button>
-                  {%endif%}
-                {%endif%}
-              
             </form>
           </div>
             <a class="article-content">{{ post.status }} </a>
@@ -72,13 +63,14 @@
     {% csrf_token %}
     {%if post.id not in posts_user_liked %}
     {%if post.username_id is not user.id%}
-    <button type="submit" name='post_id' value="{{ post.id }}" class="btn btn-outline-secondary" >Like </button>
+    <button type="submit" name='post_id' value="{{ post.id }}" class="btn btn-outline-secondary" > <img class="img-responsive" src="/media/1.png">Like </button>
     {%else%}
-    <button type="button" name='post_id' value="{{ post.id }}" class="btn btn-outline-primary" >Likes </button>
+    <button type="button" name='post_id' value="{{ post.id }}" class="btn btn-outline-secondary" > <img class="img-responsive" src="/media/1.png">
+      Like </button>
     {%endif%}
     {{post.total_likes}}
     {%else%}
-    <button type="button" class="btn btn-outline-success">Liked</button>
+    <button type="button" class="btn btn-primary"> <img class="img-responsive" src="/media/1.png">Like</button>
     {{post.total_likes}}
     {%endif%}
   </form>
