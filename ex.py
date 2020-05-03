@@ -109,6 +109,7 @@ def likes_on_LC(user_id,like_post):
                             user_no_like_per_round.update({p_i : 0})
                         else: 
                             user_no_like_per_round.update({p_i : -1})
+        print(f'user = {user_id} , friends = {user_friends}')
         return user_no_like_per_round
 
 
@@ -218,7 +219,7 @@ def convert_posts(posts_LC):
 
 
 if __name__ == '__main__':
-    # simulator.simulator()
+    simulator.simulator()
     # all_likes = Post.likes.through.objects.all()
     # for l in all_likes:
     #     print(l.pk)
@@ -227,7 +228,7 @@ if __name__ == '__main__':
     # current_round = Round.objects.filter(round_number=len(all_rounds)).first()
     # LC = 10
     # 3
-    likes_LC = {1466: 3, 1464: 7}
-    no_likes_LC = {1463: 0, 1468: -1, 1470: -1, 1471: -1, 1472: 0}
-    l = cal_prob(no_likes_LC,likes_LC)
-    print(l)
+    # likes_LC = {1466: 3, 1464: 7}
+    # no_likes_LC = {1463: 0, 1468: -1, 1470: -1, 1471: -1, 1472: 0}
+    # l = cal_prob(no_likes_LC,likes_LC)
+    # print(l)

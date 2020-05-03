@@ -88,3 +88,34 @@ body {
     width: 20px;
     margin-right: 7px;
   }
+
+  #uploaded-file{
+    display: flex;
+    flex-direction: row;
+    height: 40px;
+    margin-top: 10px;
+  }
+  
+  #file-name{
+    margin-top: 10px;
+    margin-right: 5px;
+  }
+  #progress-bar{
+    flex-grow: 1;
+    background-color: lightgrey;
+    border: 1px solid black;
+    position: relative;
+
+  }
+  #progress-text{
+    
+    position: absolute;
+    top: 21px;
+    left: 45%;
+  }
+  #progress{
+    width: 0%;
+    height: 20px;
+    background-color:coral;
+  }
+  
