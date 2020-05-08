@@ -9,7 +9,7 @@ import threading
 from facebook.views import posts_user_liked
 import random
 
-LC = 10
+LC = 5
 BETWEEN_1_TO_2 = 0.4
 BETWEEN_3_TO_5 = 0.2
 BETWEEN_5_TO_LC = 0.1
@@ -79,11 +79,11 @@ def get_new_likes(all_likes,all_rounds):
     for like in all_likes:
         flag = True
         for r_i in all_rounds:
-            if like.pk in r_i.likes_id:
+            if like.id in r_i.likes_id:
                 flag = False
                 break
         if flag:
-            new_likes.append(like.pk)
+            new_likes.append(like.id)
     return new_likes
 
 def likes_on_LC(user_id,like_post):
@@ -219,16 +219,9 @@ def convert_posts(posts_LC):
 
 
 if __name__ == '__main__':
-    simulator.simulator()
-    # all_likes = Post.likes.through.objects.all()
-    # for l in all_likes:
-    #     print(l.pk)
-    # get_pk_per_like(60)
-    # all_rounds = Round.objects.all()
-    # current_round = Round.objects.filter(round_number=len(all_rounds)).first()
-    # LC = 10
-    # 3
-    # likes_LC = {1466: 3, 1464: 7}
-    # no_likes_LC = {1463: 0, 1468: -1, 1470: -1, 1471: -1, 1472: 0}
-    # l = cal_prob(no_likes_LC,likes_LC)
-    # print(l)
+    # simulator.simulator()
+
+    Friend_req = list(set(Friend_req.objects.all()))
+    for i in Friend_req:
+        if 1 in i.myfriends_req:
+            print(i.userid_id)

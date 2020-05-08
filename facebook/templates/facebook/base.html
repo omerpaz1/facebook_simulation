@@ -133,7 +133,7 @@
                   <h5 class="card-title">People you may know</h5>
                   <ul class="list-group">
                     {% for people in people_my_know %}
-                    {% if people.pk not in list_friend_req %}
+                    {% if people.id not in list_friend_req %}
                     <form method="get" action="{% url 'manage_friends' operation='friend_requset' pk=people.pk %}">
                       <li class="list-group-item list-group-item-light">{{people}}
                         <button type="submit" id="mybtn" name='people_my_know' class="btn-sm btn-outline-info float-right"><svg class="bi bi-person-plus-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -172,8 +172,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     
     <script>
-      flag = false; // for debug mode - put it false
-      Time = 100
+      flag = flase; // for debug mode - put it false
+      Time = 50
 
 
       if(flag){

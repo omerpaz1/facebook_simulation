@@ -8,23 +8,22 @@ import facebook.algoritem as algo
 import logging
 import sys
 
-num = 0
 
 @login_required
-def home(request):   
+def home(request):
     # posts = algo.Post_on_feed(request.user.id)
 
     user_liked = posts_user_liked(request.user.id)
-    people_my_know = helper(request)
-    list_friend_req = myreq(request.user.id)
-    # print(f"list_friend_req = {list_friend_req}")
+    people_may_know = helper(request)
+    list_friend_req = myreqest(request.user.id)
+    
 
     context = {
         'posts' : Post.objects.order_by('-date_posted'),
         'mystatus' : Status.objects.all(),
         'friends' : Friends.objects.filter(userid_id=request.user.id).first().myfriends,
         'friends_requst' : list(set(Friend_req.objects.filter(userid_id=request.user.id).first().myfriends_req)),
-        'people_my_know' : people_my_know,
+        'people_my_know' : people_may_know,
         'users' : User.objects.all(),
         'posts_user_liked' : user_liked,
         'list_friend_req' : list_friend_req
@@ -93,7 +92,8 @@ def helper(request):
 # user_requsted = the user that i want to add to my friends.
 
 def addfriend(request ,user_requsted):
-    list_current_friend_req = myreq(request.user.id)
+    print(f'requst = {request.user.id}')
+    print(f'user_requsted = {user_requsted}')
     
     current_user = Friend_req.objects.filter(userid_id=request.user.id).first()
     if user_requsted.pk in current_user.myfriends_req: # if 3 in 5
@@ -101,13 +101,11 @@ def addfriend(request ,user_requsted):
     else:
         user_requsted = Friend_req.objects.filter(userid_id=user_requsted.id).first()
         if current_user.userid_id not in user_requsted.myfriends_req:
-            list_current_friend_req.append(user_requsted.userid_id) # adding to list of user requsted
             user_requsted.myfriends_req.append(request.user.id)
             user_requsted.save()
 
 # comfirm both friend in the tables
 def confirm_friends(request,user_requsted):
-    list_current_friend_req = myreq(user_requsted.pk)
     current_user_table = Friend_req.objects.filter(userid_id=request.user.id).first()
     current_user_table.myfriends_req.remove(user_requsted.pk)
     current_user_table.save()
@@ -117,7 +115,6 @@ def confirm_friends(request,user_requsted):
     current_user_table.myfriends.append(user_requsted.pk)
     user_confirm = Friends.objects.filter(userid_id=user_requsted.pk).first()
     user_confirm.myfriends.append(request.user.id)
-    list_current_friend_req.remove(current_user_table.userid_id)
 
     current_user_table.save()
     user_confirm.save()
@@ -134,23 +131,15 @@ def posts_user_liked(user_id):
 # helping for friend managment:
 
     # get in instance of the current user list of friend req
-def myreq(id):
-    if id == 1:
-        return list_friend_req_O
-    if id == 2:
-        return list_friend_req_A
-    if id == 3:
-        return list_friend_req_B
-    if id == 4:
-        return list_friend_req_C
-    if id == 5:
-        return list_friend_req_D
-    if id == 6:
-        return list_friend_req_E
+def myreqest(id):
+    my_req_list = []
+    friend_req = list(set(Friend_req.objects.all()))
+    for i in friend_req:
+        if id in i.myfriends_req:
+            my_req_list.append(i.userid_id)
+    return my_req_list
 
-list_friend_req_O = []
-list_friend_req_A = []
-list_friend_req_B = []
-list_friend_req_C = []
-list_friend_req_D = []
-list_friend_req_E = []
+
+
+
+# check if all users auth.

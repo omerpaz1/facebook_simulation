@@ -2,12 +2,46 @@ import os
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.models import Post,Status,Friends,Friend_req,Rounds
+from facebook.models import Post,Status,Friends,Friend_req,Round
+from users.models import Profile
 from django.contrib.auth.models import User
+
+users = ['UserA','UserB','UserC','UserD','UserE']
+status = ['I like Pizza','Hello World','What is coronavirus www.coronavirus.com','What is the meaning of life']
+profile_pic = ['img_A','img_B','img_C','img_D','img_E']
+# must do first after change db!
+def init_friends():
+    allusers = User.objects.all()
+    for i in users:
+        user = allusers.filter(username=i).first()
+        f = Friends(userid_id=user.id,myfriends=[])
+        f.save()
+
+# must do first after change db!
+def init_friends_requst():
+    allusers = User.objects.all()
+    for i in users:
+        user1 = allusers.filter(username=i)
+        f = Friend_req(userid_id=user1.id,myfriends_req=[])
+        f.save()
+
+# def init_profile():
+#     allusers = User.objects.all()
+#     j = 0
+#     for i in profile_pic:
+#         user = allusers.filter(username=users[i]).first()
+#         p = Profile(user=user,image=i)
+#         p.save()
+#         j+=1
+
+def init_status():
+
+    for i in status:
+        s = Status(status=i,has_link=False)
+        s.save()
 
 def delete_like():
     pass
-
 
 
 def delete_friends():
@@ -64,11 +98,23 @@ def delete_friend_req():
     friends6.save()
 
 def delete_all_rounds():
-    Rounds.objects.all().delete()
+    Round.objects.all().delete()
+
+def delete_all_posts():
+    Post.objects.all().delete()
+
+def delete_all_likes():
+    Post.likes.through.objects.all().delete()
 
 
 if __name__ == "__main__":
-    delete_all_rounds()
+    # init_friends()
+    # init_friends_requst()
 
+    # delete_all_rounds()
+    # delete_all_posts()    
+    # delete_all_likes()
+    delete_friend_req()
+    delete_friends()
 
-    
+    # init_status()

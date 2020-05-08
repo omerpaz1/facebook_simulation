@@ -9,56 +9,74 @@ import time
 from facebook.views import posts_user_liked
 
 user_id = 2
+UserA = 2
+UserB = 3
+UserC = 4
+UserD = 5
+UserE = 6
 
+# userA -> friends : [UserB,UserC,UserD]
+# userB -> friends : [UserA]
+# userC -> friends : [UserA]
+# userE -> friends : [UserD,UserB]
+# userD -> friends : [UserA,UserE]
 
 def simulator():
-    # Round n1:
-    time.sleep(1) 
-    p1 = Post(status_id=1,username_id=1) # r1 = posts =[p1,p2,p3,p4] , likes = []
-    p2 = Post(status_id=1,username_id=2) 
-    p3 = Post(status_id=1,username_id=3)
-    p4 = Post(status_id=1,username_id=4)
-    p1.save()
-    p2.save()
-    p3.save()
-    p4.save()
-    ex.Post_on_feed(user_id)
-    # Round n2:
-    time.sleep(2)
-    p5 = Post(status_id=2,username_id=3)
-    p5.save()
-    # l2 = Post.likes.through(post_id=p4.pk,user_id=2)
-    l2.save()
-    ex.Post_on_feed(user_id)
-    # Round n3:
-    time.sleep(1) 
-    p6 = Post(status_id=3,username_id=2) # r3 = posts =[p6] , likes = [L(p4)]
-    p6.save()
-    l3 = Post.likes.through(post_id=p4.pk,user_id=1)
-    l3.save()
-    ex.Post_on_feed(user_id)  
-    time.sleep(1)  
-    # # Round n4:
-    p7 = Post(status_id=4,username_id=3) # r4 = posts =[p7,p7] , likes = []
-    p8 = Post(status_id=4,username_id=4)
-    p7.save()
-    p8.save()
-    ex.Post_on_feed(user_id)   
-    # # Round n5:
-    time.sleep(1) 
-    p9 = Post(status_id=4,username_id=2) # r5 = posts =[p9] , likes = []
-    p9.save()
-    ex.Post_on_feed(user_id)  
-    # # Round n6:
-    time.sleep(1) 
-    p10 = Post(status_id=4,username_id=1) # r4 = posts =[p10] , likes = []
-    p10.save()
-    ex.Post_on_feed(user_id)   
-    # # Round n7:
-    time.sleep(1) 
-    l1 = Post.likes.through(post_id=p10.pk,user_id=2) # r2 = posts =[p5] , likes = [L(p2) , L(p4)]
-    l1.save()
-    ex.Post_on_feed(user_id)   
+    # ------------------------- Round 1 -------------------------
+    p_A_1 = Post(status_id=1,username_id=UserA) 
+    p_B_1 = Post(status_id=1,username_id=UserB) 
+    p_C_1 = Post(status_id=1,username_id=UserC)
+    p_D_1 = Post(status_id=1,username_id=UserD)
+    p_E_1 = Post(status_id=1,username_id=UserE)
 
+    p_A_1.save()
+    p_B_1.save()
+    p_C_1.save()
+    p_D_1.save()
+    p_E_1.save()
 
+    ex.Post_on_feed(user_id)
+    # ------------------------- Round 2 -------------------------
+    p_C_2 = Post(status_id=1,username_id=UserC)
+    p_D_2 = Post(status_id=1,username_id=UserD)
+    p_E_2 = Post(status_id=1,username_id=UserE)
+
+    p_C_2.save()
+    p_D_2.save()
+    p_E_2.save()
+
+    l_A2 = Post.likes.through(post_id=p_B_1.pk,user_id=UserA)
+    l_B2 = Post.likes.through(post_id=p_A_1.pk,user_id=UserB)
+    l_A2.save()
+    l_B2.save()
+    ex.Post_on_feed(user_id)
+    # ------------------------- Round 3 -------------------------
+
+    l_A3 = Post.likes.through(post_id=p_C_2.pk,user_id=UserA)
+    l_C3 = Post.likes.through(post_id=p_A_1.pk,user_id=UserC)
+    l_A3.save()
+    l_C3.save()
+
+    p_B_3 = Post(status_id=1,username_id=UserB) 
+    p_E_3 = Post(status_id=1,username_id=UserE)        
+    p_D_3 = Post(status_id=1,username_id=UserD)
+
+    p_B_3.save()
+    p_E_3.save()
+    ex.Post_on_feed(user_id)
+    # ------------------------- Round 4 -------------------------
+
+    p_A_4 = Post(status_id=1,username_id=UserA) 
+    p_B_4 = Post(status_id=1,username_id=UserB) 
+    p_C_4 = Post(status_id=1,username_id=UserC)
+    p_D_4 = Post(status_id=1,username_id=UserD)
+    p_E_4 = Post(status_id=1,username_id=UserE)
+    ex.Post_on_feed(user_id)
+
+    # ------------------------- Round 5 -------------------------
+
+    l_A5 = Post.likes.through(post_id=p_A_4.pk,user_id=UserA)
+    l_A3.save()
+    l_C3.save()
+    ex.Post_on_feed(user_id)
 
