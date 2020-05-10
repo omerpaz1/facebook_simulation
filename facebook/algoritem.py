@@ -208,3 +208,5 @@ def convert_posts(posts_LC):
         if p.id in posts_LC:
             posts_as_querySet.append(p)
     return posts_as_querySet
+
+    

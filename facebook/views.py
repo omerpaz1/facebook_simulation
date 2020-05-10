@@ -1,5 +1,6 @@
 from django.shortcuts import render , redirect
 from .models import Post,Status,Friends,Friend_req
+from users.models import AllLogin
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
 from django.contrib.auth.decorators import login_required
@@ -7,6 +8,19 @@ import time
 import facebook.algoritem as algo
 import logging
 import sys
+
+
+def waiting(request):
+    users_login = AllLogin.objects.all()
+    while(len(users_login) != 3):
+        users_login = AllLogin.objects.all()
+        context = {
+            'active_users' :AllLogin.objects.order_by('-date')
+        }
+        return render(request,'facebook/waiting.html',context)
+
+    return redirect('/create_post')
+
 
 
 @login_required
@@ -75,7 +89,6 @@ def manage_friends(request,operation,pk):
     if operation == 'friend_confirm':
         confirm_friends(request,user_requsted)
     return redirect('/home')
-
 
 # function that help manage the "people you may know"
 def helper(request):

@@ -4,10 +4,12 @@ import simulator
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
 from facebook.models import Post,Status,Friends,Friend_req,Round
+from users.models import AllLogin
 from django.contrib.auth.models import User
 import threading 
 from facebook.views import posts_user_liked
 import random
+import time
 
 LC = 5
 BETWEEN_1_TO_2 = 0.4
@@ -220,8 +222,12 @@ def convert_posts(posts_LC):
 
 if __name__ == '__main__':
     # simulator.simulator()
+    # users_login = AllLogin.objects.all()
+    # print(len(users_login))
+    # while(len(users_login) != 2):
+    #     time.sleep(5)
+    #     users_login = AllLogin.objects.all()
+    #     print(users_login)
 
-    Friend_req = list(set(Friend_req.objects.all()))
-    for i in Friend_req:
-        if 1 in i.myfriends_req:
-            print(i.userid_id)
+    print('all 5 users logged in!')
+    AllLogin.objects.all().delete()
