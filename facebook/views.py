@@ -10,6 +10,7 @@ import logging
 import sys
 
 
+
 def waiting(request):
     users_login = AllLogin.objects.all()
     while(len(users_login) != 3):

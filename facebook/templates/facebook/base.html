@@ -171,20 +171,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     
+  
     <script>
-      flag = flase; // for debug mode - put it false
+      flag = true; // for debug mode - put it false
       Time = 50
 
 
       if(flag){
       var progressBar = $('.progress');
       var progressNumber = 0;
-      if(location =='http://localhost:8000/create_post/'){
+      if(location =='http://34.89.188.107/create_post/'){
         StartBarProgres();
-      }else if(location =='http://localhost:8000/home/'){
+      }else if(location =='http://34.89.188.107/home/'){
         StartBarProgres();
       }
     }
+
     function StartBarProgres() {
     var elem = document.getElementById("progress"); 
     var width = 0;
