@@ -13,16 +13,28 @@ import sys
 
 def waiting(request):
     users_login = AllLogin.objects.all()
-    while(len(users_login) != 3):
+    set_users_login = set()
+    for i in users_login:
+        set_users_login.add(i.user.id)
+    users_login = set_users_login
+
+    while(len(users_login) < 3):
         users_login = AllLogin.objects.all()
+        for i in users_login:
+            set_users_login.add(i.user.id)
+        users_login = set_users_login
+
         context = {
-            'active_users' :AllLogin.objects.order_by('-date')
+            'active_users' :users_login,
+            'allusers': User.objects.all(),
+            'left_Users': 5-len(users_login)
         }
         return render(request,'facebook/waiting.html',context)
-
+    AllLogin.objects.all().delete()    
     return redirect('/create_post')
 
-
+def ToCreate():
+    pass
 
 @login_required
 def home(request):

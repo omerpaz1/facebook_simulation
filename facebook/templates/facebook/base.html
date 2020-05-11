@@ -204,6 +204,31 @@
     }
 }
 
+      flag1 = true; // for debug mode - put it false
+      Time = 50
+
+
+      if(flag1){
+      if(location =='http://34.89.188.107/waiting/'){
+        newfun();
+      }
+    }
+    function newfun() {
+    var elem = document.getElementById("progress"); 
+    var width = 0;
+    var id = setInterval(frame, Time);
+    function frame() {
+        if (width >= 50) {
+            clearInterval(id);
+            $(location).prop('href','/waiting');
+
+        } else {
+            width++; 
+        }
+    }
+}
+</script>
+
     </script>
 
 

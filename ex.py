@@ -222,12 +222,20 @@ def convert_posts(posts_LC):
 
 if __name__ == '__main__':
     # simulator.simulator()
-    # users_login = AllLogin.objects.all()
-    # print(len(users_login))
-    # while(len(users_login) != 2):
-    #     time.sleep(5)
-    #     users_login = AllLogin.objects.all()
-    #     print(users_login)
+    set_users_login = set()
+    users_login = AllLogin.objects.all()
+    for i in users_login:
+        set_users_login.add(i.user.id)
+        users_login = set_users_login
 
-    print('all 5 users logged in!')
-    AllLogin.objects.all().delete()
+    while(len(users_login) < 3):
+        users_login = AllLogin.objects.all()
+        for i in users_login:
+            set_users_login.add(i.user.id)
+        users_login = set_users_login
+        usersObj = User.objects.all()
+        for i in users_login:
+            if i in usersObj:
+                print(i)
+
+    # AllLogin.objects.all().delete()    

@@ -11,7 +11,7 @@ class Profile(models.Model):
         return self.user.username
 
 class AllLogin(models.Model):
-    user= models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     date= models.DateTimeField(auto_now_add= True)
 
     def __str__(self):
