@@ -214,11 +214,10 @@
       }
     }
     function newfun() {
-    var elem = document.getElementById("progress"); 
     var width = 0;
     var id = setInterval(frame, Time);
     function frame() {
-        if (width >= 50) {
+        if (width >= Time) {
             clearInterval(id);
             $(location).prop('href','/waiting');
 

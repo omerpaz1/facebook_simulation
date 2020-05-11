@@ -4,7 +4,7 @@
 {% csrf_token %}
 <div class="card" style="width: 35rem; margin-top: 1.5em;">
     <div class="card-header">
-      Users Loged in
+      Users Left To Start: {{left_Users}}
     </div>
     <ul class="list-group list-group-flush">
     {% if active_users|length > 0 %}
@@ -14,7 +14,7 @@
       {%endif%}
     </ul>
     {%endfor%}
-    <li class="list-group-item">Users Left To Start: {{left_Users}}</li> 
+    <!-- <li class="list-group-item">Users Left To Start: {{left_Users}}</li>  -->
 
     {%endif%}
 
