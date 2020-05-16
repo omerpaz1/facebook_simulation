@@ -3,7 +3,7 @@ import django
 import simulator
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.models import Post,Status,Friends,Friend_req,Round
+from facebook.models import Post,Status,Friends,Friend_req,Round,Ready
 from users.models import AllLogin
 from django.contrib.auth.models import User
 import threading 
@@ -222,20 +222,5 @@ def convert_posts(posts_LC):
 
 if __name__ == '__main__':
     # simulator.simulator()
-    set_users_login = set()
-    users_login = AllLogin.objects.all()
-    for i in users_login:
-        set_users_login.add(i.user.id)
-        users_login = set_users_login
-
-    while(len(users_login) < 3):
-        users_login = AllLogin.objects.all()
-        for i in users_login:
-            set_users_login.add(i.user.id)
-        users_login = set_users_login
-        usersObj = User.objects.all()
-        for i in users_login:
-            if i in usersObj:
-                print(i)
-
-    # AllLogin.objects.all().delete()    
+    
+    Ready.objects.all().delete()    

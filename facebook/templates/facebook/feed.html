@@ -7,7 +7,7 @@
  {% block content %} 
  
 
- <form action='' method="POST">
+ <form action='' onsubmit="NoReload()" method="POST">
   {% csrf_token %}
  <div class="card text-white bg-secondary mb-3" style="width: 35rem; margin-top: 1.5em;">    
             <article class="media content-section text-white bg-secondary mb-3">

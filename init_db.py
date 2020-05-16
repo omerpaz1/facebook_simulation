@@ -2,9 +2,11 @@ import os
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.models import Post,Status,Friends,Friend_req,Round
+from facebook.models import Post,Status,Friends,Friend_req,Round,Ready
 from users.models import Profile
 from django.contrib.auth.models import User
+from users.models import AllLogin
+
 
 users = ['UserA','UserB','UserC','UserD','UserE']
 status = ['I like Pizza','Hello World','What is coronavirus www.coronavirus.com','What is the meaning of life']
@@ -25,14 +27,6 @@ def init_friends_requst():
         f = Friend_req(userid_id=user1.id,myfriends_req=[])
         f.save()
 
-# def init_profile():
-#     allusers = User.objects.all()
-#     j = 0
-#     for i in profile_pic:
-#         user = allusers.filter(username=users[i]).first()
-#         p = Profile(user=user,image=i)
-#         p.save()
-#         j+=1
 
 def init_status():
 
@@ -106,6 +100,11 @@ def delete_all_posts():
 def delete_all_likes():
     Post.likes.through.objects.all().delete()
 
+def logout_all():
+    AllLogin.objects.all().delete()    
+
+def unReady_all():
+    Ready.objects.all().delete()    
 
 if __name__ == "__main__":
     # init_friends()
@@ -114,7 +113,8 @@ if __name__ == "__main__":
     # delete_all_rounds()
     # delete_all_posts()    
     # delete_all_likes()
-    delete_friend_req()
-    delete_friends()
-
+    # delete_friend_req()
+    # delete_friends()
+    logout_all()
+    unReady_all()
     # init_status()

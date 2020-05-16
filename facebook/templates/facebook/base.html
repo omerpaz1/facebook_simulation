@@ -1,7 +1,5 @@
 {% load static %}
 
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -46,8 +44,8 @@
         
          <ul class="navbar-nav ml-auto">
           {% if user.is_authenticated %}
-          <a class="nav-item nav-link" href="{% url 'facebook-home' %}">Home</a>
-          <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+          <!-- <a class="nav-item nav-link" href="{% url 'facebook-home' %}">Home</a>
+          <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a> -->
           {% else %}
             <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
           {% endif %}
@@ -173,11 +171,26 @@
     
   
     <script>
-      flag = true; // for debug mode - put it false
-      Time = 50
+
+      // Timer for the progressbar page      
+
+      flag_progress_bar = true; // for debug mode - put it false
+      Time_progress_bar = 100
+
+      // Timer for the waiting page      
+
+      flag_waiting = true; // for debug mode - put it false
+      Time_waiting = 40
+
+      // Timer for the ready page      
+
+      flag_ready = true; // for debug mode - put it false
+      Time_ready = 40
 
 
-      if(flag){
+      // implments
+
+      if(flag_progress_bar){
       var progressBar = $('.progress');
       var progressNumber = 0;
       if(location =='http://34.89.188.107/create_post/'){
@@ -190,11 +203,11 @@
     function StartBarProgres() {
     var elem = document.getElementById("progress"); 
     var width = 0;
-    var id = setInterval(frame, Time);
+    var id = setInterval(frame, Time_progress_bar);
     function frame() {
         if (width >= 100) {
             clearInterval(id);
-            $(location).prop('href','/home');
+            $(location).prop('href','/ready');
 
         } else {
             width++; 
@@ -204,21 +217,18 @@
     }
 }
 
-      flag1 = true; // for debug mode - put it false
-      Time = 50
 
-
-      if(flag1){
+      if(flag_waiting){
       if(location =='http://34.89.188.107/waiting/'){
-        newfun();
+        WaitFun();            
       }
     }
-    function newfun() {
+    function WaitFun() {
     var width = 0;
-    var id = setInterval(frame, Time);
+    var id = setInterval(frame, Time_waiting);
     function frame() {
-        if (width >= Time) {
-            clearInterval(id);
+        if (width >= Time_waiting) {
+            clearInterval(id);  
             $(location).prop('href','/waiting');
 
         } else {
@@ -226,11 +236,29 @@
         }
     }
 }
+
+      if(flag_ready){
+      if(location =='http://34.89.188.107/ready/'){
+        ReadyFun();            
+      }
+    }
+    function ReadyFun() {
+    var width = 0;
+    var id = setInterval(frame, Time_ready);
+    function frame() {
+        if (width >= Time_ready) {
+            clearInterval(id);  
+            $(location).prop('href','/ready');
+
+        } else {
+            width++; 
+        }
+    }
+}
+
+
 </script>
 
-    </script>
 
-
-    </script>
 </body>
 </html>

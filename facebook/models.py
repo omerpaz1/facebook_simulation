@@ -109,3 +109,11 @@ class Round(models.Model):
     round_number = models.IntegerField(default=0)
     posts_id = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=8,),size=8,)
     likes_id = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=8,),size=8,)
+
+
+class Ready(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add= True)
+
+    def __str__(self):
+        return str(self.user) + ': ' + str(self.date)

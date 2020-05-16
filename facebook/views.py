@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from .models import Post,Status,Friends,Friend_req
+from .models import Post,Status,Friends,Friend_req,Ready
 from users.models import AllLogin
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
@@ -8,6 +8,32 @@ import time
 import facebook.algoritem as algo
 import logging
 import sys
+from django.http import HttpResponse
+
+Users_num = 3
+
+
+def ready(request):
+    Ready.objects.create(user=request.user) #create new Ready User
+    users_ready = Ready.objects.all()
+    set_users_ready = set()
+    for i in users_ready:
+        set_users_ready.add(i.user.id)
+    users_ready = set_users_ready
+    while(len(users_ready) < Users_num):
+        users_ready = Ready.objects.all()
+        for i in users_ready:
+            set_users_ready.add(i.user.id)
+        users_ready = set_users_ready
+        context = {
+            'ready_users' :users_ready,
+            'allusers': User.objects.all(),
+            'left_Users': Users_num-len(users_ready)
+        }
+        return render(request,'facebook/ready.html',context)    
+
+    Ready.objects.all().delete()    
+    return redirect('/home')
 
 
 
@@ -17,7 +43,7 @@ def waiting(request):
     for i in users_login:
         set_users_login.add(i.user.id)
     users_login = set_users_login
-    while(len(users_login) < 3):
+    while(len(users_login) < Users_num):
         users_login = AllLogin.objects.all()
         for i in users_login:
             set_users_login.add(i.user.id)
@@ -28,8 +54,7 @@ def waiting(request):
             'left_Users': 5-len(users_login)
         }
         return render(request,'facebook/waiting.html',context)
-    # AllLogin.objects.all().delete()   
-    time.sleep(5) 
+    time.sleep(1) 
     return redirect('/create_post')
 
 def ToCreate():
@@ -60,6 +85,8 @@ def home(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status =pick)
        new_post.save()
+       return redirect('/ready')
+
     return render(request,'facebook/feed.html',context)
 
 
@@ -75,11 +102,14 @@ def create_post(request):
        user_post_option = request.POST.get('user_option',False) 
        user_post_name = request.user
        pick = Status.objects.get(status = user_post_option)
-       new_post = Post(username = user_post_name ,status =pick)
+       new_post = Post(username = user_post_name ,status = pick)
        new_post.save()
-       return redirect('/home')
-    else:
-        return render(request,'facebook/post_form.html',context)
+       return redirect('/ready')
+
+    return render(request,'facebook/post_form.html',context)
+
+
+
     
 # function when user click on the "like" btn.
 
@@ -88,7 +118,7 @@ def like_post(request):
         post_like_id = request.POST.get('post_id',False)
         post_like_id = Post.objects.get(id=post_like_id)
         post_like_id.likes.add(request.user)
-    return redirect('/home')
+    return redirect('/ready')
 
 
 
@@ -100,7 +130,7 @@ def manage_friends(request,operation,pk):
         addfriend(request,user_requsted)
     if operation == 'friend_confirm':
         confirm_friends(request,user_requsted)
-    return redirect('/home')
+    return redirect('/ready')
 
 # function that help manage the "people you may know"
 def helper(request):

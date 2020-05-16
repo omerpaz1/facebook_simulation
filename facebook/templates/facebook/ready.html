@@ -1,0 +1,23 @@
+{% extends "facebook/base.html" %}
+
+{% block content %}
+{% csrf_token %}
+<div class="card" style="width: 35rem; margin-top: 1.5em;">
+    <div class="card-header">
+      Users Left To Continue: {{left_Users}}
+    </div>
+    <ul class="list-group list-group-flush">
+    {% if ready_users|length > 0 %}
+    {%for user in allusers%}
+      {% if user.id in ready_users %}
+    <li class="list-group-item">{{user.username}} - Is Ready!</li> 
+      {%endif%}
+    </ul>
+    {%endfor%}
+    <!-- <li class="list-group-item">Users Left To Start: {{left_Users}}</li>  -->
+
+    {%endif%}
+
+
+</div>
+{% endblock content %}
