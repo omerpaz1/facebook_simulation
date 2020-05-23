@@ -1,6 +1,5 @@
 import os
 import django
-import simulator
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
 from facebook.models import Post,Status,Friends,Friend_req,Round,Ready
@@ -222,5 +221,8 @@ def convert_posts(posts_LC):
 
 if __name__ == '__main__':
     # simulator.simulator()
-    
-    Ready.objects.all().delete()    
+    user = User.objects.filter(id=1)
+    users_ready = set(Ready.objects.values_list('user_id', flat=True))
+    print(users_ready)
+    # if(user in users_ready):
+    #     print("in")

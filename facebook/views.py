@@ -8,7 +8,7 @@ import time
 import facebook.algoritem as algo
 import logging
 import sys
-from django.http import HttpResponse
+from django.http import HttpRequest
 
 Users_num = 3
 
@@ -94,12 +94,14 @@ def home(request):
 @login_required
 # function to create post
 def create_post(request):
+    print(request)
     context = {
         'mystatus' : Status.objects.all(),
         'posts' : Post.objects.all()
     }
     if request.method == 'POST':
-       user_post_option = request.POST.get('user_option',False) 
+       
+       user_post_option = request.content_params['user_option']
        user_post_name = request.user
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status = pick)
