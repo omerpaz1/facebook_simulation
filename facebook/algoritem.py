@@ -18,6 +18,7 @@ def Post_on_feed(user_id):
 
 
 def add_posts_to_current_round(user_id):
+    new_round = -1
     if user_id == leader_round_user_id:
         new_round = Round(round_number=len(Round.objects.all())+1,posts_id=[],likes_id=[])
         new_round.save()
@@ -188,15 +189,15 @@ def cal_prob(no_likes_LC,likes_LC):
         random_num = random.uniform(0,1)
         random_num = float('{0:.1f}'.format(random.uniform(0,1)))
         if LL in RANGE_PROB_BETWEEN_1_TO_2:
-            if True:
+            if random_num <= BETWEEN_1_TO_2:
                 posts_ans.append(post_like)
                 # print(f' LL = {LL} , random_num <= BETWEEN_1_TO_2 -> {random_num}')
         elif LL in RANGE_PROB_BETWEEN_3_TO_5:
-            if True:
+            if random_num <= BETWEEN_3_TO_5:
                 posts_ans.append(post_like)
                 # print(f' LL = {LL} , random_num <= BETWEEN_3_TO_5 -> {random_num}')
         elif LL in RANGE_PROB_BETWEEN_5_TO_LC:
-            if True:
+            if random_num <= BETWEEN_5_TO_LC:
                 posts_ans.append(post_like)
                 # print(f' LL = {LL} , random_num <= RANGE_PROB_BETWEEN_5_TO_LC -> {random_num}')
     print(f"Posts picks = {posts_ans}")
