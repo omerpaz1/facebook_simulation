@@ -93,15 +93,18 @@ def home(request):
 
 @login_required
 # function to create post
-def create_post(request):
+def create_post(request,user_option):
     print(request)
     context = {
         'mystatus' : Status.objects.all(),
         'posts' : Post.objects.all()
     }
     if request.method == 'POST':
-       
-       user_post_option = request.content_params['user_option']
+    #    if not len(request.content_params):
+    #         user_post_option = request.content_params['user_option']
+    #         print("here!")
+    #         print(f"{user_post_option}")
+       user_post_option = request.POST.get('user_option',False)
        user_post_name = request.user
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status = pick)

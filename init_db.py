@@ -111,10 +111,10 @@ if __name__ == "__main__":
     # init_friends_requst()
 
     # delete_all_rounds()
-    delete_all_posts()    
+    # delete_all_posts()    
     # delete_all_likes()
     # delete_friend_req()
-    # delete_friends()
-    logout_all()
+    delete_friends()
+    # logout_all()
     # unReady_all()
     # init_status()

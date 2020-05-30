@@ -210,3 +210,46 @@ def convert_posts(posts_LC):
     return posts_as_querySet
 
     
+
+'''
+this function get a user posts on feed
+return -> the possibole posts that he can like (not heis posts)
+'''
+def getOptionalLikePosts(user_id):
+    OptionalLikePostsList = []
+    no_likes_LC = likes_on_LC(user_id,False)
+    for post_no_liked in no_likes_LC: # about post with no like. same probability.
+        if no_likes_LC[post_no_liked] == -1:
+            OptionalLikePostsList.append(post_no_liked)
+    # convert_post(OptionalLikePostsList)
+    return OptionalLikePostsList
+
+'''
+this function will get the users that know in your friend lists
+it mean -> this users in the people you may know and you can ask for there friend.
+return - > list if the users that you mayknow.
+'''
+def getPeopleMayKnow(user_id):
+    PeopleMayKnow = []
+    userFriends = Friends.objects.filter(userid_id=user_id).first().myfriends
+    all_users = list(User.objects.values_list('id', flat=True)) 
+    for u in all_users:
+        if u not in userFriends:
+            PeopleMayKnow.append(u)
+    return PeopleMayKnow
+
+'''
+this function will return the list of user current requests
+'''
+def getFriendsRequest(user_id):
+    return Friend_req.objects.filter(userid_id=user_id).first().myfriends_req
+
+'''
+this function will return a status from all the status as a String that will be Posted.
+
+'''
+def getStatusToPost():
+    all_statuss = list(Status.objects.values_list('status', flat=True)) 
+    random_num = random.randint(0,len(all_statuss)-1) # unifom random in all the status.
+    return all_statuss[random_num]
+
