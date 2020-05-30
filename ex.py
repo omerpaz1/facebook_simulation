@@ -54,4 +54,3 @@ if __name__ == '__main__':
 
 
     PostsOnFeed = algo.getOptionalLikePosts(1,current_posts)
-    

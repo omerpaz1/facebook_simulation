@@ -222,9 +222,10 @@ def getOptionalLikePosts(user_id,current_posts):
     currentPostsOnFeed = getIdPosts(current_posts)
     OptionalLikePostsList = []
     no_likes_LC = likes_on_LC(user_id,False)
-    for post in currentPostsOnFeed: # about post with no like. same probability.
-        if no_likes_LC[post] == -1:
-            OptionalLikePostsList.append(post)
+    for post in currentPostsOnFeed: # about post with no like. same probability.]
+        if post in no_likes_LC:
+            if no_likes_LC[post] == -1:
+                OptionalLikePostsList.append(post)
     # convert_post(OptionalLikePostsList)
     return OptionalLikePostsList
 
