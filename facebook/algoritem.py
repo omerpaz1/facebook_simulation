@@ -6,6 +6,8 @@ BETWEEN_1_TO_2 = 0.4
 BETWEEN_3_TO_5 = 0.2
 BETWEEN_5_TO_LC = 0.1
 
+leader_round_user_id = 1 # this user will be the last user that create new round
+
 #puls 1 cuse range not include the end.
 RANGE_PROB_BETWEEN_1_TO_2 = range(1,2+1)
 RANGE_PROB_BETWEEN_3_TO_5 = range(3,5+1)
@@ -16,10 +18,12 @@ def Post_on_feed(user_id):
 
 
 def add_posts_to_current_round(user_id):
-    new_round = Round(round_number=len(Round.objects.all())+1,posts_id=[],likes_id=[])
-    new_round.save()
+    if user_id == leader_round_user_id:
+        new_round = Round(round_number=len(Round.objects.all())+1,posts_id=[],likes_id=[])
+        new_round.save()
+    
     all_rounds = Round.objects.all()
-    current_round = Round.objects.filter(round_number=len(all_rounds)).first()
+    new_round = Round.objects.filter(round_number=len(all_rounds)).first()
     # take all the posts id
     all_posts = Post.objects.all()
     all_likes = Post.likes.through.objects.all()
@@ -30,8 +34,8 @@ def add_posts_to_current_round(user_id):
 
     new_posts = get_new_posts(all_posts,all_rounds) 
     new_likes = get_new_likes(all_likes,all_rounds)
-
     for i in new_posts:
+        print(i)
         new_round.posts_id.append(i)
     new_round.save()
 
@@ -180,20 +184,19 @@ def cal_prob(no_likes_LC,likes_LC):
         liked_round = likes_LC[post_like]
         # LL not negative cuse like_round must be min 1 cuse no possible like and post i the same round
         LL = liked_round - posted_round
-        print(f'LL = {LL}')
         # random number between [0,1]
         random_num = random.uniform(0,1)
         random_num = float('{0:.1f}'.format(random.uniform(0,1)))
         if LL in RANGE_PROB_BETWEEN_1_TO_2:
-            if random_num <= BETWEEN_1_TO_2:
+            if True:
                 posts_ans.append(post_like)
                 # print(f' LL = {LL} , random_num <= BETWEEN_1_TO_2 -> {random_num}')
         elif LL in RANGE_PROB_BETWEEN_3_TO_5:
-            if random_num <= BETWEEN_3_TO_5:
+            if True:
                 posts_ans.append(post_like)
                 # print(f' LL = {LL} , random_num <= BETWEEN_3_TO_5 -> {random_num}')
         elif LL in RANGE_PROB_BETWEEN_5_TO_LC:
-            if random_num <= BETWEEN_5_TO_LC:
+            if True:
                 posts_ans.append(post_like)
                 # print(f' LL = {LL} , random_num <= RANGE_PROB_BETWEEN_5_TO_LC -> {random_num}')
     print(f"Posts picks = {posts_ans}")
@@ -215,12 +218,13 @@ def convert_posts(posts_LC):
 this function get a user posts on feed
 return -> the possibole posts that he can like (not heis posts)
 '''
-def getOptionalLikePosts(user_id):
+def getOptionalLikePosts(user_id,current_posts):
+    currentPostsOnFeed = getIdPosts(current_posts)
     OptionalLikePostsList = []
     no_likes_LC = likes_on_LC(user_id,False)
-    for post_no_liked in no_likes_LC: # about post with no like. same probability.
-        if no_likes_LC[post_no_liked] == -1:
-            OptionalLikePostsList.append(post_no_liked)
+    for post in currentPostsOnFeed: # about post with no like. same probability.
+        if no_likes_LC[post] == -1:
+            OptionalLikePostsList.append(post)
     # convert_post(OptionalLikePostsList)
     return OptionalLikePostsList
 
@@ -232,9 +236,10 @@ return - > list if the users that you mayknow.
 def getPeopleMayKnow(user_id):
     PeopleMayKnow = []
     userFriends = Friends.objects.filter(userid_id=user_id).first().myfriends
+    friend_reqs = getFriendsRequest(user_id)
     all_users = list(User.objects.values_list('id', flat=True)) 
     for u in all_users:
-        if u not in userFriends:
+        if u not in userFriends and u not in friend_reqs:
             PeopleMayKnow.append(u)
     return PeopleMayKnow
 
@@ -253,3 +258,9 @@ def getStatusToPost():
     random_num = random.randint(0,len(all_statuss)-1) # unifom random in all the status.
     return all_statuss[random_num]
 
+
+def getIdPosts(round_posts):
+    id_current_posts = []
+    for i in round_posts:
+        id_current_posts.append(i.id)
+    return id_current_posts

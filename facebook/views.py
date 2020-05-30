@@ -10,7 +10,7 @@ import logging
 import sys
 from django.http import HttpRequest
 
-Users_num = 3
+Users_num = 2
 
 
 def ready(request):
@@ -24,11 +24,10 @@ def ready(request):
         users_ready = Ready.objects.all()
         for i in users_ready:
             set_users_ready.add(i.user.id)
-        users_ready = set_users_ready
+        users_ready = set_users_ready        
         context = {
             'ready_users' :users_ready,
             'allusers': User.objects.all(),
-            'left_Users': Users_num-len(users_ready)
         }
         return render(request,'facebook/ready.html',context)    
 
@@ -62,15 +61,15 @@ def ToCreate():
 
 @login_required
 def home(request):
-    # posts = algo.Post_on_feed(request.user.id)
-
+    posts = algo.Post_on_feed(request.user.id)
     user_liked = posts_user_liked(request.user.id)
     people_may_know = helper(request)
     list_friend_req = myreqest(request.user.id)
     
 
     context = {
-        'posts' : Post.objects.order_by('-date_posted'),
+        # 'posts' : Post.objects.order_by('-date_posted'),
+        'posts' : posts,
         'mystatus' : Status.objects.all(),
         'friends' : Friends.objects.filter(userid_id=request.user.id).first().myfriends,
         'friends_requst' : list(set(Friend_req.objects.filter(userid_id=request.user.id).first().myfriends_req)),
@@ -93,18 +92,29 @@ def home(request):
 
 @login_required
 # function to create post
-def create_post(request,user_option):
+def create_post(request):
+    context = {
+        'mystatus' : Status.objects.all(),
+        'posts' : Post.objects.all()
+    }
+    if request.method == 'POST':
+       user_post_option = request.POST.get('user_option',False)
+       user_post_name = request.user
+       pick = Status.objects.get(status = user_post_option)
+       new_post = Post(username = user_post_name ,status = pick)
+       new_post.save()
+       return redirect('/ready')
+
+    return render(request,'facebook/post_form.html',context)
+
+def create_post_Agent(request):
     print(request)
     context = {
         'mystatus' : Status.objects.all(),
         'posts' : Post.objects.all()
     }
     if request.method == 'POST':
-    #    if not len(request.content_params):
-    #         user_post_option = request.content_params['user_option']
-    #         print("here!")
-    #         print(f"{user_post_option}")
-       user_post_option = request.POST.get('user_option',False)
+       user_post_option = request.content_params['user_option']
        user_post_name = request.user
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status = pick)
@@ -129,7 +139,6 @@ def like_post(request):
 
 
 def manage_friends(request,operation,pk):
-    print(pk)
     user_requsted = User.objects.get(pk=pk)
     if operation =='friend_requset':
         addfriend(request,user_requsted)
