@@ -85,7 +85,8 @@ def delete_friend_req():
     friends5.myfriends_req.clear()
     friends6.myfriends_req.clear()
 
-
+    friends1.myfriends_req.append(3)
+    friends3.myfriends_req.append(1)
     friends1.save()
     friends2.save()
     friends3.save()
@@ -117,6 +118,6 @@ if __name__ == "__main__":
     # delete_all_likes()
     delete_friend_req()
     delete_friends()
-    # logout_all()
+    logout_all()
     unReady_all()
     # init_status()

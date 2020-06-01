@@ -24,33 +24,74 @@ the operations:
 def Get_Possible_Operators(userid):
     pass
 
+
+
+def getStatusToPost():
+    print("here")
+    all_statuss = list(Status.objects.values_list('status', flat=True)) 
+    random_num = random.randint(0,len(all_statuss)-1) # unifom random in all the status.
+    return all_statuss[random_num]
+
+def getPostToLike(OptionalPostsToLike):
+    random_num = random.randint(0,len(OptionalPostsToLike)-1) # unifom random in all the status.
+    return OptionalPostsToLike[random_num]
+
+
 if __name__ == '__main__':
-    operations = {}
-    # new_round = Round(round_number=len(Round.objects.all())+1,posts_id=[],likes_id=[])
+    # operations = {}
+    # # new_round = Round(round_number=len(Round.objects.all())+1,posts_id=[],likes_id=[])
 
-    current_posts = algo.Post_on_feed(1)
+    # # 1 -> AF
+    # PeopleMayKnow = algo.getPeopleMayKnow(1)
+    # if PeopleMayKnow: # if there is users not in your friends
+    #     operations.update({'AF' : PeopleMayKnow})
 
+    # # 2 -> CF
+    # FriendRequests = algo.getFriendsRequest(1)
+    # if FriendRequests: # if there is users in your friends requests
+    #     operations.update({'CF' : FriendRequests})
 
-    # 1 -> AF
-    PeopleMayKnow = algo.getPeopleMayKnow(1)
-    if PeopleMayKnow: # if there is users not in your friends
-        operations.update({'AF' : PeopleMayKnow})
+    # # 3 -> LP
+    # PostsOnFeed = algo.getOptionalLikePosts(1,[])
+    # if PostsOnFeed: # if the there is posts optional to like.
+    #     operations.update({'LP' : PostsOnFeed})
 
-    # 2 -> CF
-    FriendRequests = algo.getFriendsRequest(1)
-    if FriendRequests: # if there is users in your friends requests
-        operations.update({'CF' : FriendRequests})
+    # # 4 -> CP
+    # operations.update({'CP' : algo.getAllStatus()})
 
-    # 3 -> LP
-    PostsOnFeed = algo.getOptionalLikePosts(1,current_posts)
-    if PostsOnFeed: # if the there is posts optional to like.
-        operations.update({'LP' : PostsOnFeed})
-
-    # 4 -> CP
-    operations.update({'CP' : algo.getStatusToPost()})
-
-    # 5 -> P
-    operations.update({'P' : 'Pass'})
+    # # 5 -> P
+    # operations.update({'P' : 'Pass'})
 
 
-    PostsOnFeed = algo.getOptionalLikePosts(1,current_posts)
+    # PostsOnFeed = [245,133]
+    # move = "LP"
+
+    # if move == "AF":
+    #     print(f'Pick = {move}')
+    #     print(operations[move])
+    # elif move == "CF":
+    #     print(getStatusToPost())
+    # elif move == "LP":
+    #     print(getPostToLike(PostsOnFeed))
+    # elif move == "CP":
+    #     print(operations[move])
+    # elif move == "P":
+    #     print(f'Pick = {move}')
+    #     print(operations[move]) 
+    user_id = 1
+    PeopleMayKnow = []
+    all_users = list(User.objects.values_list('id', flat=True)) 
+    for _id in all_users:
+        if _id != user_id:
+            friends_req = list(Friend_req.objects.filter(userid_id=_id).first().myfriends_req)
+            userFriends = list(Friends.objects.filter(userid_id=_id).first().myfriends)
+            if user_id not in friends_req and user_id not in userFriends:
+                PeopleMayKnow.append(_id)
+    print(PeopleMayKnow)
+    my_friends_req = algo.getFriendsRequest(user_id)
+    print(my_friends_req)
+    for i in PeopleMayKnow:
+        if i in my_friends_req:
+            PeopleMayKnow.remove(i)
+
+    print(PeopleMayKnow)

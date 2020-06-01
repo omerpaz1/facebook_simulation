@@ -12,19 +12,15 @@ from django.http import HttpRequest
 
 Users_num = 2
 
-
 def ready(request):
     Ready.objects.create(user=request.user) #create new Ready User
     users_ready = Ready.objects.all()
-    set_users_ready = set()
-    for i in users_ready:
-        set_users_ready.add(i.user.id)
+    set_users_ready = set(Ready.objects.values_list('user_id', flat=True))
     users_ready = set_users_ready
-    while(len(users_ready) < Users_num):
+    while(request.user.id in users_ready):
         users_ready = Ready.objects.all()
-        for i in users_ready:
-            set_users_ready.add(i.user.id)
-        users_ready = set_users_ready        
+        set_users_ready = set(Ready.objects.values_list('user_id', flat=True))
+        users_ready = set_users_ready    
         context = {
             'ready_users' :users_ready,
             'allusers': User.objects.all(),
@@ -107,24 +103,6 @@ def create_post(request):
 
     return render(request,'facebook/post_form.html',context)
 
-def create_post_Agent(request):
-    print(request)
-    context = {
-        'mystatus' : Status.objects.all(),
-        'posts' : Post.objects.all()
-    }
-    if request.method == 'POST':
-       user_post_option = request.content_params['user_option']
-       user_post_name = request.user
-       pick = Status.objects.get(status = user_post_option)
-       new_post = Post(username = user_post_name ,status = pick)
-       new_post.save()
-       return redirect('/ready')
-
-    return render(request,'facebook/post_form.html',context)
-
-
-
     
 # function when user click on the "like" btn.
 
@@ -136,8 +114,10 @@ def like_post(request):
     return redirect('/ready')
 
 
-
-
+'''
+request is the user that send the request offering 
+user_requsted is the user that we send to him friend request.
+'''
 def manage_friends(request,operation,pk):
     user_requsted = User.objects.get(pk=pk)
     if operation =='friend_requset':
@@ -212,3 +192,28 @@ def myreqest(id):
 
 
 # check if all users auth.
+
+
+# -------------------------------- Functions for Agent --------------------------------- #
+
+
+
+def create_post_Agent(request):
+    if request.method == 'POST':
+       user_post_option = request.content_params['user_option']
+       user_post_name = request.user
+       pick = Status.objects.get(status = user_post_option)
+       new_post = Post(username = user_post_name ,status = pick)
+       new_post.save()
+    return redirect('/ready')
+
+
+def home_Agent(request):
+    if request.method == 'POST':
+       user_post_option = request.content_params['user_option_on_feed'] 
+       user_post_name = request.user
+       pick = Status.objects.get(status = user_post_option)
+       new_post = Post(username = user_post_name ,status =pick)
+       new_post.save()
+    return redirect('/ready')
+

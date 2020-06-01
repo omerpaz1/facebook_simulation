@@ -237,30 +237,39 @@ return - > list if the users that you mayknow.
 '''
 def getPeopleMayKnow(user_id):
     PeopleMayKnow = []
-    userFriends = Friends.objects.filter(userid_id=user_id).first().myfriends
-    friend_reqs = getFriendsRequest(user_id)
     all_users = list(User.objects.values_list('id', flat=True)) 
-    for u in all_users:
-        if u not in userFriends and u not in friend_reqs:
-            PeopleMayKnow.append(u)
+    for _id in all_users:
+        if _id != user_id:
+            friends_req = list(Friend_req.objects.filter(userid_id=_id).first().myfriends_req)
+            userFriends = list(Friends.objects.filter(userid_id=_id).first().myfriends)
+            if user_id not in friends_req and user_id not in userFriends:
+                PeopleMayKnow.append(_id)
+
+    my_friends_req = getFriendsRequest(user_id)
+    for i in PeopleMayKnow:
+        if i in my_friends_req:
+            PeopleMayKnow.remove(i)
     return PeopleMayKnow
 
 '''
 this function will return the list of user current requests
 '''
 def getFriendsRequest(user_id):
-    return Friend_req.objects.filter(userid_id=user_id).first().myfriends_req
+    return list(Friend_req.objects.filter(userid_id=user_id).first().myfriends_req)
 
 '''
 this function will return a status from all the status as a String that will be Posted.
 
 '''
-def getStatusToPost():
+
+def getAllStatus():
     all_statuss = list(Status.objects.values_list('status', flat=True)) 
-    random_num = random.randint(0,len(all_statuss)-1) # unifom random in all the status.
-    return all_statuss[random_num]
+    return all_statuss
 
 
+'''
+this function will return all the ids posts from the rounds posts.
+'''
 def getIdPosts(round_posts):
     id_current_posts = []
     for i in round_posts:
