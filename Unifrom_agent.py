@@ -107,9 +107,10 @@ def MakeMove(Possible_Operators):
     move = "AF"
     current_path = site_path
     if move == "AF":
-        userToAdd = getFriendToAdd(Possible_Operators[move])
-        print('in add friends function')
-        # addfriend(userid,userToAdd)
+        AgentRequest = MyRequest(method='GET',path=site_path+'home')
+        userIdToAdd = getFriendToAdd(Possible_Operators[move])
+        userObj = User.objects.filter(id=userIdToAdd).first()
+        addfriend(AgentRequest,userObj)
 
     elif move == "CF":
         userToConfirm = getFriendToConfirm(Possible_Operators[move])
@@ -251,6 +252,5 @@ while(round != total_rounds):
     AgentRequest = MyRequest(method='GET',path=current_path)
     ready(AgentRequest)
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    # time.sleep(7)
     round+=1
 

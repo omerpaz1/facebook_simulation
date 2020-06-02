@@ -16,8 +16,6 @@ def ready(request):
     readyList = set(Ready.objects.values_list('user_id', flat=True))
     if request.user.id not in readyList:
         Ready.objects.create(user=request.user) #create new Ready User
-        print(f'readyList now = {readyList}')
-        print('IN THE READY OBJECT')
         return render(request,'facebook/ready.html')
 
     elif len(readyList) == Users_num:
@@ -26,7 +24,6 @@ def ready(request):
         return redirect('/home')
 
     else:
-        print('return to ready')
         return render(request,'facebook/ready.html')
 
 
