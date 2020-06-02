@@ -159,9 +159,6 @@ def get_LC_rounds():
 
     begin = start_round_LC.round_number
     end = end_round_LC.round_number
-    print(f'begin = {begin}')
-    print(f'end = {end}')
-
     LC_rounds = get_the_LC_rounds(begin,end)
     return LC_rounds
 

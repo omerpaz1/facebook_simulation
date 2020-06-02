@@ -29,7 +29,7 @@ agent = User.objects.filter(id=userid).first()
 total_rounds = 50
 
 # wating and ready values.
-Users_num = 3
+Users_num = 2
 
 # create first post values
 create_post_status = 'Hello World'
@@ -108,7 +108,9 @@ def MakeMove(Possible_Operators):
     current_path = site_path
     if move == "AF":
         userToAdd = getFriendToAdd(Possible_Operators[move])
-        print(f'user to add = {userToAdd}')
+        print('in add friends function')
+        # addfriend(userid,userToAdd)
+
     elif move == "CF":
         userToConfirm = getFriendToConfirm(Possible_Operators[move])
 
@@ -232,12 +234,13 @@ round = 0
 while(round != total_rounds):
     while(agent.id in users_ready):
         users_ready = set(Ready.objects.values_list('user_id', flat=True))
+        print('in sleep')
+        ready(AgentRequest)
         time.sleep(1)
 
     '''
     Do Here Algoritem and And Send a Request to the operation.
     '''
-    
     current_posts = algo.Post_on_feed(agent.id)
     Possible_Operators = Get_Possible_Operators(userid,current_posts)
     print(Possible_Operators)

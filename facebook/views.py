@@ -13,22 +13,23 @@ from django.http import HttpRequest
 Users_num = 2
 
 def ready(request):
-    Ready.objects.create(user=request.user) #create new Ready User
-    users_ready = Ready.objects.all()
-    set_users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    users_ready = set_users_ready
-    while(request.user.id in users_ready):
-        users_ready = Ready.objects.all()
-        set_users_ready = set(Ready.objects.values_list('user_id', flat=True))
-        users_ready = set_users_ready    
-        context = {
-            'ready_users' :users_ready,
-            'allusers': User.objects.all(),
-        }
-        return render(request,'facebook/ready.html',context)    
+    readyList = set(Ready.objects.values_list('user_id', flat=True))
+    if request.user.id not in readyList:
+        Ready.objects.create(user=request.user) #create new Ready User
+        print(f'readyList now = {readyList}')
+        print('IN THE READY OBJECT')
+        return render(request,'facebook/ready.html')
 
-    Ready.objects.all().delete()    
-    return redirect('/home')
+    elif len(readyList) == Users_num:
+        Ready.objects.all().delete()    
+        readyList = []
+        return redirect('/home')
+
+    else:
+        print('return to ready')
+        return render(request,'facebook/ready.html')
+
+
 
 
 
@@ -141,9 +142,7 @@ def helper(request):
 # user_requsted = the user that i want to add to my friends.
 
 def addfriend(request ,user_requsted):
-    print(f'requst = {request.user.id}')
-    print(f'user_requsted = {user_requsted}')
-    
+    print('here!')
     current_user = Friend_req.objects.filter(userid_id=request.user.id).first()
     if user_requsted.pk in current_user.myfriends_req: # if 3 in 5
         confirm_friends(request,user_requsted)

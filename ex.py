@@ -78,20 +78,5 @@ if __name__ == '__main__':
     # elif move == "P":
     #     print(f'Pick = {move}')
     #     print(operations[move]) 
-    user_id = 1
-    PeopleMayKnow = []
-    all_users = list(User.objects.values_list('id', flat=True)) 
-    for _id in all_users:
-        if _id != user_id:
-            friends_req = list(Friend_req.objects.filter(userid_id=_id).first().myfriends_req)
-            userFriends = list(Friends.objects.filter(userid_id=_id).first().myfriends)
-            if user_id not in friends_req and user_id not in userFriends:
-                PeopleMayKnow.append(_id)
-    print(PeopleMayKnow)
-    my_friends_req = algo.getFriendsRequest(user_id)
-    print(my_friends_req)
-    for i in PeopleMayKnow:
-        if i in my_friends_req:
-            PeopleMayKnow.remove(i)
-
-    print(PeopleMayKnow)
+    readyList = list(Ready.objects.values_list('user_id', flat=True))
+    print(readyList)
