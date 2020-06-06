@@ -117,3 +117,11 @@ class Ready(models.Model):
 
     def __str__(self):
         return str(self.user) + ': ' + str(self.date)
+
+
+class WorkersInfo(models.Model):
+    worker_id = models.CharField(max_length=100)
+    free_comments = models.TextField()
+
+    def __str__(self):
+        return str(self.worker_id) + ': ' + str(self.free_comments)

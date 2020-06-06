@@ -26,7 +26,7 @@ userid = 1
 agent = User.objects.filter(id=userid).first()
 
 #Total rounds untill agnet stop action
-total_rounds = 50
+from facebook.views import total_rounds
 
 # wating and ready values.
 Users_num = 2
@@ -35,11 +35,6 @@ Users_num = 2
 create_post_status = 'Hello World'
 creat_post_path = site_path+'create_post'
 
-#get the users ready
-users_ready = set(Ready.objects.values_list('user_id', flat=True))
-
-# userFriendsOfrring 
-userFriendsOfrring = []
 
 def MyRequest(method='GET',path=site_path, user=agent, params={}):
   """ Construct a fake request(WSGIRequest) object"""
@@ -102,30 +97,36 @@ return - > Void
 
 '''
 def MakeMove(Possible_Operators):
-    ans = 'the pick'
-    # move = PickMove(Possible_Operators)
-    move = "AF"
+    move = PickMove(Possible_Operators)
     current_path = site_path
     if move == "AF":
         AgentRequest = MyRequest(method='GET',path=site_path+'home')
         userIdToAdd = getFriendToAdd(Possible_Operators[move])
         userObj = User.objects.filter(id=userIdToAdd).first()
         addfriend(AgentRequest,userObj)
+        return "AF", userIdToAdd
 
     elif move == "CF":
+        AgentRequest = MyRequest(method='GET',path=site_path+'home')
         userToConfirm = getFriendToConfirm(Possible_Operators[move])
+        userObj = User.objects.filter(id=userToConfirm).first()
+        confirm_friends(AgentRequest,userObj)
+        return "CF", userToConfirm
 
     elif move == "LP":
         PostToLike = getPostToLike(Possible_Operators[move])
-        # send a request
+        AgentRequest = MyRequest(method='POST',path=site_path+'home',params={'post_id': PostToLike})
+        like_post_Agent(AgentRequest)
+        return "LP", PostToLike
 
     elif move == "CP":
         StatusToPost = getStatusToPost()
         AgentRequest = MyRequest(method='POST',path=current_path+'home' ,params={'user_option_on_feed': StatusToPost})
         home_Agent(AgentRequest)
+        return "CP", StatusToPost
+
     elif move == "P":
-        # do nating..
-        pass
+        return "P", "Pass"
 
 
 
@@ -141,7 +142,7 @@ def PickMove(Possible_Operators):
         if j is random_num:
             MovePicked = move
         j+=1
-    return move
+    return MovePicked
 
 
 '''
@@ -209,11 +210,14 @@ in the Create Post page.
 if(DEBUG):
     print("Create Post in Create post page")
 
+
 time.sleep(2)
 current_path = site_path+'create_post'
 AgentRequest = MyRequest(method='POST',path=current_path ,params={'user_option': create_post_status})
 create_post_Agent(AgentRequest)
 
+# Create The First Round!
+current_posts = algo.Post_on_feed(agent.id)
 
 
 if(DEBUG):
@@ -227,30 +231,31 @@ AgentRequest = MyRequest(method='GET',path=current_path)
 ready(AgentRequest)
 
 
-current_posts = algo.Post_on_feed(agent.id)
-Possible_Operators = Get_Possible_Operators(userid,current_posts)
-
 users_ready = set(Ready.objects.values_list('user_id', flat=True))
-round = 0
+round = 1
 while(round != total_rounds):
     while(agent.id in users_ready):
         users_ready = set(Ready.objects.values_list('user_id', flat=True))
-        print('in sleep')
         ready(AgentRequest)
-        time.sleep(1)
+        time.sleep(4)
 
     '''
     Do Here Algoritem and And Send a Request to the operation.
     '''
     current_posts = algo.Post_on_feed(agent.id)
     Possible_Operators = Get_Possible_Operators(userid,current_posts)
+    print("Possible_Operators For The Current Round:\n")
     print(Possible_Operators)
-    MakeMove(Possible_Operators)
+    print('\n')
+    operand, value = MakeMove(Possible_Operators)
+    print(f'MakeMove Pick: Operator = {operand} , value = {value}\n')
 
-    print("join to the Ready Room")
     current_path = site_path+'ready'
     AgentRequest = MyRequest(method='GET',path=current_path)
     ready(AgentRequest)
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
     round+=1
+    print('----------------  # End Round----------------\n')
 
+
+print("Simulrator Finished")

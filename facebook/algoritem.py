@@ -13,7 +13,7 @@ RANGE_PROB_BETWEEN_1_TO_2 = range(1,2+1)
 RANGE_PROB_BETWEEN_3_TO_5 = range(3,5+1)
 RANGE_PROB_BETWEEN_5_TO_LC = range(5,LC+1)
 
-def Post_on_feed(user_id):  
+def Post_on_feed(user_id):
     return add_posts_to_current_round(user_id)
 
 
@@ -22,7 +22,7 @@ def add_posts_to_current_round(user_id):
     if user_id == leader_round_user_id:
         new_round = Round(round_number=len(Round.objects.all())+1,posts_id=[],likes_id=[])
         new_round.save()
-    
+
     all_rounds = Round.objects.all()
     new_round = Round.objects.filter(round_number=len(all_rounds)).first()
     # take all the posts id
@@ -43,8 +43,8 @@ def add_posts_to_current_round(user_id):
     for i in new_likes:
         new_round.likes_id.append(i)
     new_round.save()
-
-    print(f'round number: {new_round.round_number} , posts_id_list = {new_round.posts_id} , likes_id_list = {new_round.likes_id}')
+    print(f'----------------  # Start Round: {new_round.round_number} ----------------\n')
+    print(f'posts_id_list = {new_round.posts_id} , likes_id_list = {new_round.likes_id}')
     no_likes_LC = likes_on_LC(user_id,False)
     likes_LC = likes_on_LC(user_id,True)
 
@@ -197,8 +197,7 @@ def cal_prob(no_likes_LC,likes_LC):
             if random_num <= BETWEEN_5_TO_LC:
                 posts_ans.append(post_like)
                 # print(f' LL = {LL} , random_num <= RANGE_PROB_BETWEEN_5_TO_LC -> {random_num}')
-    print(f"Posts picks = {posts_ans}")
-    print("________________________end round________________________")
+    print(f"Posts picks = {posts_ans}\n")
     return convert_posts(posts_ans)
 
 # covert from post id to post object

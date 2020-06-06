@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from .models import Post,Status,Friends,Friend_req,Ready
+from .models import Post,Status,Friends,Friend_req,Ready,Round,WorkersInfo
 from users.models import AllLogin
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
@@ -10,6 +10,7 @@ import logging
 import sys
 from django.http import HttpRequest
 
+total_rounds = 5
 Users_num = 2
 
 def ready(request):
@@ -25,8 +26,6 @@ def ready(request):
 
     else:
         return render(request,'facebook/ready.html')
-
-
 
 
 
@@ -49,13 +48,24 @@ def waiting(request):
         return render(request,'facebook/waiting.html',context)
     time.sleep(1) 
     return redirect('/create_post')
+    
+@login_required
+def end(request):
+    if request.method == 'POST':
+        worker_id = request.POST.get('Worker_ID',False) 
+        free_comments  = request.POST.get('Free_Comments',False) 
+        w = WorkersInfo(worker_id=worker_id,free_comments=free_comments)
+        w.save()
+        return redirect('/logout')
+    return render(request,'facebook/end.html')
 
-def ToCreate():
-    pass
 
 @login_required
 def home(request):
+    if len(Round.objects.all()) >= total_rounds:
+        return redirect('/end')
     posts = algo.Post_on_feed(request.user.id)
+
     user_liked = posts_user_liked(request.user.id)
     people_may_know = helper(request)
     list_friend_req = myreqest(request.user.id)
@@ -139,7 +149,6 @@ def helper(request):
 # user_requsted = the user that i want to add to my friends.
 
 def addfriend(request ,user_requsted):
-    print('here!')
     current_user = Friend_req.objects.filter(userid_id=request.user.id).first()
     if user_requsted.pk in current_user.myfriends_req: # if 3 in 5
         confirm_friends(request,user_requsted)
@@ -213,3 +222,11 @@ def home_Agent(request):
        new_post.save()
     return redirect('/ready')
 
+
+
+def like_post_Agent(request):
+    if request.method == 'POST':
+        post_like_id = request.content_params['post_id']
+        post_like_id = Post.objects.get(id=post_like_id)
+        post_like_id.likes.add(request.user)
+    return redirect('/ready')
