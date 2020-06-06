@@ -125,3 +125,11 @@ class WorkersInfo(models.Model):
 
     def __str__(self):
         return str(self.worker_id) + ': ' + str(self.free_comments)
+
+class Log(models.Model):
+    id_user = models.IntegerField(User)
+    id_round = models.IntegerField(default=0)
+    code_operation = models.CharField(max_length=10)
+
+    def __str__(self):
+        return str(self.id_round) + ': ' + str(self.id_user) + ': ' + str(self.code_peration)

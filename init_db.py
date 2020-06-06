@@ -2,7 +2,7 @@ import os
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.models import Post,Status,Friends,Friend_req,Round,Ready
+from facebook.models import Post,Status,Friends,Friend_req,Round,Ready,Log,WorkersInfo
 from users.models import Profile
 from django.contrib.auth.models import User
 from users.models import AllLogin
@@ -103,17 +103,39 @@ def logout_all():
     AllLogin.objects.all().delete()    
 
 def unReady_all():
-    Ready.objects.all().delete()    
+    Ready.objects.all().delete()
+
+def delete_operation_info():
+    Log.objects.all().delete()
+
+def delete_workers_info():
+    WorkersInfo.objects.all().delete()
+
+
+
 
 if __name__ == "__main__":
+    '''
+    use this init only when chagne DB.
+    '''
     # init_friends()
     # init_friends_requst()
+    # init_status()
 
+    '''
+    init DB for next simulation.
+    '''
     delete_all_rounds()
     delete_all_posts()    
-    # delete_all_likes()
+    delete_all_likes()
     delete_friend_req()
     delete_friends()
     logout_all()
     unReady_all()   
-    # init_status()
+
+    '''
+    only if you dont need anymore the data from the workers and the LOG.
+
+    '''
+    # delete_operation_info()
+    # delete_workers_info()

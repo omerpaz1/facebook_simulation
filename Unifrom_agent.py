@@ -29,8 +29,7 @@ agent = User.objects.filter(id=userid).first()
 from facebook.views import total_rounds
 
 # wating and ready values.
-Users_num = 2
-
+from facebook.views import Users_num
 # create first post values
 create_post_status = 'Hello World'
 creat_post_path = site_path+'create_post'
@@ -126,6 +125,7 @@ def MakeMove(Possible_Operators):
         return "CP", StatusToPost
 
     elif move == "P":
+        log(agent.id,"P")
         return "P", "Pass"
 
 
@@ -210,14 +210,15 @@ in the Create Post page.
 if(DEBUG):
     print("Create Post in Create post page")
 
+# Create The First Round!
+current_posts = algo.Post_on_feed(agent.id)
 
 time.sleep(2)
 current_path = site_path+'create_post'
 AgentRequest = MyRequest(method='POST',path=current_path ,params={'user_option': create_post_status})
 create_post_Agent(AgentRequest)
 
-# Create The First Round!
-current_posts = algo.Post_on_feed(agent.id)
+
 
 
 if(DEBUG):
@@ -232,18 +233,23 @@ ready(AgentRequest)
 
 
 users_ready = set(Ready.objects.values_list('user_id', flat=True))
-round = 1
-while(round != total_rounds):
+First_Possible_Operators = Get_Possible_Operators(userid,current_posts)
+num_round = 1
+while(num_round != total_rounds):
     while(agent.id in users_ready):
         users_ready = set(Ready.objects.values_list('user_id', flat=True))
         ready(AgentRequest)
-        time.sleep(4)
+        time.sleep(2)
 
     '''
     Do Here Algoritem and And Send a Request to the operation.
     '''
+    if First_Possible_Operators is not None:
+        Possible_Operators = First_Possible_Operators
+        First_Possible_Operators = None
+    else:
+        Possible_Operators = Get_Possible_Operators(userid,current_posts)
     current_posts = algo.Post_on_feed(agent.id)
-    Possible_Operators = Get_Possible_Operators(userid,current_posts)
     print("Possible_Operators For The Current Round:\n")
     print(Possible_Operators)
     print('\n')
@@ -254,8 +260,7 @@ while(round != total_rounds):
     AgentRequest = MyRequest(method='GET',path=current_path)
     ready(AgentRequest)
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    round+=1
+    num_round+=1
     print('----------------  # End Round----------------\n')
-
 
 print("Simulrator Finished")

@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from .models import Post,Status,Friends,Friend_req,Ready,Round,WorkersInfo
+from .models import Post,Status,Friends,Friend_req,Ready,Round,WorkersInfo,Log
 from users.models import AllLogin
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
@@ -10,8 +10,15 @@ import logging
 import sys
 from django.http import HttpRequest
 
+# number of Rounds:
 total_rounds = 5
+
+# total users To the Simulation:
 Users_num = 2
+
+# LC Rounds
+LC = 10
+
 
 def ready(request):
     readyList = set(Ready.objects.values_list('user_id', flat=True))
@@ -62,8 +69,6 @@ def end(request):
 
 @login_required
 def home(request):
-    if len(Round.objects.all()) >= total_rounds:
-        return redirect('/end')
     posts = algo.Post_on_feed(request.user.id)
 
     user_liked = posts_user_liked(request.user.id)
@@ -88,8 +93,12 @@ def home(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status =pick)
        new_post.save()
+       log(request.user.id,"CP")
+       if len(Round.objects.all()) == total_rounds:
+            return redirect('/end')
        return redirect('/ready')
-
+    if len(Round.objects.all()) == total_rounds:
+        return redirect('/end')
     return render(request,'facebook/feed.html',context)
 
 
@@ -107,6 +116,7 @@ def create_post(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status = pick)
        new_post.save()
+       log(request.user.id,"CP")
        return redirect('/ready')
 
     return render(request,'facebook/post_form.html',context)
@@ -119,6 +129,7 @@ def like_post(request):
         post_like_id = request.POST.get('post_id',False)
         post_like_id = Post.objects.get(id=post_like_id)
         post_like_id.likes.add(request.user)
+        log(request.user.id,"LP")
     return redirect('/ready')
 
 
@@ -157,12 +168,14 @@ def addfriend(request ,user_requsted):
         if current_user.userid_id not in user_requsted.myfriends_req:
             user_requsted.myfriends_req.append(request.user.id)
             user_requsted.save()
+    log(request.user.id,"AF")
 
 # comfirm both friend in the tables
 def confirm_friends(request,user_requsted):
     current_user_table = Friend_req.objects.filter(userid_id=request.user.id).first()
     current_user_table.myfriends_req.remove(user_requsted.pk)
     current_user_table.save()
+    log(request.user.id,"CF")
 
     # add to the friends table of both sides.
     current_user_table = Friends.objects.filter(userid_id=request.user.id).first()
@@ -195,8 +208,21 @@ def myreqest(id):
 
 
 
-
-# check if all users auth.
+'''
+this function will be track about the users operaions on the specific rounds.
+the operations: 
+1. AF (Add Friend)
+2. CF (Confirm Friend)
+3. LP (Like Post)
+4. CP (Create Post)
+5. P (Pass)
+'''
+def log(id_user,code_operation):
+    all_rounds = Round.objects.all()
+    current_round = Round.objects.filter(round_number=len(all_rounds)).first()
+    print(f'Round for the LOG = {current_round.round_number}')
+    l = Log(id_round=current_round.round_number,id_user=id_user,code_operation=code_operation)
+    l.save()
 
 
 # -------------------------------- Functions for Agent --------------------------------- #
@@ -210,6 +236,7 @@ def create_post_Agent(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status = pick)
        new_post.save()
+       log(request.user.id,"CP")
     return redirect('/ready')
 
 
@@ -220,6 +247,7 @@ def home_Agent(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status =pick)
        new_post.save()
+       log(request.user.id,"CP")
     return redirect('/ready')
 
 
@@ -229,4 +257,6 @@ def like_post_Agent(request):
         post_like_id = request.content_params['post_id']
         post_like_id = Post.objects.get(id=post_like_id)
         post_like_id.likes.add(request.user)
+        log(request.user.id,"LP")
     return redirect('/ready')
+

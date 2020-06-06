@@ -2,7 +2,7 @@ import os
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.models import Post,Status,Friends,Friend_req,Round,Ready,WorkersInfo
+from facebook.models import Post,Status,Friends,Friend_req,Round,Ready,WorkersInfo,Log
 from users.models import AllLogin
 from django.contrib.auth.models import User
 import threading 
@@ -14,6 +14,4 @@ import time
 
 
 if __name__ == '__main__':
-    a = len(Round.objects.all())+1
-    print(a)
-    WorkersInfo.objects.all().delete()    
+    Log.objects.all().delete()

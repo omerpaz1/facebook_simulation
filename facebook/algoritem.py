@@ -1,7 +1,7 @@
 from .models import *
 import random
 
-LC = 10
+from facebook.views import LC
 BETWEEN_1_TO_2 = 0.4
 BETWEEN_3_TO_5 = 0.2
 BETWEEN_5_TO_LC = 0.1
@@ -36,7 +36,6 @@ def add_posts_to_current_round(user_id):
     new_posts = get_new_posts(all_posts,all_rounds) 
     new_likes = get_new_likes(all_likes,all_rounds)
     for i in new_posts:
-        print(i)
         new_round.posts_id.append(i)
     new_round.save()
 
