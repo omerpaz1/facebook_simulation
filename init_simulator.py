@@ -1,4 +1,5 @@
 import os
+import sys
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
@@ -7,6 +8,11 @@ from users.models import Profile
 from django.contrib.auth.models import User
 from users.models import AllLogin
 
+try:
+    flag = sys.argv[2]
+    flag = True
+except:
+    flag = False
 
 users = ['UserA','UserB','UserC','UserD','UserE']
 status = ['I like Pizza','Hello World','What is coronavirus www.coronavirus.com','What is the meaning of life']
@@ -137,5 +143,6 @@ if __name__ == "__main__":
     only if you dont need anymore the data from the workers and the LOG.
 
     '''
-    # delete_operation_info()
-    # delete_workers_info()
+    if flag:
+        delete_operation_info()
+        delete_workers_info()

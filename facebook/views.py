@@ -11,13 +11,10 @@ import sys
 from django.http import HttpRequest
 
 # number of Rounds:
-total_rounds = 5
+from properties import total_rounds
 
 # total users To the Simulation:
-Users_num = 2
-
-# LC Rounds
-LC = 10
+from properties import Users_num
 
 
 def ready(request):
@@ -63,6 +60,7 @@ def end(request):
         free_comments  = request.POST.get('Free_Comments',False) 
         w = WorkersInfo(worker_id=worker_id,free_comments=free_comments)
         w.save()
+
         return redirect('/logout')
     return render(request,'facebook/end.html')
 

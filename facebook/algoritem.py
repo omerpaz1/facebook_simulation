@@ -1,12 +1,15 @@
 from .models import *
 import random
 
-from facebook.views import LC
+LC = 10
+
+
 BETWEEN_1_TO_2 = 0.4
 BETWEEN_3_TO_5 = 0.2
 BETWEEN_5_TO_LC = 0.1
 
-leader_round_user_id = 1 # this user will be the last user that create new round
+from properties import agent_id
+leader_round_user_id = agent_id # this user will be the last user that create new round
 
 #puls 1 cuse range not include the end.
 RANGE_PROB_BETWEEN_1_TO_2 = range(1,2+1)
@@ -16,7 +19,9 @@ RANGE_PROB_BETWEEN_5_TO_LC = range(5,LC+1)
 def Post_on_feed(user_id):
     return add_posts_to_current_round(user_id)
 
-
+'''
+this function will get all the information from the user_id and return the posts for the LC rounds.
+'''
 def add_posts_to_current_round(user_id):
     new_round = -1
     if user_id == leader_round_user_id:

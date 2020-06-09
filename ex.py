@@ -14,4 +14,7 @@ import time
 
 
 if __name__ == '__main__':
-    Log.objects.all().delete()
+    pass
+    # all_statuss = list(Status.objects.values_list('status', flat=True)) 
+    # status_id = 0
+    # print(all_statuss[random_num])

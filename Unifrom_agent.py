@@ -1,12 +1,13 @@
 import os
 import django
+import sys
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
+from facebook.views import addfriend,confirm_friends,like_post_Agent,home_Agent,log,create_post_Agent,ready
 import time
 from django.contrib.auth.models import User
 from facebook.models import Post,Status,Friends,Friend_req,Ready
 from users.views import *
-from facebook.views import *
 import requests
 from django.contrib.auth.models import AnonymousUser
 from django.core.handlers.wsgi import WSGIRequest
@@ -15,6 +16,13 @@ from django.urls import resolve
 import random
 import facebook.algoritem as algo
 
+
+from properties import total_rounds
+from properties import Users_num
+from properties import status_id
+from properties import agent_id
+
+
 # site path 
 site_path = 'http://34.89.188.107/'
 
@@ -22,16 +30,15 @@ site_path = 'http://34.89.188.107/'
 DEBUG = True
 
 # Agent info.
-userid = 1
+userid = agent_id
 agent = User.objects.filter(id=userid).first()
 
-#Total rounds untill agnet stop action
-from facebook.views import total_rounds
 
-# wating and ready values.
-from facebook.views import Users_num
+
+
 # create first post values
-create_post_status = 'Hello World'
+all_statuss = list(Status.objects.values_list('status', flat=True)) 
+create_post_status = all_statuss[status_id]
 creat_post_path = site_path+'create_post'
 
 
@@ -193,7 +200,6 @@ if(DEBUG):
 #  waiting to start simulation
 if(DEBUG):
     print("Waiting in the Wait page")
-
 users_login = AllLogin.objects.all()
 while(len(users_login) < Users_num):
     users_login = AllLogin.objects.all()
