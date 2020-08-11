@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from .models import Post,Status,Friends,Friend_req,Ready,Round,WorkersInfo,Log
+from .models import Post,Status,Friends,Friend_req,Round,WorkersInfo,Log
 from users.models import AllLogin
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
