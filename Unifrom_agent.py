@@ -17,9 +17,10 @@ import random
 import facebook.algoritem as algo
 
 from properties import total_rounds
-from properties import Users_num
+# from properties import Users_num
 from properties import agent_id
 
+Users_num = 3
 
 # site path 
 site_path = 'http://34.89.133.90/'
@@ -234,7 +235,7 @@ while(num_round != total_rounds):
     while(agent.id in users_ready):
         users_ready = set(Ready.objects.values_list('user_id', flat=True))
         ready(AgentRequest)
-        time.sleep(2)
+        time.sleep(10)
 
     '''
     Do Here Algoritem and And Send a Request to the operation.

@@ -18,7 +18,7 @@ class AllLogin(models.Model):
         return str(self.user) + ': ' + str(self.date)
 
 class Users_free(models.Model):
-    worker_id = models.IntegerField(null=True)
+    worker_id = models.IntegerField(default=False)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     # is_gived = models.BooleanField(default=False)
 

@@ -14,10 +14,11 @@ from django.http import HttpRequest
 from properties import total_rounds
 
 # total users To the Simulation:
-from properties import Users_num
+# from properties import Users_num
 
+Users_num = 3
 
-def ready(request):
+def ready(request):        
     readyList = set(Ready.objects.values_list('user_id', flat=True))
     if request.user.id not in readyList:
         Ready.objects.create(user=request.user) #create new Ready User
