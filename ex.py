@@ -47,7 +47,7 @@ def get_info(worker_id):
                 return username , alocate_user_id, pass_user , to_alocate
 
 if __name__ == '__main__':
-    username , alocate_user_id, pass_user , to_alocate = get_info(11)
+    username , alocate_user_id, pass_user , to_alocate = get_info()
 
     print(username)
     print(alocate_user_id)

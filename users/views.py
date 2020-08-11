@@ -33,23 +33,28 @@ def pull_userPass(request):
     user_pick = -1
     pass_pick = -1
     if request.method == "POST":
-        worker_id = request.POST.get('Worker_ID',False) 
-        username , user_id, password , to_alocate = get_info(worker_id)
+        try:
+            worker_id = request.POST.get('Worker_ID',False) 
+            username , user_id, password , to_alocate = get_info(int(worker_id))
+            is_valid = False
+        except:
+            username = None
+            password = None
+            to_alocate = False
+            is_valid = True
+            
 
         if to_alocate == True:
             update_user = Users_free.objects.filter(user_id=user_id).first()
             update_user.worker_id = worker_id
             update_user.save()
-            user_pick = username
-            pass_pick = password
-        else:
-            user_pick = 123
-            pass_pick = 123
-
+    user_pick = username
+    pass_pick = password
 
     context = {
             'user_pick' : user_pick,
             'pass_pick' : pass_pick,
+            'is_valid' : is_valid,
     }
     return render(request,'users/welcome.html',context)
 
@@ -58,7 +63,7 @@ def get_info(worker_id):
     Users_f = Users_free.objects.all()
     allusers = User.objects.all()
     userid = -1
-    to_alocate = False    ########################3snir
+    to_alocate = False
     for i in Users_f:
         if worker_id == i.worker_id:
             userid = i.user_id
