@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from .models import AllLogin,Users_free
 
 # Create your views here.
-
+# Hello Snir
 
 logger = logging.getLogger(__name__)
 
