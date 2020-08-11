@@ -6,7 +6,7 @@ django.setup()
 from facebook.models import Post,Status,Friends,Friend_req,Round,Ready,Log,WorkersInfo
 from users.models import Profile
 from django.contrib.auth.models import User
-from users.models import AllLogin
+from users.models import AllLogin,Users_free
 
 try:
     flag = sys.argv[2]
@@ -33,6 +33,12 @@ def init_friends_requst():
         f = Friend_req(userid_id=user1.id,myfriends_req=[])
         f.save()
 
+def init_users_free():
+    allusers = User.objects.all()
+    for i in users:
+        user = allusers.filter(username=i).first()
+        f = Users_free(user_id=user.id,is_gived=False)
+        f.save()
 
 def init_status():
 
@@ -42,6 +48,13 @@ def init_status():
 
 def delete_like():
     pass
+
+def delete_workers_alocate():
+    allusers = User.objects.all()
+    for i in range(2,len(users)+2):
+        user = Users_free.objects.filter(user_id=i).first()
+        user.worker_id = None
+        user.save() 
 
 
 def delete_friends():
@@ -127,6 +140,7 @@ if __name__ == "__main__":
     # init_friends()
     # init_friends_requst()
     # init_status()
+    # init_users_free()
 
     '''
     init DB for next simulation.
@@ -136,6 +150,7 @@ if __name__ == "__main__":
     delete_all_likes()
     delete_friend_req()
     delete_friends()
+    delete_workers_alocate()
     logout_all()
     unReady_all()   
 
@@ -143,6 +158,5 @@ if __name__ == "__main__":
     only if you dont need anymore the data from the workers and the LOG.
 
     '''
-    if flag:
-        delete_operation_info()
-        delete_workers_info()
+    delete_operation_info()
+    delete_workers_info()

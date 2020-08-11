@@ -153,7 +153,8 @@ def helper(request):
         if c_user.pk not in friends_requst:
             if c_user.pk not in friends:
                 if c_user.pk != request.user.id:
-                    friend_my_know.append(c_user)
+                    if c_user.pk != 1:
+                        friend_my_know.append(c_user)
     return friend_my_know
 # user_requsted = the user that i want to add to my friends.
 

@@ -25,7 +25,7 @@ SECRET_KEY = ')e*ngj9@gms=%flq4k7h6!yy6ru0+j0r%-rkq3^hu0h+5tto9v'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['34.89.133.90']
 
 
 # Application definition
@@ -133,5 +133,5 @@ MEDIA_URL = '/media/'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 
-LOGIN_REDIRECT_URL = '/waiting/'
+LOGIN_REDIRECT_URL = '/waiting'
 LOGIN_URL = 'login'

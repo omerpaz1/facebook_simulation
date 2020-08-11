@@ -175,7 +175,7 @@
       // Timer for the progressbar page      
 
       flag_progress_bar = true; // for debug mode - put it false
-      Time_progress_bar = 200
+      Time_progress_bar = 200 // 1000 = 1 sec
 
       // Timer for the waiting page      
 
@@ -193,9 +193,9 @@
       if(flag_progress_bar){
       var progressBar = $('.progress');
       var progressNumber = 0;
-      if(location =='http://34.89.188.107/create_post/'){
+      if(location =='http://34.89.133.90/create_post/'){
         StartBarProgres();
-      }else if(location =='http://34.89.188.107/home/'){
+      }else if(location =='http://34.89.133.90/home/'){
         StartBarProgres();
       }
     }
@@ -219,7 +219,7 @@
 
 
       if(flag_waiting){
-      if(location =='http://34.89.188.107/waiting/'){
+      if(location =='http://34.89.133.90/waiting/'){
         WaitFun();            
       }
     }
@@ -238,7 +238,7 @@
 }
 
       if(flag_ready){
-      if(location =='http://34.89.188.107/ready/'){
+      if(location =='http://34.89.133.90/ready/'){
         ReadyFun();            
       }
     }

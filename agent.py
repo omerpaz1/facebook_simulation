@@ -14,7 +14,7 @@ from io import StringIO ## for Python 3
 from django.urls import resolve
 import random
 import facebook.algoritem as algo
-
+import properties
 
 class Agent:
     
@@ -41,7 +41,7 @@ class Agent:
 if __name__ == "__main__":
     userid = 2
     omerpazUser = User.objects.filter(id=userid).first()
-    site_path = 'http://34.89.188.107/'  
+    site_path = properties.site_path
     a1 = Agent(path=site_path, user=omerpazUser,rounds=10)
     AgentRequest = a1.CreateRequest(method='GET',params={"omer": "pro"})
     print(AgentRequest.content_params)

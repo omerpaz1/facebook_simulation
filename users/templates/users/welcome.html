@@ -1,0 +1,79 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'facebook/style.css' %}">
+
+    {% if title %}
+        <title>Facebook Simulation - {{title}}</title>
+    {% else %}
+        <title>Facebook Simulation</title>
+    {% endif %}
+</head>
+<body>
+  <header class="site-header">
+    
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top " style="background-color: #3B5998; flex-wrap: wrap;">
+        <a class="navbar-brand mr-4" style="color: aliceblue;">Facebook Simulator</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+       <div class="collapse navbar-collapse" id="navbarResponsive">
+         <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+           <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+             <a class="nav-link" href="index.html">
+               <i class="fa fa-fw fa-dashboard"></i>
+            </a>
+           </li>
+         </ul>
+         <ul class="navbar-nav ml-auto">
+          {% if user.is_authenticated %}
+          <!-- <a class="nav-item nav-link" href="{% url 'facebook-home' %}">Home</a>
+          <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a> -->
+          {% else %}
+            <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+          {% endif %}
+         </ul>
+       </div>
+     </nav>
+     <div class="col-md" style="margin-left: 27em;">
+      <div class="row">
+        <form action="{% url 'pull_userPass' %}" method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+              <h2 style="margin-top: 1em;" >Welcome To The Facebook Simulator</h2>
+            <input style="margin-top: 1em;" type="text" class="form-control" name="Worker_ID" aria-describedby="emailHelp" placeholder="Your Amazon Worker ID">
+          </div>
+          <button type="submit" name='pull' class="btn btn-outline-secondary" > <img class="img-responsive">Pull</button>
+        </form>
+      </div>
+    </div>
+                <div class="col-md" style="margin-left: 27em;">
+                  <div class="row">
+                    <form action="{% url 'welcome' %}" method="POST">
+                      {% csrf_token %}
+                      <h2 class="text-info">Your Login Information:</h3>
+                      <h4>Username: <span class="badge badge-secondary"> {{user_pick}} </span></h3>
+                      <h4>Password: <span class="badge badge-secondary"> {{pass_pick}} </span></h3>
+                      <h10 class="text-warning">* Please remeber the username and the password for the next page</h10>
+                      <br>
+                      <br>
+
+                      <button type="submit" name="goToLogin" class="btn btn-primary">Login And Start</button>
+                    </form>
+                  </div>
+                </div>
+            </div>
+
+                
+              
+    </header>

@@ -16,15 +16,13 @@ from django.urls import resolve
 import random
 import facebook.algoritem as algo
 
-
 from properties import total_rounds
 from properties import Users_num
-from properties import status_id
 from properties import agent_id
 
 
 # site path 
-site_path = 'http://34.89.188.107/'
+site_path = 'http://34.89.133.90/'
 
 # DEBUG mode for the prints
 DEBUG = True
@@ -32,14 +30,6 @@ DEBUG = True
 # Agent info.
 userid = agent_id
 agent = User.objects.filter(id=userid).first()
-
-
-
-
-# create first post values
-all_statuss = list(Status.objects.values_list('status', flat=True)) 
-create_post_status = all_statuss[status_id]
-creat_post_path = site_path+'create_post'
 
 
 def MyRequest(method='GET',path=site_path, user=agent, params={}):
@@ -221,10 +211,9 @@ current_posts = algo.Post_on_feed(agent.id)
 
 time.sleep(2)
 current_path = site_path+'create_post'
-AgentRequest = MyRequest(method='POST',path=current_path ,params={'user_option': create_post_status})
+StatusToPost = getStatusToPost()
+AgentRequest = MyRequest(method='POST',path=current_path ,params={'user_option': StatusToPost})
 create_post_Agent(AgentRequest)
-
-
 
 
 if(DEBUG):
