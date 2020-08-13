@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from .models import Post,Status,Friends,Friend_req,Round,WorkersInfo,Log
+from .models import Post,Status,Friends,Friend_req,Round,WorkersInfo,Log,Ready
 from users.models import AllLogin
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
@@ -12,11 +12,13 @@ from django.http import HttpRequest
 
 # number of Rounds:
 from properties import total_rounds
+from properties import agent_id
 
 # total users To the Simulation:
 # from properties import Users_num
 
 Users_num = 3
+
 
 def ready(request):        
     readyList = set(Ready.objects.values_list('user_id', flat=True))
@@ -24,13 +26,13 @@ def ready(request):
         Ready.objects.create(user=request.user) #create new Ready User
         return render(request,'facebook/ready.html')
 
-    elif len(readyList) == Users_num:
-        Ready.objects.all().delete()    
-        readyList = []
-        return redirect('/home')
+    while(len(readyList) != Users_num):
+        readyList = set(Ready.objects.values_list('user_id', flat=True))
 
-    else:
-        return render(request,'facebook/ready.html')
+   
+    time.sleep(2)
+    readyList = []
+    return redirect('/home')
 
 
 

@@ -17,10 +17,9 @@ import random
 import facebook.algoritem as algo
 
 from properties import total_rounds
-# from properties import Users_num
+from properties import Users_num
 from properties import agent_id
 
-Users_num = 3
 
 # site path 
 site_path = 'http://34.89.133.90/'
@@ -225,18 +224,22 @@ Send For the First time the Agent to the Ready Room
 '''
 current_path = site_path+'ready'
 AgentRequest = MyRequest(method='GET',path=current_path)
-ready(AgentRequest)
 
 
-users_ready = set(Ready.objects.values_list('user_id', flat=True))
+# users_ready = set(Ready.objects.values_list('user_id', flat=True))
 First_Possible_Operators = Get_Possible_Operators(userid,current_posts)
+users_ready = set(Ready.objects.values_list('user_id', flat=True))
 num_round = 1
 while(num_round != total_rounds):
-    while(agent.id in users_ready):
+    while(len(users_ready) != Users_num):        
         users_ready = set(Ready.objects.values_list('user_id', flat=True))
-        ready(AgentRequest)
-        time.sleep(10)
-
+        if agent_id not in users_ready and len(users_ready) != Users_num:
+            print("Join to Ready")
+            Ready.objects.create(user=AgentRequest.user) #create new Ready User
+    print("Out of ready, Make Move!")
+    Ready.objects.all().delete()    
+    readyList = []
+        # ready(AgentRequest)
     '''
     Do Here Algoritem and And Send a Request to the operation.
     '''
@@ -252,11 +255,10 @@ while(num_round != total_rounds):
     operand, value = MakeMove(Possible_Operators)
     print(f'MakeMove Pick: Operator = {operand} , value = {value}\n')
 
-    current_path = site_path+'ready'
-    AgentRequest = MyRequest(method='GET',path=current_path)
-    ready(AgentRequest)
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
     num_round+=1
     print('----------------  # End Round----------------\n')
 
+time.sleep(10)
+current_posts = algo.Post_on_feed(agent.id)
 print("Simulrator Finished")
