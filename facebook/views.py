@@ -15,10 +15,9 @@ from properties import total_rounds
 from properties import agent_id
 
 # total users To the Simulation:
-# from properties import Users_num
+from properties import Users_num
 
 Users_num = 3
-
 
 def ready(request):        
     readyList = set(Ready.objects.values_list('user_id', flat=True))
@@ -30,7 +29,6 @@ def ready(request):
         readyList = set(Ready.objects.values_list('user_id', flat=True))
 
    
-    time.sleep(2)
     readyList = []
     return redirect('/home')
 

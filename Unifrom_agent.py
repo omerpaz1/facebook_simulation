@@ -20,6 +20,7 @@ from properties import total_rounds
 from properties import Users_num
 from properties import agent_id
 
+Users_num = 3
 
 # site path 
 site_path = 'http://34.89.133.90/'
@@ -90,7 +91,6 @@ after he pick a move he send to a function that call 'UnifromPickFromOption'.
 this function will pick Unifromly from the specific operation that chooes in uniformly 
 After that he will will send to A function that call 'ActionOperation' that send the Request.
 return - > Void
-
 '''
 def MakeMove(Possible_Operators):
     move = PickMove(Possible_Operators)
@@ -226,7 +226,6 @@ current_path = site_path+'ready'
 AgentRequest = MyRequest(method='GET',path=current_path)
 
 
-# users_ready = set(Ready.objects.values_list('user_id', flat=True))
 First_Possible_Operators = Get_Possible_Operators(userid,current_posts)
 users_ready = set(Ready.objects.values_list('user_id', flat=True))
 num_round = 1
@@ -237,9 +236,9 @@ while(num_round != total_rounds):
             print("Join to Ready")
             Ready.objects.create(user=AgentRequest.user) #create new Ready User
     print("Out of ready, Make Move!")
+    time.sleep(5)
     Ready.objects.all().delete()    
     readyList = []
-        # ready(AgentRequest)
     '''
     Do Here Algoritem and And Send a Request to the operation.
     '''
