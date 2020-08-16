@@ -14,7 +14,7 @@ try:
 except:
     flag = False
 
-users = ['UserA','UserB','UserC','UserD','UserE']
+users = ['Riley','Jordan','Parker','Harley','Kendall']
 status = ['I like Pizza','Hello World','What is coronavirus www.coronavirus.com','What is the meaning of life']
 profile_pic = ['img_A','img_B','img_C','img_D','img_E']
 # must do first after change db!
@@ -46,8 +46,6 @@ def init_status():
         s = Status(status=i,has_link=False)
         s.save()
 
-def delete_like():
-    pass
 
 def delete_workers_alocate():
     allusers = User.objects.all()
@@ -71,7 +69,7 @@ def delete_friends():
     friends5.myfriends.clear()
     friends6.myfriends.clear()
 
-    friends1.myfriends.append(1)
+    friends1.myfriends.append(1) # omerpaz
     friends2.myfriends.append(2)
     friends3.myfriends.append(3)
     friends4.myfriends.append(4)
@@ -153,6 +151,7 @@ if __name__ == "__main__":
     delete_workers_alocate()
     logout_all()
     unReady_all()   
+
 
     '''
     only if you dont need anymore the data from the workers and the LOG.

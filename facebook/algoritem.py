@@ -2,7 +2,7 @@ from .models import *
 import random
 
 LC = 10
-
+adminUser = 1 # omerpaz user
 
 BETWEEN_1_TO_2 = 0.4
 BETWEEN_3_TO_5 = 0.2
@@ -221,14 +221,20 @@ return -> the possibole posts that he can like (not heis posts)
 '''
 def getOptionalLikePosts(user_id,current_posts):
     currentPostsOnFeed = getIdPosts(current_posts)
-    OptionalLikePostsList = []
+    print(f'currentPostsOnFeed = {currentPostsOnFeed}')
+    Optional_SAFE_LikePostsList = []
+    Optional_UN_SAFE_LikePostsList = []
     no_likes_LC = likes_on_LC(user_id,False)
-    for post in currentPostsOnFeed: # about post with no like. same probability.]
-        if post in no_likes_LC:
-            if no_likes_LC[post] == -1:
-                OptionalLikePostsList.append(post)
-    # convert_post(OptionalLikePostsList)
-    return OptionalLikePostsList
+    for key,value in no_likes_LC.items(): # about post with no like. same probability.]
+        if key in currentPostsOnFeed:
+            if value == -1:
+                post = Post.objects.filter(id=key).first()
+                status =  Status.objects.filter(id=post.status_id).first()
+                if status.has_link:
+                    Optional_UN_SAFE_LikePostsList.append(key)
+                else:
+                    Optional_SAFE_LikePostsList.append(key)
+    return Optional_SAFE_LikePostsList,Optional_UN_SAFE_LikePostsList
 
 '''
 this function will get the users that know in your friend lists
@@ -237,7 +243,8 @@ return - > list if the users that you mayknow.
 '''
 def getPeopleMayKnow(user_id):
     PeopleMayKnow = []
-    all_users = list(User.objects.values_list('id', flat=True)) 
+    all_users = list(User.objects.values_list('id', flat=True))
+    all_users.remove(adminUser)
     for _id in all_users:
         if _id != user_id:
             friends_req = list(Friend_req.objects.filter(userid_id=_id).first().myfriends_req)

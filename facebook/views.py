@@ -17,7 +17,7 @@ from properties import agent_id
 # total users To the Simulation:
 from properties import Users_num
 
-Users_num = 3
+# Users_num = 3
 
 def ready(request):        
     readyList = set(Ready.objects.values_list('user_id', flat=True))
@@ -30,6 +30,7 @@ def ready(request):
 
    
     readyList = []
+    time.sleep(5)
     return redirect('/home')
 
 
@@ -69,7 +70,6 @@ def end(request):
 @login_required
 def home(request):
     posts = algo.Post_on_feed(request.user.id)
-
     user_liked = posts_user_liked(request.user.id)
     people_may_know = helper(request)
     list_friend_req = myreqest(request.user.id)
@@ -92,7 +92,7 @@ def home(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status =pick)
        new_post.save()
-       log(request.user.id,"CP")
+       log(request.user.id,"P")
        if len(Round.objects.all()) == total_rounds:
             return redirect('/end')
        return redirect('/ready')
@@ -115,7 +115,7 @@ def create_post(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status = pick)
        new_post.save()
-       log(request.user.id,"CP")
+       log(request.user.id,"P")
        return redirect('/ready')
 
     return render(request,'facebook/post_form.html',context)
@@ -128,7 +128,11 @@ def like_post(request):
         post_like_id = request.POST.get('post_id',False)
         post_like_id = Post.objects.get(id=post_like_id)
         post_like_id.likes.add(request.user)
-        log(request.user.id,"LP")
+        status_liked =  Status.objects.filter(id=post_like_id.status_id).first()
+        if status_liked.has_link:
+            log(request.user.id,"UL")
+        else:
+            log(request.user.id,"SL")
     return redirect('/ready')
 
 
@@ -162,20 +166,23 @@ def helper(request):
 def addfriend(request ,user_requsted):
     current_user = Friend_req.objects.filter(userid_id=request.user.id).first()
     if user_requsted.pk in current_user.myfriends_req: # if 3 in 5
-        confirm_friends(request,user_requsted)
+        current_user_table = Friend_req.objects.filter(userid_id=request.user.id).first()
+        current_user_table.myfriends_req.remove(user_requsted.pk)
+        current_user_table.save()
+        # log(request.user.id,"AF-OffringSameRound")
     else:
         user_requsted = Friend_req.objects.filter(userid_id=user_requsted.id).first()
         if current_user.userid_id not in user_requsted.myfriends_req:
             user_requsted.myfriends_req.append(request.user.id)
             user_requsted.save()
-    log(request.user.id,"AF")
+    log(request.user.id,"OF")
 
 # comfirm both friend in the tables
 def confirm_friends(request,user_requsted):
     current_user_table = Friend_req.objects.filter(userid_id=request.user.id).first()
     current_user_table.myfriends_req.remove(user_requsted.pk)
     current_user_table.save()
-    log(request.user.id,"CF")
+    log(request.user.id,"AF")
 
     # add to the friends table of both sides.
     current_user_table = Friends.objects.filter(userid_id=request.user.id).first()
@@ -208,19 +215,21 @@ def myreqest(id):
 
 
 
+
 '''
-this function will be track about the users operaions on the specific rounds.
+this function will return list of the name of the relevant operations.
+param: AR - AgentRequest
 the operations: 
-1. AF (Add Friend)
-2. CF (Confirm Friend)
-3. LP (Like Post)
-4. CP (Create Post)
-5. P (Pass)
+1. OF (Offer Friendship)
+2. AF (Accept Friendship)
+3. SL (Safe like link)
+4. UL (UnSafe like link)
+4. P (Post)
+5. N (None)
 '''
 def log(id_user,code_operation):
     all_rounds = Round.objects.all()
     current_round = Round.objects.filter(round_number=len(all_rounds)).first()
-    print(f'Round for the LOG = {current_round.round_number}')
     l = Log(id_round=current_round.round_number,id_user=id_user,code_operation=code_operation)
     l.save()
 
@@ -236,7 +245,7 @@ def create_post_Agent(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status = pick)
        new_post.save()
-       log(request.user.id,"CP")
+       log(request.user.id,"P")
     return redirect('/ready')
 
 
@@ -247,16 +256,20 @@ def home_Agent(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status =pick)
        new_post.save()
-       log(request.user.id,"CP")
+       log(request.user.id,"P")
     return redirect('/ready')
 
 
 
-def like_post_Agent(request):
+def like_post_Agent(request,code):
     if request.method == 'POST':
         post_like_id = request.content_params['post_id']
         post_like_id = Post.objects.get(id=post_like_id)
         post_like_id.likes.add(request.user)
-        log(request.user.id,"LP")
+        if code == "SL":
+            log(request.user.id,"SL")
+        elif code == "UL":
+            log(request.user.id,"UL")
+
     return redirect('/ready')
 

@@ -20,11 +20,11 @@ Parameters:
 '''
 
 # total rounds for the simulation. can be in range [1,infinty]
-total_rounds = 5
+total_rounds = 6
 # number of LC Rounds.
 LC = 10
 # number of users that will be in the simulationץ can be in range [2,5]
-Users_num = 3
+Users_num = 5
 # the agent user id can be in ragne [2,6]
 agent_id = 2 
 

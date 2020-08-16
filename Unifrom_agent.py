@@ -20,7 +20,7 @@ from properties import total_rounds
 from properties import Users_num
 from properties import agent_id
 
-Users_num = 3
+# Users_num = 3
 
 # site path 
 site_path = 'http://34.89.133.90/'
@@ -41,6 +41,7 @@ def MyRequest(method='GET',path=site_path, user=agent, params={}):
           'wsgi.input': StringIO()})
 
   req.user = user
+
   req.content_params = params
   return req
 AgentRequest = MyRequest(method='POST',path=site_path+'login')
@@ -50,35 +51,38 @@ AgentRequest = MyRequest(method='POST',path=site_path+'login')
 this function will return list of the name of the relevant operations.
 param: AR - AgentRequest
 the operations: 
-1. AF (Add Friend)
-2. CF (Confirm Friend)
-3. LP (Like Post)
-4. CP (Create Post)
-5. P (Pass)
+1. OF (Offer Friendship)
+2. AF (Accept Friendship)
+3. SL (Safe like link)
+4. UL (UnSafe like link)
+4. P (Post)
+5. N (None)
 '''
 def Get_Possible_Operators(userid,current_posts):
     operations = {}
 
-    # 1 -> AF
+    # 1 -> OF
     PeopleMayKnow = algo.getPeopleMayKnow(userid)
     if PeopleMayKnow: # if there is users not in your friends
-        operations.update({'AF' : PeopleMayKnow})
+        operations.update({'OF' : PeopleMayKnow})
 
-    # 2 -> CF
+    # 2 -> AF
     FriendRequests = algo.getFriendsRequest(userid)
     if FriendRequests: # if there is users in your friends requests
-        operations.update({'CF' : FriendRequests})
+        operations.update({'AF' : FriendRequests})
 
-    # 3 -> LP
-    OptionalPostsToLike = algo.getOptionalLikePosts(userid,current_posts)
-    if OptionalPostsToLike: # if the there is posts optional to like.
-        operations.update({'LP' : OptionalPostsToLike})
+    # 3 -> SL
+    Optional_SAFE_LikePostsList,Optional_UN_SAFE_LikePostsList = algo.getOptionalLikePosts(userid,current_posts)
+    if Optional_SAFE_LikePostsList: # if the there is posts optional to like.
+        operations.update({'SL' : Optional_SAFE_LikePostsList})
+    if Optional_UN_SAFE_LikePostsList:
+        operations.update({'UL' : Optional_UN_SAFE_LikePostsList})
 
-    # 4 -> CP
-    operations.update({'CP' : algo.getAllStatus()})
+    # 4 -> P
+    operations.update({'P' : algo.getAllStatus()})
 
-    # 5 -> P
-    operations.update({'P' : 'Pass'})
+    # 5 -> N
+    operations.update({'N' : 'None'})
     return operations
 
 
@@ -95,40 +99,46 @@ return - > Void
 def MakeMove(Possible_Operators):
     move = PickMove(Possible_Operators)
     current_path = site_path
-    if move == "AF":
+    if move == "OF":
         AgentRequest = MyRequest(method='GET',path=site_path+'home')
         userIdToAdd = getFriendToAdd(Possible_Operators[move])
         userObj = User.objects.filter(id=userIdToAdd).first()
         addfriend(AgentRequest,userObj)
-        return "AF", userIdToAdd
+        return "OF", userIdToAdd
 
-    elif move == "CF":
+    elif move == "AF":
         AgentRequest = MyRequest(method='GET',path=site_path+'home')
         userToConfirm = getFriendToConfirm(Possible_Operators[move])
         userObj = User.objects.filter(id=userToConfirm).first()
         confirm_friends(AgentRequest,userObj)
-        return "CF", userToConfirm
+        return "AF", userToConfirm
 
-    elif move == "LP":
+    elif move == "SL":
         PostToLike = getPostToLike(Possible_Operators[move])
         AgentRequest = MyRequest(method='POST',path=site_path+'home',params={'post_id': PostToLike})
-        like_post_Agent(AgentRequest)
-        return "LP", PostToLike
+        like_post_Agent(AgentRequest,"SL")
+        return "SL", PostToLike
 
-    elif move == "CP":
+    elif move == "UL":
+        PostToLike = getPostToLike(Possible_Operators[move])
+        AgentRequest = MyRequest(method='POST',path=site_path+'home',params={'post_id': PostToLike})
+        like_post_Agent(AgentRequest,"UL")
+        return "UL", PostToLike
+
+    elif move == "P":
         StatusToPost = getStatusToPost()
         AgentRequest = MyRequest(method='POST',path=current_path+'home' ,params={'user_option_on_feed': StatusToPost})
         home_Agent(AgentRequest)
-        return "CP", StatusToPost
+        return "P", StatusToPost
 
-    elif move == "P":
-        log(agent.id,"P")
-        return "P", "Pass"
+    elif move == "N":
+        log(agent.id,"N")
+        return "N", "None"
 
 
 
 '''
-this function will pick from the possible opeation one type of operation.. like (AF , P , CP, LP , CF)
+this function will pick from the possible opeation one type of operation.. like (AF , N , P, LS , CF)
 'SizeOfOp' will be the size of the possible operations for the round.
 '''
 def PickMove(Possible_Operators):
@@ -242,15 +252,18 @@ while(num_round != total_rounds):
     '''
     Do Here Algoritem and And Send a Request to the operation.
     '''
+    current_posts = algo.Post_on_feed(agent.id)
     if First_Possible_Operators is not None:
         Possible_Operators = First_Possible_Operators
         First_Possible_Operators = None
     else:
         Possible_Operators = Get_Possible_Operators(userid,current_posts)
-    current_posts = algo.Post_on_feed(agent.id)
     print("Possible_Operators For The Current Round:\n")
     print(Possible_Operators)
     print('\n')
+    users_ready = set(Ready.objects.values_list('user_id', flat=True))
+    while(len(users_ready) < Users_num-1 and num_round != total_rounds):
+        users_ready = set(Ready.objects.values_list('user_id', flat=True))
     operand, value = MakeMove(Possible_Operators)
     print(f'MakeMove Pick: Operator = {operand} , value = {value}\n')
 
@@ -258,6 +271,6 @@ while(num_round != total_rounds):
     num_round+=1
     print('----------------  # End Round----------------\n')
 
+
 time.sleep(10)
-current_posts = algo.Post_on_feed(agent.id)
 print("Simulrator Finished")
