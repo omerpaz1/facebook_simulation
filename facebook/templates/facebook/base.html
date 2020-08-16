@@ -64,24 +64,34 @@
      </nav>
 
         <!--                start  left bar            -->
-        <div class="container">
-            <div class="row">
-                  <div class="card mr-3" style="width: 15rem; margin-top: 1.5em;">
+            <div class="row"> 
+              
+                  <div class="card mr-3" style="width: 25rem; margin-top: 1.5em; margin-left: 1.5em;">
                   <div class="card-body">
                     <h5 class="card-header"> <svg class="bi bi-info-circle" width="1em" height="0.8em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                       <path fill-rule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clip-rule="evenodd"/>
                       <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
                       <circle cx="8" cy="4.5" r="1"/>
                     </svg> Quick Guide</h5>
-                    <div class="card-body">
-                      <li class="card-text">you can do only one operation.</li>
-                      <li class="card-text">check it</li>
-                      <li class="card-text">dont forget to ...</li>
-                    </div>
+                    <li>The possible actions to be performed are:</li>
+                    <ol>
+                      <li>Publish a post</li>
+                      <li>Like one of your friend's posts</li>
+                      <li>Offer a friend request</li>
+                      <li>Offer a friend request</li>
+                      <li>Accept a friend request</li>
+                    </ol>
+                    <li>Only one action can be performed per round.</li>
+                    <li>You should pay attention to the time bar appearing on the top of your screen.</li>
+                    <li> If none of the above-mentioned actions were performed by the end of the round, it will be considered as the action "do nothing" was performed.</li>
+                    <li>On your "Feed" you will be presented with your and your friends' actions. Actions of participants who are not your friends will not be visible to you.</li>
+                    <li>On the right side of the screen you will see your current friend requests and people you may know (to which you are allowed to send friend requests).</li>
+                    <li>While posting a post you can choose whether to add a URL to the post or not.</li>
+                    <li>Liking your own post is not allowed.</li>
+
                   </div>
             </div>
-                
-                
+                    
 <!--            start posts-->
                 <!-- if we on the create post page!  -->
                 
@@ -174,7 +184,7 @@
 
       // Timer for the progressbar page      
 
-      flag_progress_bar = true; // for debug mode - put it false
+      flag_progress_bar = false; // for debug mode - put it false
       Time_progress_bar = 200 // 1000 = 1 sec
 
       // Timer for the waiting page      
@@ -256,6 +266,17 @@
     }
 }
 
+
+
+$( function( )
+    	{
+    		$( "[data-toggle='popover'" ).popover( );
+    	} );
+
+    	$( ".popover-dismiss" ).popover(
+    	{
+    		trigger: "focus"
+    	} );
 
 </script>
 

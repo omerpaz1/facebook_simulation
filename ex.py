@@ -8,23 +8,17 @@ from django.contrib.auth.models import User
 import threading 
 from facebook.views import posts_user_liked
 import facebook.algoritem as algo
+from properties import adminUser,agent_id
 import random
 import time
 
 
 
 if __name__ == '__main__':
-
-    # pick = Status.objects.all()
-    # aa =  Status.objects.filter(id=29).first()
-    # print(aa.has_link)
-    no_likes_LC = {720: 0, 721: -1, 723: -1, 722: -1, 725: 0, 724: -1}
-    currentPostsOnFeed = [710, 722, 723, 724]
-
-    post_like_id = Post.objects.get(id=723)
-    status =  Status.objects.filter(id=post_like_id.status_id).first()
-    print(status.has_link)
-
+    print(type(adminUser))
+    allusers = User.objects.all()
+    for i in allusers:
+        print(type(i.id))
 
     # Optional_SAFE_LikePostsList = []
     # Optional_UN_SAFE_LikePostsList = [] 

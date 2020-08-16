@@ -7,6 +7,7 @@ from facebook.models import Post,Status,Friends,Friend_req,Round,Ready,Log,Worke
 from users.models import Profile
 from django.contrib.auth.models import User
 from users.models import AllLogin,Users_free
+from properties import agent_id,adminUser
 
 try:
     flag = sys.argv[2]
@@ -35,10 +36,12 @@ def init_friends_requst():
 
 def init_users_free():
     allusers = User.objects.all()
-    for i in users:
-        user = allusers.filter(username=i).first()
-        f = Users_free(user_id=user.id,is_gived=False)
-        f.save()
+    Users_free.objects.all().delete()
+    for i in allusers:
+        if i.id != agent_id and i.id != adminUser:
+            user = allusers.filter(username=i).first()
+            f = Users_free(user_id=user.id,worker_id=None)
+            f.save()
 
 def init_status():
 
@@ -49,7 +52,7 @@ def init_status():
 
 def delete_workers_alocate():
     allusers = User.objects.all()
-    for i in range(2,len(users)+2):
+    for i in range(3,len(users)+2):
         user = Users_free.objects.filter(user_id=i).first()
         user.worker_id = None
         user.save() 
@@ -138,7 +141,7 @@ if __name__ == "__main__":
     # init_friends()
     # init_friends_requst()
     # init_status()
-    # init_users_free()
+    # init_users_free() 
 
     '''
     init DB for next simulation.
