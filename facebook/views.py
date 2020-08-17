@@ -60,7 +60,9 @@ def end(request):
     if request.method == 'POST':
         worker_id = request.POST.get('Worker_ID',False) 
         free_comments  = request.POST.get('Free_Comments',False) 
-        w = WorkersInfo(worker_id=worker_id,free_comments=free_comments)
+        clear_info  = request.POST.get('is_clear_info',False) 
+        help_test_rounds  = request.POST.get('help_test_rounds',False) 
+        w = WorkersInfo(worker_id=worker_id,free_comments=free_comments,clear_info=clear_info,tests_rounds_help=help_test_rounds)
         w.save()
 
         return redirect('/logout')
@@ -92,11 +94,14 @@ def home(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status =pick)
        new_post.save()
-       log(request.user.id,"P")
+       log(request.user.id,"P",new_post.id)
        if len(Round.objects.all()) == total_rounds:
             return redirect('/end')
        return redirect('/ready')
     if len(Round.objects.all()) == total_rounds:
+
+        algo.UpdateScoreStatic(request.user.id)
+
         return redirect('/end')
     return render(request,'facebook/feed.html',context)
 
@@ -115,7 +120,7 @@ def create_post(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status = pick)
        new_post.save()
-       log(request.user.id,"P")
+       log(request.user.id,"P",new_post.id)
        return redirect('/ready')
 
     return render(request,'facebook/post_form.html',context)
@@ -130,9 +135,9 @@ def like_post(request):
         post_like_id.likes.add(request.user)
         status_liked =  Status.objects.filter(id=post_like_id.status_id).first()
         if status_liked.has_link:
-            log(request.user.id,"UL")
+            log(request.user.id,"UL",post_like_id.id)
         else:
-            log(request.user.id,"SL")
+            log(request.user.id,"SL",post_like_id.id)
     return redirect('/ready')
 
 
@@ -227,11 +232,18 @@ the operations:
 4. P (Post)
 5. N (None)
 '''
-def log(id_user,code_operation):
+def log(id_user,code_operation,post=None):
     all_rounds = Round.objects.all()
     current_round = Round.objects.filter(round_number=len(all_rounds)).first()
-    l = Log(id_round=current_round.round_number,id_user=id_user,code_operation=code_operation)
-    l.save()
+    if post != None:
+        l = Log(id_round=current_round.round_number,id_user=id_user,code_operation=code_operation,post_id=post)
+        l.save()
+    else:
+        l = Log(id_round=current_round.round_number,id_user=id_user,code_operation=code_operation)
+        l.save()
+
+
+
 
 
 # -------------------------------- Functions for Agent --------------------------------- #
@@ -245,7 +257,7 @@ def create_post_Agent(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status = pick)
        new_post.save()
-       log(request.user.id,"P")
+       log(request.user.id,"P",new_post.id)
     return redirect('/ready')
 
 
@@ -256,7 +268,7 @@ def home_Agent(request):
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status =pick)
        new_post.save()
-       log(request.user.id,"P")
+       log(request.user.id,"P",new_post.id)
     return redirect('/ready')
 
 
@@ -267,9 +279,9 @@ def like_post_Agent(request,code):
         post_like_id = Post.objects.get(id=post_like_id)
         post_like_id.likes.add(request.user)
         if code == "SL":
-            log(request.user.id,"SL")
+            log(request.user.id,"SL",post_like_id.id)
         elif code == "UL":
-            log(request.user.id,"UL")
+            log(request.user.id,"UL",post_like_id.id)
 
     return redirect('/ready')
 

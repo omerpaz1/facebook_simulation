@@ -149,7 +149,7 @@ def PickMove(Possible_Operators):
         if j is random_num:
             MovePicked = move
         j+=1
-    return MovePicked
+    return "P"
 
 
 '''
@@ -253,6 +253,7 @@ while(num_round != total_rounds):
     Do Here Algoritem and And Send a Request to the operation.
     '''
     current_posts = algo.Post_on_feed(agent.id)
+    
     if First_Possible_Operators is not None:
         Possible_Operators = First_Possible_Operators
         First_Possible_Operators = None
@@ -264,6 +265,7 @@ while(num_round != total_rounds):
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
     while(len(users_ready) < Users_num-1 and num_round != total_rounds):
         users_ready = set(Ready.objects.values_list('user_id', flat=True))
+
     operand, value = MakeMove(Possible_Operators)
     print(f'MakeMove Pick: Operator = {operand} , value = {value}\n')
 

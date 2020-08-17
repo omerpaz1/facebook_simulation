@@ -1,5 +1,6 @@
 from .models import *
 import random
+from properties import _benefit,_burden,_privacy_loss
 
 LC = 10
 adminUser = 1 # omerpaz user
@@ -17,7 +18,10 @@ RANGE_PROB_BETWEEN_3_TO_5 = range(3,5+1)
 RANGE_PROB_BETWEEN_5_TO_LC = range(5,LC+1)
 
 def Post_on_feed(user_id):
-    return add_posts_to_current_round(user_id)
+    posts = add_posts_to_current_round(user_id)
+    UpDateScore(user_id,posts)
+    return convert_posts(posts)
+
 
 '''
 this function will get all the information from the user_id and return the posts for the LC rounds.
@@ -202,7 +206,7 @@ def cal_prob(no_likes_LC,likes_LC):
                 posts_ans.append(post_like)
                 # print(f' LL = {LL} , random_num <= RANGE_PROB_BETWEEN_5_TO_LC -> {random_num}')
     print(f"Posts picks = {posts_ans}\n")
-    return convert_posts(posts_ans)
+    return posts_ans
 
 # covert from post id to post object
 def convert_posts(posts_LC):
@@ -282,3 +286,50 @@ def getIdPosts(round_posts):
     for i in round_posts:
         id_current_posts.append(i.id)
     return id_current_posts
+
+
+
+'------------------------- Score ---------------------'
+
+def UpDateScore(user_id,CurrentPostsOnRound):
+    for p in CurrentPostsOnRound:
+            post = Post.objects.filter(id=p).first()
+            if post.username_id != user_id:
+                _UpdateScorePosts(post.username_id)
+
+'''
+this function will get the user that need to update heis score by showing heis post on the feed.
+will update heis Benefits Row.
+'''
+def _UpdateScorePosts(userID_ToUpdate):
+    user_score = Score.objects.filter(id_user=userID_ToUpdate).first()
+    user_score.benefit = user_score.benefit+_benefit
+
+    user_score.save()
+
+
+'''
+this function will update the score of user by static values that given on heis operation.(like,add friend etc..)
+'''
+def UpdateScoreStatic(userID_ToUpdate):
+    userScore = Score.objects.filter(id_user=userID_ToUpdate).first()
+    logs = Log.objects.all()
+    for i in logs:
+        if i.id_user == userID_ToUpdate:
+            if i.code_operation == "P":
+                userScore.burden = userScore.burden + _burden
+                userScore.privacy_loss = userScore.privacy_loss + _privacy_loss
+            elif i.code_operation == "AF":
+                userScore.burden = userScore.burden + _burden
+            elif i.code_operation == "OF":
+                userScore.burden = userScore.burden + _burden
+            elif i.code_operation == "SL":
+                userScore.burden = userScore.burden + _burden
+                userScore.privacy_loss = userScore.privacy_loss + _privacy_loss
+            elif i.code_operation == "UL":
+                userScore.burden = userScore.burden + _burden
+                userScore.privacy_loss = userScore.privacy_loss + _privacy_loss
+    userScore.final_score = userScore.final_score + userScore.privacy_loss + userScore.burden + userScore.benefit
+                    
+
+    userScore.save()

@@ -2,32 +2,30 @@ import os
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.models import Post,Status,Friends,Friend_req,Round,Ready,WorkersInfo,Log
+from facebook.models import Post,Status,Friends,Friend_req,Round,Ready,WorkersInfo,Log,Score
 from users.models import AllLogin,Users_free
 from django.contrib.auth.models import User
 import threading 
 from facebook.views import posts_user_liked
 import facebook.algoritem as algo
-from properties import adminUser,agent_id
+from properties import adminUser,agent_id,_benefit,_burden,_privacy_loss
 import random
 import time
 
 
+def UpDateScore(user_id,CurrentPostsOnRound):
+    for p in CurrentPostsOnRound:
+            post = Post.objects.filter(id=p).first()
+            if post.username_id != user_id:
+                _UpdateScorePosts(post.username_id)
+
+def _UpdateScorePosts(userID_ToUpdate):
+    user_score = Score.objects.filter(id_user=userID_ToUpdate).first()
+    user_score.benefit = user_score.benefit+_benefit
+
+    print(user_score.benefit)
+    # user_score.save()
 
 if __name__ == '__main__':
-    print(type(adminUser))
-    allusers = User.objects.all()
-    for i in allusers:
-        print(type(i.id))
-
-    # Optional_SAFE_LikePostsList = []
-    # Optional_UN_SAFE_LikePostsList = [] 
-    # for key,value in no_likes_LC.items(): # about post with no like. same probability.]
-    #     if key in currentPostsOnFeed:
-    #         if value == -1:
-    #             post = Post.objects.filter(id=key).first()
-    #             status =  Status.objects.filter(id=post.status_id).first()
-    #             if status.has_link:
-    #                 Optional_UN_SAFE_LikePostsList.append(key)
-    #             else:
-    #                 Optional_SAFE_LikePostsList.append(key)
+    Posts = [933, 936, 938, 940, 942,937,941]
+    UpDateScore(2,Posts)
