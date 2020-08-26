@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from .models import Post,Status,Friends,Friend_req,Round,WorkersInfo,Log,Ready
+from .models import Post,Status,Friends,Friend_req,Round,WorkersInfo,Log,Ready,inEndScreen
 from users.models import AllLogin
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
@@ -49,7 +49,7 @@ def waiting(request):
         context = {
             'active_users' :users_login,
             'allusers': User.objects.all(),
-            'left_Users': 5-len(users_login)
+            'left_Users': Users_num-len(users_login)
         }
         return render(request,'facebook/waiting.html',context)
     time.sleep(1) 
@@ -71,6 +71,11 @@ def end(request):
 
 @login_required
 def home(request):
+    if len(Round.objects.all()) == total_rounds:
+        algo.UpdateScoreStatic(request.user.id)
+        Ready.objects.create(user=request.user) #create new Ready User
+        return render(request,'facebook/end.html')
+
     posts = algo.Post_on_feed(request.user.id)
     user_liked = posts_user_liked(request.user.id)
     people_may_know = helper(request)
@@ -96,15 +101,12 @@ def home(request):
        new_post.save()
        log(request.user.id,"P",new_post.id)
        if len(Round.objects.all()) == total_rounds:
+            Ready.objects.create(user=request.user) #create new Ready User
+            algo.UpdateScoreStatic(request.user.id)
             return redirect('/end')
        return redirect('/ready')
-    if len(Round.objects.all()) == total_rounds:
 
-        algo.UpdateScoreStatic(request.user.id)
-
-        return redirect('/end')
     return render(request,'facebook/feed.html',context)
-
 
 
 @login_required
@@ -112,7 +114,6 @@ def home(request):
 def create_post(request):
     context = {
         'mystatus' : Status.objects.all(),
-        'posts' : Post.objects.all()
     }
     if request.method == 'POST':
        user_post_option = request.POST.get('user_option',False)

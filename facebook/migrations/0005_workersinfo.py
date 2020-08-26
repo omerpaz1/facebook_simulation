@@ -5,10 +5,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('facebook', '0004_ready'),
-    ]
-
     operations = [
         migrations.CreateModel(
             name='WorkersInfo',

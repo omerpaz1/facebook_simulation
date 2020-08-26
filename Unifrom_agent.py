@@ -3,7 +3,7 @@ import django
 import sys
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.views import addfriend,confirm_friends,like_post_Agent,home_Agent,log,create_post_Agent,ready
+from facebook.views import addfriend,inEndScreen,confirm_friends,like_post_Agent,home_Agent,log,create_post_Agent,ready
 import time
 from django.contrib.auth.models import User
 from facebook.models import Post,Status,Friends,Friend_req,Ready
@@ -252,6 +252,11 @@ while(num_round != total_rounds):
     '''
     Do Here Algoritem and And Send a Request to the operation.
     '''
+    # if num_round+1 == total_rounds:
+    #     while(len(users_ready) < Users_num-1):
+    #         users_ready = set(Ready.objects.values_list('user_id', flat=True))
+    #         num_round+=1
+    #     break
     current_posts = algo.Post_on_feed(agent.id)
     
     if First_Possible_Operators is not None:
@@ -262,17 +267,22 @@ while(num_round != total_rounds):
     print("Possible_Operators For The Current Round:\n")
     print(Possible_Operators)
     print('\n')
+    
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    while(len(users_ready) < Users_num-1 and num_round != total_rounds):
+    num_round+=1
+    print(f"num round = {num_round}")
+    while(len(users_ready) < Users_num-1):
         users_ready = set(Ready.objects.values_list('user_id', flat=True))
+
+
 
     operand, value = MakeMove(Possible_Operators)
     print(f'MakeMove Pick: Operator = {operand} , value = {value}\n')
 
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    num_round+=1
     print('----------------  # End Round----------------\n')
 
 
+algo.UpdateScoreStatic(userid)
 time.sleep(10)
 print("Simulrator Finished")

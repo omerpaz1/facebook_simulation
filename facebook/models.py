@@ -231,10 +231,38 @@ class Log(models.Model):
 
 class Score(models.Model):
     id_user = models.IntegerField(User)
-    burden = models.IntegerField(default=0)
-    benefit = models.IntegerField(default=0)
-    privacy_loss = models.IntegerField(default=0)
-    final_score = models.IntegerField(default=0)
+    burden = models.FloatField(default=0)
+    benefit = models.FloatField(default=0)
+    privacy_loss = models.FloatField(default=0)
+    final_score = models.FloatField(default=0)
 
     def __str__(self):
         return str(self.id_user) + ': ' + str(self.burden) + ': ' + str(self.benefit)+ ': ' + str(self.privacy_loss)+ ': ' + str(self.final_score)
+
+
+class benefitRounds(models.Model):
+    id_user = models.IntegerField(User)
+    round_1 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_2 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_3 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_4 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_5 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_6 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_7 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_8 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_9 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_10 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_11 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_12 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_13 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_14 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_15 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    def __str__(self):
+        return str(self.id_user)
+
+
+class inEndScreen(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.user)

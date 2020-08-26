@@ -1,13 +1,15 @@
 from .models import *
 import random
-from properties import _benefit,_burden,_privacy_loss
+from properties import _benefit,_burden,_privacy_loss,total_rounds
+from .models import benefitRounds,Round,Status,Post
+import threading
 
 LC = 10
 adminUser = 1 # omerpaz user
 
-BETWEEN_1_TO_2 = 0.4
-BETWEEN_3_TO_5 = 0.2
-BETWEEN_5_TO_LC = 0.1
+BETWEEN_1_TO_2 =  0.4
+BETWEEN_3_TO_5 =  0.2
+BETWEEN_5_TO_LC =  0.1
 
 from properties import agent_id
 leader_round_user_id = agent_id # this user will be the last user that create new round
@@ -225,7 +227,6 @@ return -> the possibole posts that he can like (not heis posts)
 '''
 def getOptionalLikePosts(user_id,current_posts):
     currentPostsOnFeed = getIdPosts(current_posts)
-    print(f'currentPostsOnFeed = {currentPostsOnFeed}')
     Optional_SAFE_LikePostsList = []
     Optional_UN_SAFE_LikePostsList = []
     no_likes_LC = likes_on_LC(user_id,False)
@@ -291,21 +292,131 @@ def getIdPosts(round_posts):
 
 '------------------------- Score ---------------------'
 
+def getUserByRound(argument,postUserID,PostID): 
+    userBene = benefitRounds.objects.filter(id_user=postUserID).first()
+    if argument == 1:
+        userBene.round_1.append(PostID)
+        userBene.save()
+    elif argument == 2:
+        userBene.round_2.append(PostID)
+        userBene.round_2=set(userBene.round_2)
+        userBene.round_2=list(userBene.round_2)
+        userBene.save()
+    elif argument == 3:
+        userBene.round_3.append(PostID)
+        userBene.round_3=set(userBene.round_3)
+        userBene.round_3=list(userBene.round_3)
+        userBene.save()
+    elif argument == 4:
+        userBene.round_4.append(PostID)
+        userBene.round_4=set(userBene.round_4)
+        userBene.round_4=list(userBene.round_4)
+        userBene.save()
+    elif argument == 5:
+        userBene.round_5.append(PostID)
+        userBene.round_5=set(userBene.round_5)
+        userBene.round_5=list(userBene.round_5)
+        userBene.save()
+    elif argument == 6:
+        userBene.round_6.append(PostID)
+        userBene.round_6=set(userBene.round_6)
+        userBene.round_6=list(userBene.round_6)
+        userBene.save()
+    elif argument == 7:
+        userBene.round_7.append(PostID)
+        userBene.round_7=set(userBene.round_7)
+        userBene.round_7=list(userBene.round_7)
+        userBene.save()
+    elif argument == 8:
+        userBene.round_8.append(PostID)
+        userBene.round_8=set(userBene.round_8)     
+        userBene.round_8=list(userBene.round_8)           
+        userBene.save()
+    elif argument == 9:
+        userBene.round_9.append(PostID)
+        userBene.round_9=set(userBene.round_9)
+        userBene.round_9=list(userBene.round_9)
+        userBene.save()
+    elif argument == 10:
+        userBene.round_10.append(PostID)
+        userBene.round_10=set(userBene.round_10)
+        userBene.round_10=list(userBene.round_10)
+        userBene.save()
+    elif argument == 11:
+        userBene.round_11.append(PostID)
+        userBene.round_11=set(userBene.round_11)
+        userBene.round_11=list(userBene.round_11)
+        userBene.save()
+    elif argument == 12:
+        userBene.round_12.append(PostID)
+        userBene.round_12=set(userBene.round_12)
+        userBene.round_12=list(userBene.round_12)
+        userBene.save()
+    elif argument == 13:
+        userBene.round_13.append(PostID)
+        userBene.round_13=set(userBene.round_13)
+        userBene.round_13=list(userBene.round_13)
+        userBene.save()
+    elif argument == 14:
+        userBene.round_14.append(PostID)
+        userBene.round_14=set(userBene.round_14)
+        userBene.round_14=list(userBene.round_14)
+        userBene.save()
+    elif argument == 15:
+        userBene.round_15.append(PostID)
+        userBene.round_15=set(userBene.round_15)
+        userBene.round_15=list(userBene.round_15)
+        userBene.save()
+
 def UpDateScore(user_id,CurrentPostsOnRound):
     for p in CurrentPostsOnRound:
-            post = Post.objects.filter(id=p).first()
-            if post.username_id != user_id:
-                _UpdateScorePosts(post.username_id)
+        roundNumber = int(len(Round.objects.all()))
+        post = Post.objects.filter(id=p).first()
+        print(f"post.username_id {post.username_id} != {user_id} ?")
+        if post.username_id != user_id:
+            print(f"post.username_id {post.username_id} != {user_id} ?")
+            getUserByRound(roundNumber,post.username_id,p)
+
+
+def getRoundList(argument,postUserID): 
+    userBene = benefitRounds.objects.filter(id_user=postUserID).first()
+    dic = {
+    1:userBene.round_1,
+    2: userBene.round_2,
+    3: userBene.round_3,
+    4: userBene.round_4,
+    5: userBene.round_5,
+    6: userBene.round_6,
+    7: userBene.round_7,
+    8: userBene.round_8,
+    9: userBene.round_9,
+    10: userBene.round_10,
+    11: userBene.round_11,
+    12: userBene.round_12,
+    13: userBene.round_13,
+    14: userBene.round_14,
+    15: userBene.round_15
+    }
+    return dic.get(argument)
+
+# def UpDateScore(user_id,CurrentPostsOnRound):
+#     i = 1
+#     for p in CurrentPostsOnRound:
+#         post = Post.objects.filter(id=p).first()
+#         print(f"post.username_id {post.username_id} != {user_id} ?")
+#         if post.username_id != user_id:
+#             user_score = Score.objects.filter(id_user=post.username_id).first()
+#             print(f'before benfit = {user_score.benefit}')
+#             user_score.benefit+=1
+#             print(f'after benfit = {user_score.benefit}')
+#             i+=1
+#             user_score.save()
 
 '''
 this function will get the user that need to update heis score by showing heis post on the feed.
 will update heis Benefits Row.
 '''
-def _UpdateScorePosts(userID_ToUpdate):
-    user_score = Score.objects.filter(id_user=userID_ToUpdate).first()
-    user_score.benefit = user_score.benefit+_benefit
 
-    user_score.save()
 
 
 '''
@@ -317,19 +428,49 @@ def UpdateScoreStatic(userID_ToUpdate):
     for i in logs:
         if i.id_user == userID_ToUpdate:
             if i.code_operation == "P":
-                userScore.burden = userScore.burden + _burden
-                userScore.privacy_loss = userScore.privacy_loss + _privacy_loss
+                burden_val,privacy_loss_val = UpDateScoreForLikes(i.post_id)
+                userScore.burden = userScore.burden + burden_val
+                userScore.privacy_loss = userScore.privacy_loss + privacy_loss_val
             elif i.code_operation == "AF":
                 userScore.burden = userScore.burden + _burden
             elif i.code_operation == "OF":
                 userScore.burden = userScore.burden + _burden
             elif i.code_operation == "SL":
-                userScore.burden = userScore.burden + _burden
-                userScore.privacy_loss = userScore.privacy_loss + _privacy_loss
+                burden_val,privacy_loss_val = UpDateScoreForLikes(i.post_id)
+                userScore.burden = userScore.burden + burden_val
+                userScore.privacy_loss = userScore.privacy_loss + privacy_loss_val
             elif i.code_operation == "UL":
-                userScore.burden = userScore.burden + _burden
-                userScore.privacy_loss = userScore.privacy_loss + _privacy_loss
-    userScore.final_score = userScore.final_score + userScore.privacy_loss + userScore.burden + userScore.benefit
-                    
+                burden_val,privacy_loss_val = UpDateScoreForLikes(i.post_id)
+                userScore.burden = userScore.burden + burden_val
+                userScore.privacy_loss = userScore.privacy_loss + privacy_loss_val
 
+            userScore.benefit = UpdateScoreForPosts(i.id_user)
+    userScore.final_score = userScore.final_score + userScore.privacy_loss + userScore.burden + userScore.benefit
+        
     userScore.save()
+
+def UpdateScoreForPosts(user_id):
+    benefit_val = 0
+    burden_val = 0
+    privacy_loss_val = 0
+
+    beneUsers = benefitRounds.objects.all()
+    for i in range(1,total_rounds+1):
+        array = getRoundList(i,user_id)
+        if array:
+            for postID in array:
+                statusID = Post.objects.get(id=postID).status_id
+                status_info =  Status.objects.filter(id=statusID).first()
+                benefit_val+= float(status_info.benefit.replace('$', ''))
+
+    return round((benefit_val),2)
+
+def UpDateScoreForLikes(post_id):
+    burden_val = 0
+    privacy_loss_val = 0
+
+    statusID = Post.objects.get(id=post_id).status_id
+    status_info =  Status.objects.filter(id=statusID).first()
+    burden_val+= float(status_info.burden.replace('$', ''))
+    privacy_loss_val+= float(status_info.PrivacyLoss.replace('$', ''))
+    return round((burden_val),2),round((privacy_loss_val),2)
