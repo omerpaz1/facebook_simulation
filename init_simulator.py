@@ -3,7 +3,7 @@ import sys
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.models import Post,Status,Friends,Friend_req,Round,Ready,Log,WorkersInfo,Score,inEndScreen,benefitRounds
+from facebook.models import Post,Status,Friends,Friend_req,Round,Ready,Log,WorkersInfo,Score,inEndScreen,benefitRounds2
 from users.models import Profile
 from django.contrib.auth.models import User
 from users.models import AllLogin,Users_free
@@ -60,10 +60,10 @@ def init_friends():
 # must do first after change db!
 def init_benefitRounds():
     allusers = User.objects.all()
-    benefitRounds.objects.all().delete()
+    benefitRounds2.objects.all().delete()
     for i in users:
         user = allusers.filter(username=i).first()
-        f = benefitRounds(id_user=user.id,round_1=[],round_2=[],round_3=[],round_4=[],round_5=[],round_6=[],round_7=[],round_8=[],round_9=[],round_10=[],round_11=[],round_12=[],round_13=[],round_14=[],round_15=[])
+        f = benefitRounds2(id_user=user.id,round_1=[],round_2=[],round_3=[],round_4=[],round_5=[],round_6=[],round_7=[],round_8=[],round_9=[],round_10=[],round_11=[],round_12=[],round_13=[],round_14=[],round_15=[])
         f.save()
 
 # must do first after change db!
@@ -91,7 +91,7 @@ def init_users_free():
     for i in allusers:
         if i.id != agent_id and i.id != adminUser:
             user = allusers.filter(username=i).first()
-            f = Users_free(user_id=user.id,worker_id=None)
+            f = Users_free(user_id=user.id)
             f.save()
 
 def init_status():
@@ -105,7 +105,7 @@ def delete_workers_alocate():
     allusers = User.objects.all()
     for i in range(3,len(users)+2):
         user = Users_free.objects.filter(user_id=i).first()
-        user.worker_id = None
+        user.worker_id = "None"
         user.save() 
 
 
@@ -128,13 +128,8 @@ def delete_friends():
 
     # friends1.myfriends.append(1) # omerpaz
     friends2.myfriends.append(2)
-    friends2.myfriends.append(3)
-    friends2.myfriends.append(4)
     friends3.myfriends.append(3)
-    friends3.myfriends.append(2)
-    friends3.myfriends.append(4)
     friends4.myfriends.append(4)
-    friends4.myfriends.append(3)
     friends5.myfriends.append(5)
     friends6.myfriends.append(6)
     friends7.myfriends.append(7)
@@ -212,8 +207,8 @@ if __name__ == "__main__":
     init_benefitRounds()
     init_users_score()
     '''
-    init DB for next simulation.
-    '''
+    # init DB for next simulation.
+    # '''
     delete_all_rounds()
     delete_all_posts()    
     delete_all_likes()
@@ -222,12 +217,11 @@ if __name__ == "__main__":
     delete_workers_alocate()
     logout_all()
     unReady_all()   
-    delete_inEndScreen()
 
 
-    '''
-    only if you dont need anymore the data from the workers and the LOG.
+    # '''
+    # only if you dont need anymore the data from the workers and the LOG.
 
-    '''
+    # '''
     delete_operation_info()
     delete_workers_info()

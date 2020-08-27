@@ -37,10 +37,9 @@
 </form>
 
 
-
+{% for post in posts %}
 {% for f in friends %}
-  {% for post in posts %}
-    {% if post.username_id == f %}
+    <!-- {% if post.username_id == f %} -->
 <div class="card mb-3"  style="width: 35rem">
         <article class="media content-section">
           <img class="rounded-circle article-img" src="{{ post.username.profile.image.url }}">
@@ -79,7 +78,7 @@
 
 </div>
 </div>
-        {%endif%}
+        <!-- {%endif%} -->
     {% endfor %}
   {% endfor %}
 

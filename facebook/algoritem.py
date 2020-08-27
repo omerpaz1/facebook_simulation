@@ -1,7 +1,7 @@
 from .models import *
 import random
 from properties import _benefit,_burden,_privacy_loss,total_rounds
-from .models import benefitRounds,Round,Status,Post
+from .models import Round,Status,Post,benefitRounds2
 import threading
 
 LC = 10
@@ -98,12 +98,13 @@ def likes_on_LC(user_id,like_post):
     user_no_like_per_round = {}
 
     LC_rounds = get_LC_rounds() # get the current rounds acording the LC
-
     if like_post == True:
         for r_i in LC_rounds:
             for l_i in r_i.likes_id:
                 if user_id == get_user_like_id(l_i):
-                    user_likes_per_round.update({get_post_like_id(l_i) : r_i.round_number})
+                    for j in LC_rounds:
+                        if get_post_like_id(l_i) in j.posts_id:
+                            user_likes_per_round.update({get_post_like_id(l_i) : r_i.round_number})
         return user_likes_per_round        
     if like_post == False:
         user_friends = Friends.objects.filter(userid_id=user_id).first().myfriends    
@@ -158,15 +159,17 @@ def get_LC_rounds():
     all_rounds = Round.objects.all()
     current_round = Round.objects.filter(round_number=len(all_rounds)).first()
     count_round = current_round.round_number
-    if count_round < LC:  # 5 < 5? 
-        start_LC = 1
+    if count_round <= LC:  # 11 <= 10? 
+        start_LC = 1  # 2 - 11 (11-1)
     else:
-        start_LC = count_round+1 - LC
+        start_LC = count_round - LC
     end_LC = count_round
     # get the current round start and end for the right LC rounds.
-    start_round_LC = Round.objects.filter(round_number=(start_LC)).first()
+    if start_LC == 0:
+        start_round_LC = Round.objects.filter(round_number=(start_LC)+1).first()
+    else:
+        start_round_LC = Round.objects.filter(round_number=(start_LC)).first()
     end_round_LC = Round.objects.filter(round_number=(end_LC)).first()
-
     begin = start_round_LC.round_number
     end = end_round_LC.round_number
     LC_rounds = get_the_LC_rounds(begin,end)
@@ -191,7 +194,9 @@ def cal_prob(no_likes_LC,likes_LC):
         posted_round = get_post_round(post_like)
         liked_round = likes_LC[post_like]
         # LL not negative cuse like_round must be min 1 cuse no possible like and post i the same round
+        print(liked_round,posted_round)
         LL = liked_round - posted_round
+        print(LL)
         # random number between [0,1]
         random_num = random.uniform(0,1)
         random_num = float('{0:.1f}'.format(random.uniform(0,1)))
@@ -234,6 +239,9 @@ def getOptionalLikePosts(user_id,current_posts):
         if key in currentPostsOnFeed:
             if value == -1:
                 post = Post.objects.filter(id=key).first()
+                post_i_liked = post.likes.filter(id=user_id).values_list('likes', flat=True).first()
+                if post_i_liked != None:
+                    continue
                 status =  Status.objects.filter(id=post.status_id).first()
                 if status.has_link:
                     Optional_UN_SAFE_LikePostsList.append(key)
@@ -253,8 +261,8 @@ def getPeopleMayKnow(user_id):
     for _id in all_users:
         if _id != user_id:
             friends_req = list(Friend_req.objects.filter(userid_id=_id).first().myfriends_req)
-            userFriends = list(Friends.objects.filter(userid_id=_id).first().myfriends)
-            if user_id not in friends_req and user_id not in userFriends:
+            userFriends = list(Friends.objects.filter(userid_id=user_id).first().myfriends)
+            if user_id not in friends_req and _id not in userFriends:
                 PeopleMayKnow.append(_id)
 
     my_friends_req = getFriendsRequest(user_id)
@@ -293,7 +301,7 @@ def getIdPosts(round_posts):
 '------------------------- Score ---------------------'
 
 def getUserByRound(argument,postUserID,PostID): 
-    userBene = benefitRounds.objects.filter(id_user=postUserID).first()
+    userBene = benefitRounds2.objects.filter(id_user=postUserID).first()
     if argument == 1:
         userBene.round_1.append(PostID)
         userBene.save()
@@ -372,14 +380,12 @@ def UpDateScore(user_id,CurrentPostsOnRound):
     for p in CurrentPostsOnRound:
         roundNumber = int(len(Round.objects.all()))
         post = Post.objects.filter(id=p).first()
-        print(f"post.username_id {post.username_id} != {user_id} ?")
         if post.username_id != user_id:
-            print(f"post.username_id {post.username_id} != {user_id} ?")
             getUserByRound(roundNumber,post.username_id,p)
 
 
 def getRoundList(argument,postUserID): 
-    userBene = benefitRounds.objects.filter(id_user=postUserID).first()
+    userBene = benefitRounds2.objects.filter(id_user=postUserID).first()
     dic = {
     1:userBene.round_1,
     2: userBene.round_2,
@@ -399,18 +405,6 @@ def getRoundList(argument,postUserID):
     }
     return dic.get(argument)
 
-# def UpDateScore(user_id,CurrentPostsOnRound):
-#     i = 1
-#     for p in CurrentPostsOnRound:
-#         post = Post.objects.filter(id=p).first()
-#         print(f"post.username_id {post.username_id} != {user_id} ?")
-#         if post.username_id != user_id:
-#             user_score = Score.objects.filter(id_user=post.username_id).first()
-#             print(f'before benfit = {user_score.benefit}')
-#             user_score.benefit+=1
-#             print(f'after benfit = {user_score.benefit}')
-#             i+=1
-#             user_score.save()
 
 '''
 this function will get the user that need to update heis score by showing heis post on the feed.
@@ -432,9 +426,9 @@ def UpdateScoreStatic(userID_ToUpdate):
                 userScore.burden = userScore.burden + burden_val
                 userScore.privacy_loss = userScore.privacy_loss + privacy_loss_val
             elif i.code_operation == "AF":
-                userScore.burden = userScore.burden + _burden
+                userScore.burden = userScore.burden + 0
             elif i.code_operation == "OF":
-                userScore.burden = userScore.burden + _burden
+                userScore.burden = userScore.burden + 0
             elif i.code_operation == "SL":
                 burden_val,privacy_loss_val = UpDateScoreForLikes(i.post_id)
                 userScore.burden = userScore.burden + burden_val
@@ -445,8 +439,8 @@ def UpdateScoreStatic(userID_ToUpdate):
                 userScore.privacy_loss = userScore.privacy_loss + privacy_loss_val
 
             userScore.benefit = UpdateScoreForPosts(i.id_user)
-    userScore.final_score = userScore.final_score + userScore.privacy_loss + userScore.burden + userScore.benefit
-        
+    userScore.final_score = userScore.burden + userScore.benefit - userScore.privacy_loss
+    print(f"userScore.privacy_loss = {userScore.privacy_loss}, userScore.burden = {userScore.burden} , userScore.benefit = {userScore.benefit}")
     userScore.save()
 
 def UpdateScoreForPosts(user_id):
@@ -454,7 +448,7 @@ def UpdateScoreForPosts(user_id):
     burden_val = 0
     privacy_loss_val = 0
 
-    beneUsers = benefitRounds.objects.all()
+    beneUsers = benefitRounds2.objects.all()
     for i in range(1,total_rounds+1):
         array = getRoundList(i,user_id)
         if array:
@@ -471,6 +465,8 @@ def UpDateScoreForLikes(post_id):
 
     statusID = Post.objects.get(id=post_id).status_id
     status_info =  Status.objects.filter(id=statusID).first()
-    burden_val+= float(status_info.burden.replace('$', ''))
-    privacy_loss_val+= float(status_info.PrivacyLoss.replace('$', ''))
+    burden_val = float(status_info.burden.replace('$', ''))
+    privacy_loss_val = float(status_info.PrivacyLoss.replace('$', ''))
     return round((burden_val),2),round((privacy_loss_val),2)
+
+    0

@@ -16,6 +16,7 @@ dic = {
         4 : "facebookC1234",
         5 : "facebookD1234",
         6 : "facebookE1234",
+        7 : "facebookF1234",
 
 }
 
@@ -35,7 +36,7 @@ def pull_userPass(request):
     if request.method == "POST":
         try:
             worker_id = request.POST.get('Worker_ID',False) 
-            username , user_id, password , to_alocate = get_info(int(worker_id))
+            username , user_id, password , to_alocate = get_info(str(worker_id))
             is_valid = False
         except:
             username = None
@@ -65,7 +66,7 @@ def get_info(worker_id):
     userid = -1
     to_alocate = False
     for i in Users_f:
-        if worker_id == i.worker_id:
+        if str(worker_id) == i.worker_id:
             userid = i.user_id
             pass_user = dic.get(userid) 
             username = allusers.filter(id=userid).first()
@@ -74,7 +75,7 @@ def get_info(worker_id):
 
     if userid == -1:
         for i in Users_f:
-            if i.worker_id == None:
+            if i.worker_id == "None":
                 alocate_user_id = i.user_id
                 pass_user = dic.get(alocate_user_id) 
                 username = allusers.filter(id=alocate_user_id).first()

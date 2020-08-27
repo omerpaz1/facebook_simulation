@@ -3,7 +3,7 @@ import django
 import sys
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.views import addfriend,inEndScreen,confirm_friends,like_post_Agent,home_Agent,log,create_post_Agent,ready
+from facebook.views import addfriend,inEndScreen,confirm_friends,like_post_Agent,home_Agent,log,create_post_Agent,ready,Round
 import time
 from django.contrib.auth.models import User
 from facebook.models import Post,Status,Friends,Friend_req,Ready
@@ -149,7 +149,7 @@ def PickMove(Possible_Operators):
         if j is random_num:
             MovePicked = move
         j+=1
-    return "P"
+    return MovePicked
 
 
 '''
@@ -217,8 +217,8 @@ if(DEBUG):
     print("Create Post in Create post page")
 
 # Create The First Round!
-current_posts = algo.Post_on_feed(agent.id)
-
+new_round = Round(round_number=len(Round.objects.all())+1,posts_id=[],likes_id=[])
+new_round.save()
 time.sleep(2)
 current_path = site_path+'create_post'
 StatusToPost = getStatusToPost()
@@ -236,7 +236,7 @@ current_path = site_path+'ready'
 AgentRequest = MyRequest(method='GET',path=current_path)
 
 
-First_Possible_Operators = Get_Possible_Operators(userid,current_posts)
+# First_Possible_Operators = Get_Possible_Operators(userid,current_posts)
 users_ready = set(Ready.objects.values_list('user_id', flat=True))
 num_round = 1
 while(num_round != total_rounds):
@@ -252,18 +252,9 @@ while(num_round != total_rounds):
     '''
     Do Here Algoritem and And Send a Request to the operation.
     '''
-    # if num_round+1 == total_rounds:
-    #     while(len(users_ready) < Users_num-1):
-    #         users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    #         num_round+=1
-    #     break
     current_posts = algo.Post_on_feed(agent.id)
     
-    if First_Possible_Operators is not None:
-        Possible_Operators = First_Possible_Operators
-        First_Possible_Operators = None
-    else:
-        Possible_Operators = Get_Possible_Operators(userid,current_posts)
+    Possible_Operators = Get_Possible_Operators(userid,current_posts)
     print("Possible_Operators For The Current Round:\n")
     print(Possible_Operators)
     print('\n')
@@ -282,7 +273,15 @@ while(num_round != total_rounds):
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
     print('----------------  # End Round----------------\n')
 
+Ready.objects.create(user=AgentRequest.user) #create new Ready User
+users_ready = set(Ready.objects.values_list('user_id', flat=True))
+
+while(len(users_ready) != Users_num):        
+        users_ready = set(Ready.objects.values_list('user_id', flat=True))
+
+time.sleep(5)
+Ready.objects.all().delete()    
+readyList = []
 
 algo.UpdateScoreStatic(userid)
-time.sleep(10)
 print("Simulrator Finished")

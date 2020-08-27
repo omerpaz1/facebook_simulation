@@ -185,7 +185,7 @@ class Status(models.Model):
 class Post(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.ForeignKey(Status, on_delete=models.CASCADE)
-    date_posted = models.DateTimeField(default=timezone.now)
+    date_posted = models.TimeField(default=timezone.now)
     likes = models.ManyToManyField(User,related_name='likes',blank=True)
     
     def __str__(self):
@@ -240,7 +240,7 @@ class Score(models.Model):
         return str(self.id_user) + ': ' + str(self.burden) + ': ' + str(self.benefit)+ ': ' + str(self.privacy_loss)+ ': ' + str(self.final_score)
 
 
-class benefitRounds(models.Model):
+class benefitRounds2(models.Model):
     id_user = models.IntegerField(User)
     round_1 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
     round_2 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)

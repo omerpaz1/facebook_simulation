@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from .models import Post,Status,Friends,Friend_req,Round,WorkersInfo,Log,Ready,inEndScreen
+from .models import Post,Status,Friends,Friend_req,Round,WorkersInfo,Log,Ready,inEndScreen,Score
 from users.models import AllLogin
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
@@ -30,7 +30,7 @@ def ready(request):
 
    
     readyList = []
-    time.sleep(5)
+    # time.sleep(5)
     return redirect('/home')
 
 
@@ -57,6 +57,7 @@ def waiting(request):
     
 @login_required
 def end(request):
+    final_score = Score.objects.filter(id_user=request.user.id).first().final_score
     if request.method == 'POST':
         worker_id = request.POST.get('Worker_ID',False) 
         free_comments  = request.POST.get('Free_Comments',False) 
@@ -66,17 +67,26 @@ def end(request):
         w.save()
 
         return redirect('/logout')
-    return render(request,'facebook/end.html')
+    context = {
+            'final_score' : final_score,
+
+    }
+    return render(request,'facebook/end.html',context)
+
+
+def sortbyTime(e):
+    return e.date_posted
 
 
 @login_required
 def home(request):
-    if len(Round.objects.all()) == total_rounds:
+    if len(Round.objects.all())-1 == total_rounds:
         algo.UpdateScoreStatic(request.user.id)
         Ready.objects.create(user=request.user) #create new Ready User
         return render(request,'facebook/end.html')
 
     posts = algo.Post_on_feed(request.user.id)
+    posts.sort(reverse=True,key=sortbyTime)
     user_liked = posts_user_liked(request.user.id)
     people_may_know = helper(request)
     list_friend_req = myreqest(request.user.id)
@@ -139,6 +149,11 @@ def like_post(request):
             log(request.user.id,"UL",post_like_id.id)
         else:
             log(request.user.id,"SL",post_like_id.id)
+
+        if len(Round.objects.all()) == total_rounds:
+            Ready.objects.create(user=request.user) #create new Ready User
+            algo.UpdateScoreStatic(request.user.id)
+            return redirect('/end')
     return redirect('/ready')
 
 
@@ -152,6 +167,12 @@ def manage_friends(request,operation,pk):
         addfriend(request,user_requsted)
     if operation == 'friend_confirm':
         confirm_friends(request,user_requsted)
+
+    if len(Round.objects.all()) == total_rounds:
+        Ready.objects.create(user=request.user) #create new Ready User
+        algo.UpdateScoreStatic(request.user.id)
+        return redirect('/end')
+        
     return redirect('/ready')
 
 # function that help manage the "people you may know"
@@ -176,6 +197,13 @@ def addfriend(request ,user_requsted):
         current_user_table.myfriends_req.remove(user_requsted.pk)
         current_user_table.save()
         # log(request.user.id,"AF-OffringSameRound")
+        current_user_table = Friends.objects.filter(userid_id=request.user.id).first()
+        current_user_table.myfriends.append(user_requsted.pk)
+        user_confirm = Friends.objects.filter(userid_id=user_requsted.pk).first()
+        user_confirm.myfriends.append(request.user.id)
+
+        current_user_table.save()
+        user_confirm.save()
     else:
         user_requsted = Friend_req.objects.filter(userid_id=user_requsted.id).first()
         if current_user.userid_id not in user_requsted.myfriends_req:
