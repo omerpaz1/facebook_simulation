@@ -210,6 +210,7 @@ def addfriend(request ,user_requsted):
             user_requsted.myfriends_req.append(request.user.id)
             user_requsted.save()
     log(request.user.id,"OF")
+    #sads
 
 # comfirm both friend in the tables
 def confirm_friends(request,user_requsted):
