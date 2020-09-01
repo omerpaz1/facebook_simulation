@@ -3,6 +3,7 @@ import random
 from properties import _benefit,_burden,_privacy_loss,total_rounds
 from .models import Round,Status,Post,benefitRounds2
 import threading
+from . import views
 
 LC = 10
 adminUser = 1 # omerpaz user
@@ -165,10 +166,8 @@ def get_LC_rounds():
         start_LC = count_round - LC
     end_LC = count_round
     # get the current round start and end for the right LC rounds.
-    if start_LC == 0:
-        start_round_LC = Round.objects.filter(round_number=(start_LC)+1).first()
-    else:
-        start_round_LC = Round.objects.filter(round_number=(start_LC)).first()
+
+    start_round_LC = Round.objects.filter(round_number=(start_LC)).first()
     end_round_LC = Round.objects.filter(round_number=(end_LC)).first()
     begin = start_round_LC.round_number
     end = end_round_LC.round_number
@@ -194,9 +193,13 @@ def cal_prob(no_likes_LC,likes_LC):
         posted_round = get_post_round(post_like)
         liked_round = likes_LC[post_like]
         # LL not negative cuse like_round must be min 1 cuse no possible like and post i the same round
-        print(liked_round,posted_round)
-        LL = liked_round - posted_round
-        print(LL)
+        try:
+            print(f"here",liked_round,posted_round)
+            LL = liked_round - posted_round
+            print(LL)
+        except:
+            views.log(3,"PROB",123)
+        
         # random number between [0,1]
         random_num = random.uniform(0,1)
         random_num = float('{0:.1f}'.format(random.uniform(0,1)))
@@ -426,9 +429,9 @@ def UpdateScoreStatic(userID_ToUpdate):
                 userScore.burden = userScore.burden + burden_val
                 userScore.privacy_loss = userScore.privacy_loss + privacy_loss_val
             elif i.code_operation == "AF":
-                userScore.burden = userScore.burden + 0
+                userScore.burden = userScore.burden + 0.6
             elif i.code_operation == "OF":
-                userScore.burden = userScore.burden + 0
+                userScore.burden = userScore.burden + 1.2
             elif i.code_operation == "SL":
                 burden_val,privacy_loss_val = UpDateScoreForLikes(i.post_id)
                 userScore.burden = userScore.burden + burden_val

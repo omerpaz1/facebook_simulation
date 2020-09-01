@@ -28,10 +28,26 @@ def ready(request):
     while(len(readyList) != Users_num):
         readyList = set(Ready.objects.values_list('user_id', flat=True))
 
-   
     readyList = []
-    # time.sleep(5)
+    time.sleep(5)
     return redirect('/home')
+
+def readyToEnd(request):
+    if len(Round.objects.all()) != total_rounds:
+        return redirect('/ready')
+        
+    readyList = set(Ready.objects.values_list('user_id', flat=True))
+    if request.user.id not in readyList:
+        Ready.objects.create(user=request.user) #create new Ready User
+        return render(request,'facebook/readyToEnd.html')
+
+    while(len(readyList) != Users_num):
+        readyList = set(Ready.objects.values_list('user_id', flat=True))
+
+    algo.UpdateScoreStatic(request.user.id)
+    readyList = []
+    time.sleep(1)
+    return redirect('/end')   
 
 
 
@@ -58,6 +74,9 @@ def waiting(request):
 @login_required
 def end(request):
     final_score = Score.objects.filter(id_user=request.user.id).first().final_score
+    context = {
+        'final_score' : final_score,
+    }
     if request.method == 'POST':
         worker_id = request.POST.get('Worker_ID',False) 
         free_comments  = request.POST.get('Free_Comments',False) 
@@ -65,12 +84,8 @@ def end(request):
         help_test_rounds  = request.POST.get('help_test_rounds',False) 
         w = WorkersInfo(worker_id=worker_id,free_comments=free_comments,clear_info=clear_info,tests_rounds_help=help_test_rounds)
         w.save()
-
         return redirect('/logout')
-    context = {
-            'final_score' : final_score,
 
-    }
     return render(request,'facebook/end.html',context)
 
 
@@ -78,13 +93,11 @@ def sortbyTime(e):
     return e.date_posted
 
 
+    
+
+
 @login_required
 def home(request):
-    if len(Round.objects.all())-1 == total_rounds:
-        algo.UpdateScoreStatic(request.user.id)
-        Ready.objects.create(user=request.user) #create new Ready User
-        return render(request,'facebook/end.html')
-
     posts = algo.Post_on_feed(request.user.id)
     posts.sort(reverse=True,key=sortbyTime)
     user_liked = posts_user_liked(request.user.id)
@@ -111,12 +124,11 @@ def home(request):
        new_post.save()
        log(request.user.id,"P",new_post.id)
        if len(Round.objects.all()) == total_rounds:
-            Ready.objects.create(user=request.user) #create new Ready User
-            algo.UpdateScoreStatic(request.user.id)
-            return redirect('/end')
+            return redirect('/readyToEnd')
        return redirect('/ready')
 
     return render(request,'facebook/feed.html',context)
+
 
 
 @login_required
@@ -151,9 +163,8 @@ def like_post(request):
             log(request.user.id,"SL",post_like_id.id)
 
         if len(Round.objects.all()) == total_rounds:
-            Ready.objects.create(user=request.user) #create new Ready User
-            algo.UpdateScoreStatic(request.user.id)
-            return redirect('/end')
+            return redirect('/readyToEnd')
+
     return redirect('/ready')
 
 
@@ -169,10 +180,8 @@ def manage_friends(request,operation,pk):
         confirm_friends(request,user_requsted)
 
     if len(Round.objects.all()) == total_rounds:
-        Ready.objects.create(user=request.user) #create new Ready User
-        algo.UpdateScoreStatic(request.user.id)
-        return redirect('/end')
-        
+        return redirect('/readyToEnd')
+
     return redirect('/ready')
 
 # function that help manage the "people you may know"

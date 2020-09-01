@@ -223,5 +223,5 @@ if __name__ == "__main__":
     # only if you dont need anymore the data from the workers and the LOG.
 
     # '''
-    delete_operation_info()
-    delete_workers_info()
+    # delete_operation_info()
+    # delete_workers_info()

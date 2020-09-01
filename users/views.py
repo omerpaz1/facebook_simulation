@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect    
 import logging
 from django.contrib.auth.signals import user_logged_in,user_logged_out,user_login_failed
+from django.contrib.auth import authenticate, login
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from .models import AllLogin,Users_free
@@ -25,8 +26,6 @@ def welcome(request):
     allusers = User.objects.all()
     Users_f = Users_free.objects.all()
     if request.method == "POST":
-        # add alert if not pull
-        # else go to login
         return redirect('/login')
     return render(request,'users/welcome.html')
 
@@ -34,23 +33,37 @@ def pull_userPass(request):
     user_pick = -1
     pass_pick = -1
     if request.method == "POST":
+
+        if request.POST.get("save_home"):
+            if user_pick != -1:
+                return redirect('/login')
         try:
             worker_id = request.POST.get('Worker_ID',False) 
-            username , user_id, password , to_alocate = get_info(str(worker_id))
-            is_valid = False
+            if len(worker_id) != 0:
+                username , user_id, password , to_alocate = get_info(str(worker_id))
+                is_valid = False
+            else:
+                username = None
+                password = None
+                to_alocate = False
+                is_valid = True                
         except:
             username = None
             password = None
             to_alocate = False
             is_valid = True
             
-
         if to_alocate == True:
             update_user = Users_free.objects.filter(user_id=user_id).first()
             update_user.worker_id = worker_id
             update_user.save()
+        
+
+
+        
     user_pick = username
     pass_pick = password
+
 
     context = {
             'user_pick' : user_pick,

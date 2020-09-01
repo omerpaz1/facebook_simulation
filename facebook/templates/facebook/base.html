@@ -1,203 +1,172 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html>
-<head>
-
+  <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
     <link rel="stylesheet" type="text/css" href="{% static 'facebook/style.css' %}">
-
     {% if title %}
-        <title>Facebook Simulation - {{title}}</title>
+    <title>Facebook Simulation - {{title}}</title>
     {% else %}
-        <title>Facebook Simulation</title>
+    <title>Facebook Simulation</title>
     {% endif %}
-</head>
-<body>
-  <header class="site-header">
-    
+  </head>
+  <body>
+    <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark fixed-top " style="background-color: #3B5998; flex-wrap: wrap;">
         <a class="navbar-brand mr-4" style="color: aliceblue;">Facebook Simulator</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
         </button>
-       <div class="collapse navbar-collapse" id="navbarResponsive">
-         <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
-           <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-             <a class="nav-link" href="index.html">
-               <i class="fa fa-fw fa-dashboard"></i>
-            </a>
-           </li>
-         </ul>
-         
-         <ul class="navbar-nav sidenav-toggler">
-          {% if user.is_authenticated %}
-          <a class="text-center" style="color: aliceblue;">Login as: {{user.username}}</a>
-          {% endif %}
-        </ul>
-        
-         <ul class="navbar-nav ml-auto">
-          {% if user.is_authenticated %}
-          <!-- <a class="nav-item nav-link" href="{% url 'facebook-home' %}">Home</a>
-          <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a> -->
-          {% else %}
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+            <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+              <a class="nav-link" href="index.html">
+              <i class="fa fa-fw fa-dashboard"></i>
+              </a>
+            </li>
+          </ul>
+          <ul class="navbar-nav sidenav-toggler">
+            {% if user.is_authenticated %}
+            <a class="text-center" style="color: aliceblue;">Login as: {{user.username}}</a>
+            {% endif %}
+          </ul>
+          <ul class="navbar-nav ml-auto">
+            {% if user.is_authenticated %}
+            <!-- <a class="nav-item nav-link" href="{% url 'facebook-home' %}">Home</a>
+              <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a> -->
+            {% else %}
             <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-          {% endif %}
-         </ul>
-       </div>
-      <div class="container" style="flex-wrap: wrap;" id="sim-progress">
-        <div class="col-12 float-none">
-          <h style="color: darkgoldenrod;">Time left to complete action</h>
-          <div class="progress-bar" style="background-color:black;">
-            <div id="progress-text"></div>
-            <div id="progress"></div>
-          </div>
-      </div>
-     </nav>
-
-        <!--                start  left bar            -->
-            <div class="row"> 
-              
-                  <div class="card mr-3" style="width: 25rem; margin-top: 1.5em; margin-left: 1.5em;">
-                  <div class="card-body">
-                    <h5 class="card-header"> <svg class="bi bi-info-circle" width="1em" height="0.8em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clip-rule="evenodd"/>
-                      <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
-                      <circle cx="8" cy="4.5" r="1"/>
-                    </svg> Quick Guide</h5>
-                    <li>The possible actions to be performed are:</li>
-                    <ol>
-                      <li>Publish a post</li>
-                      <li>Like one of your friend's posts</li>
-                      <li>Offer a friend request</li>
-                      <li>Offer a friend request</li>
-                      <li>Accept a friend request</li>
-                    </ol>
-                    <li>Only one action can be performed per round.</li>
-                    <li>You should pay attention to the time bar appearing on the top of your screen.</li>
-                    <li> If none of the above-mentioned actions were performed by the end of the round, it will be considered as the action "do nothing" was performed.</li>
-                    <li>On your "Feed" you will be presented with your and your friends' actions. Actions of participants who are not your friends will not be visible to you.</li>
-                    <li>On the right side of the screen you will see your current friend requests and people you may know (to which you are allowed to send friend requests).</li>
-                    <li>While posting a post you can choose whether to add a URL to the post or not.</li>
-                    <li>Liking your own post is not allowed.</li>
-
-                  </div>
-            </div>
-                    
-<!--            start posts-->
-                <!-- if we on the create post page!  -->
-                
-                <div class="col-md">
-                  <div class="row">
-                    {% block createpost %}
-                    {% endblock %}
-                  </div>
-                  
-                  <div class="col-md">
-                    
-                    <div class="row">
-                      {% block content%}
-                      {% endblock %}
-                    </div>
-              </div>
-
-              </div>
-              <!--            start  right bar-->
-            <div class="col"> 
-              <div class="row">
-              <div class="card" style="width: 18rem; margin-top: 1.5em;">
-                <div class="card-body">
-                  <h5 class="card-title">Friend Requests</h5>
-                  <ul class="list-group">
-                    {% if friends_requst|length > 0 %}
-                    {% for friend in friends_requst%}
-                    <form method="get" action="{% url 'manage_friends' operation='friend_confirm' pk=friend%}">
-                      {% for user in users %}
-                        {% if user.pk == friend%}
-                    <li class="list-group-item list-group-item-light">{{user.username}}
-                      {%endif%}
-                      {% endfor %}
-                      <button type="submit" class="btn-sm btn-dark float-right">Confirm</button>
-                    </li>
-                  </form>
-                    {% endfor %}
-                    {%else%}
-                    <!-- <li class="list-group-item list-group-item-light">There are no friend suggestions to confirm -->
-                    {% endif %}
-
-                  </ul>
-                </div>
-              </div>
-              <div class="card mt-3" style="width: 18rem; margin-top: 1.5em;">
-                <div class="card-body">
-                  <h5 class="card-title">People you may know</h5>
-                  <ul class="list-group">
-                    {% for people in people_my_know %}
-                    {% if people.id not in list_friend_req %}
-                    <form method="get" action="{% url 'manage_friends' operation='friend_requset' pk=people.pk %}">
-                      <li class="list-group-item list-group-item-light">{{people}}
-                        <button type="submit" id="mybtn" name='people_my_know' class="btn-sm btn-outline-info float-right"><svg class="bi bi-person-plus-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                          <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 100-6 3 3 0 000 6zm7.5-3a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-2a.5.5 0 010-1H13V5.5a.5.5 0 01.5-.5z" clip-rule="evenodd"/>
-                          <path fill-rule="evenodd" d="M13 7.5a.5.5 0 01.5-.5h2a.5.5 0 010 1H14v1.5a.5.5 0 01-1 0v-2z" clip-rule="evenodd"/>
-                          </svg>Add Friend</button>
-                     </form>
-                    {% else %}
-                    <li class="list-group-item list-group-item-light">{{people}}
-                    <button type="submit" id="mybtn" name='people_my_know ' class="btn-sm btn-outline-warning float-right">Friend requst Sent</button>
-                  </li>
-                     {% endif %}
-                    {% endfor %}
-                  </ul>
-                </div>
-              </div>
-            </div>
-              </div>
-            <!--            end  right bar-->
-
-            </div>
-      <div class="col-md-4">
-    </div>
-
+            {% endif %}
+          </ul>
         </div>
-    </div>
-                
-              
-    </header>
-    
+         <div class="container" style="flex-wrap: wrap;" id="sim-progress">
+          <div class="col-12 float-none"> 
+            <h style="color: darkgoldenrod;">Time left to complete action</h>
+            <div class="progress-bar" style="background-color:black;">
+              <div id="progress-text"></div>
+              <div id="progress"></div>
+            </div>
+          </div>
+      </nav>
+      <!--                start  left bar            -->
+      <div class="row"> 
+      <div class="card mr-3" style="width: 18rem; margin-top: 1.5em; margin-left: 1.5em;">
+      <div class="card-body">
+      <h5 class="card-header"> <svg class="bi bi-info-circle" width="1em" height="0.8em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clip-rule="evenodd"/>
+      <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
+      <circle cx="8" cy="4.5" r="1"/>
+      </svg> Quick Guide</h5>
+      <li>The possible actions to be performed are:</li>
+      <ol>
+      <li>Publish a post</li>
+      <li>Like one of your friend's posts</li>
+      <li>Offer a friend request (1.2$ Burden)</li>
+      <li>Accept a friend request (0.6$ Burden)</li>
+      </ol>
+      <li>Only one action can be performed per round.</li>
+      <li>You should pay attention to the time bar appearing on the top of your screen.</li>
+      <li> If none of the above-mentioned actions were performed by the end of the round, it will be considered as the action "do nothing" was performed.</li>
+      <li>On your "Feed" you will be presented with your and your friends' actions. Actions of participants who are not your friends will not be visible to you.</li>
+      <li>On the right side of the screen you will see your current friend requests and people you may know (to which you are allowed to send friend requests).</li>
+      <li>While posting a post you can choose whether to add a URL to the post or not.</li>
+      <li>Liking your own post is not allowed.</li>
+      </div>
+      </div>
+      <!--            start posts-->
+      <!-- if we on the create post page!  -->
+      <div class="col-md">
+      <div class="row">
+      {% block createpost %}
+      {% endblock %}
+      </div>
+      <div class="col-md">
+      <div class="row">
+      {% block content%}
+      {% endblock %}
+      </div>
+      </div>
+      </div>
+      <!--            start  right bar-->
+      <div class="col"> 
+      <div class="row ">
+      <div class="card" style="width: 18rem; margin-top: 1.5em;">
+      <div class="card-body">
+      <h5 class="card-title">Friend Requests</h5>
+      <ul class="list-group">
+      {% if friends_requst|length > 0 %}
+      {% for friend in friends_requst%}
+      <form method="get" action="{% url 'manage_friends' operation='friend_confirm' pk=friend%}">
+      {% for user in users %}
+      {% if user.pk == friend%}
+      <li class="list-group-item list-group-item-light">{{user.username}}
+      {%endif%}
+      {% endfor %}
+      <button type="submit" class="btn-sm btn-dark float-right">Confirm</button>
+      </li>
+      </form>
+      {% endfor %}
+      {%else%}
+      <!-- <li class="list-group-item list-group-item-light">There are no friend suggestions to confirm -->
+      {% endif %}
+      </ul>
+      </div>
+      <div class="card mt-3" style="width: 18rem; margin-top: 1.5em;">
+        <div class="card-body">
+        <h5 class="card-title">People you may know</h5>
+        <ul class="list-group">
+        {% for people in people_my_know %}
+        {% if people.id not in list_friend_req %}
+        <form method="get" action="{% url 'manage_friends' operation='friend_requset' pk=people.pk %}">
+        <li class="list-group-item list-group-item-light">{{people}}
+        <button type="submit" id="mybtn" name='people_my_know' class="btn-sm btn-outline-info float-right"><svg class="bi bi-person-plus-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 100-6 3 3 0 000 6zm7.5-3a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-2a.5.5 0 010-1H13V5.5a.5.5 0 01.5-.5z" clip-rule="evenodd"/>
+        <path fill-rule="evenodd" d="M13 7.5a.5.5 0 01.5-.5h2a.5.5 0 010 1H14v1.5a.5.5 0 01-1 0v-2z" clip-rule="evenodd"/>
+        </svg>Add Friend</button>
+        </form>
+        {% else %}
+        <li class="list-group-item list-group-item-light">{{people}}
+        <button type="submit" id="mybtn" name='people_my_know ' class="btn-sm btn-outline-warning float-right">Friend requst Sent</button>
+        </li>
+        {% endif %}
+        {% endfor %}
+        </ul>
+        </div>
+        <!--            end  right bar-->
+      </div>
+      </div>
 
+      <div class="col-md-4"></div>
+    </header>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    
-  
     <script>
-
       // Timer for the progressbar page      
-
-      flag_progress_bar = false; // for debug mode - put it false
-      Time_progress_bar = 1200 // 1200 = 2 min
-
+      
+      flag_progress_bar = true; // for debug mode - put it false
+      Time_progress_bar = 1200   // 1200 = 2 min
+      
       // Timer for the waiting page      
-
+      
       flag_waiting = true; // for debug mode - put it false
       Time_waiting = 40
-
+      
       // Timer for the ready page      
-
+      
       flag_ready = true; // for debug mode - put it false
-      Time_ready = 40
-
-
+      Time_ready = 10
+      
+      flag_readyToEnd = true; // for debug mode - put it false
+      Time_readyToEnd = 10     
       // implments
-
+      
       if(flag_progress_bar){
       var progressBar = $('.progress');
       var progressNumber = 0;
@@ -206,78 +175,94 @@
       }else if(location =='http://34.89.133.90/home/'){
         StartBarProgres();
       }
-    }
-
-    function StartBarProgres() {
-    var elem = document.getElementById("progress"); 
-    var width = 0;
-    var id = setInterval(frame, Time_progress_bar);
-    function frame() {
+      }
+      
+      function StartBarProgres() {
+      var elem = document.getElementById("progress"); 
+      var width = 0;
+      var id = setInterval(frame, Time_progress_bar);
+      function frame() {
         if (width >= 100) {
             clearInterval(id);
-            $(location).prop('href','/ready');
-
+            $(location).prop('href','/readyToEnd');
+      
         } else {
             width++; 
             elem.style.width = width + '%'; 
             document.getElementById('progress-text').innerHTML = width+ "%"
         }
-    }
-}
-
-
+      }
+      }
+      
+      
       if(flag_waiting){
       if(location =='http://34.89.133.90/waiting/'){
         WaitFun();            
       }
-    }
-    function WaitFun() {
-    var width = 0;
-    var id = setInterval(frame, Time_waiting);
-    function frame() {
+      }
+      function WaitFun() {
+      var width = 0;
+      var id = setInterval(frame, Time_waiting);
+      function frame() {
         if (width >= Time_waiting) {
             clearInterval(id);  
             $(location).prop('href','/waiting');
-
+      
         } else {
             width++; 
         }
-    }
-}
-
+      }
+      }
+      
       if(flag_ready){
       if(location =='http://34.89.133.90/ready/'){
         ReadyFun();            
       }
-    }
-    function ReadyFun() {
-    var width = 0;
-    var id = setInterval(frame, Time_ready);
-    function frame() {
+      }
+      function ReadyFun() {
+      var width = 0;
+      var id = setInterval(frame, Time_ready);
+      function frame() {
         if (width >= Time_ready) {
             clearInterval(id);  
             $(location).prop('href','/ready');
-
+      
         } else {
             width++; 
         }
-    }
-}
+      }
+      }
 
-
-
-$( function( )
-    	{
-    		$( "[data-toggle='popover'" ).popover( );
-    	} );
-
-    	$( ".popover-dismiss" ).popover(
-    	{
-    		trigger: "focus"
-    	} );
-
-</script>
-
-
-</body>
+      if(flag_readyToEnd){
+      if(location =='http://34.89.133.90/readyToEnd/'){
+        ReadyToEndFun();            
+      }
+      }
+      function ReadyToEndFun() {
+      var width = 0;
+      var id = setInterval(frame, Time_ready);
+      function frame() {
+        if (width >= Time_readyToEnd) {
+            clearInterval(id);  
+            $(location).prop('href','/readyToEnd');
+      
+        } else {
+            width++; 
+        }
+      }
+      }    
+      
+      
+      $( function( )
+      {
+      $( "[data-toggle='popover'" ).popover( );
+      } );
+      
+      $( ".popover-dismiss" ).popover(
+      {
+      trigger: "focus"
+      } );
+      
+    </script>
+  </body>
 </html>

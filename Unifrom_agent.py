@@ -217,8 +217,7 @@ if(DEBUG):
     print("Create Post in Create post page")
 
 # Create The First Round!
-new_round = Round(round_number=len(Round.objects.all())+1,posts_id=[],likes_id=[])
-new_round.save()
+algo.Post_on_feed(agent.id)
 time.sleep(2)
 current_path = site_path+'create_post'
 StatusToPost = getStatusToPost()
@@ -246,13 +245,13 @@ while(num_round != total_rounds):
             print("Join to Ready")
             Ready.objects.create(user=AgentRequest.user) #create new Ready User
     print("Out of ready, Make Move!")
-    time.sleep(5)
+    current_posts = algo.Post_on_feed(agent.id)
+    time.sleep(2)
     Ready.objects.all().delete()    
     readyList = []
     '''
     Do Here Algoritem and And Send a Request to the operation.
     '''
-    current_posts = algo.Post_on_feed(agent.id)
     
     Possible_Operators = Get_Possible_Operators(userid,current_posts)
     print("Possible_Operators For The Current Round:\n")

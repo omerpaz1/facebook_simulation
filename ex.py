@@ -17,15 +17,10 @@ def sortbyTime(e):
     return e.date_posted
 
 if __name__ == '__main__':
-    #final score = -1.33227e-15
-    # priavcy loss = 7.4
-    # benefits = 2.1
-    # burden = 5.3
-    ans = 0
-    userScore = Score.objects.filter(id_user=3).first()
-    userScore.privacy_loss = 7.4
-    userScore.benefit = 2.1
-    userScore.burden = 5.3
-    userScore.save()
-    algo.UpdateScoreStatic(3)
-    
+    # User = User.objects.filter(id=1).first()
+    # # AllLogin.objects.filter(user=User).delete()
+
+    #                 worker_id = request.POST.get('Worker_ID',False)
+    #             UserId = Users_free.objects.filter(worker_id=worker_id).first().user_id
+    #             UserF = User.objects.filter(id=UserId).first()
+    #             login(request,UserF)

@@ -56,26 +56,27 @@
               <h10 class="text-danger">* invalid input!</h10>
             {% endif %}
           </div>
-          <button type="submit"   name='pull' class="btn btn-outline-secondary" >Submit</button>
-        </form>
+          <button type="submit" name='pull' value='pull_val' class="btn btn-outline-secondary" >Submit</button>
+          <h2 class="text-info">Your Login Information:</h3>
+            <h4>Username: <span class="badge badge-secondary"> {{user_pick}} </span></h3>
+            <h4>Password: <span class="badge badge-secondary"> {{pass_pick}} </span></h3>
+            <h10 class="text-warning">* Please remeber the username and the password for the next page</h10>
+            <br>
+            <br>
+
+            <button type="submit" name="save_home" class="btn btn-primary" value="Save&Home">&nbsp;Save&Home</button>
+          </form>
       </div>
     </div>
-                <div class="col-md" style="margin-left: 27em;">
+                <!-- <div class="col-md" style="margin-left: 27em;">
                   <div class="row">
                     <form action="{% url 'welcome' %}" method="POST">
                       {% csrf_token %}
-                      <h2 class="text-info">Your Login Information:</h3>
-                      <h4>Username: <span class="badge badge-secondary"> {{user_pick}} </span></h3>
-                      <h4>Password: <span class="badge badge-secondary"> {{pass_pick}} </span></h3>
-                      <h10 class="text-warning">* Please remeber the username and the password for the next page</h10>
-                      <br>
-                      <br>
-
-                      <button type="submit" name="goToLogin" class="btn btn-primary">Login And Start</button>
+        
                     </form>
                   </div>
                 </div>
-            </div>
+            </div> -->
 
                 
               
