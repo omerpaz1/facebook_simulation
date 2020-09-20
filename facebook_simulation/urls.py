@@ -23,7 +23,7 @@ from django.conf.urls import url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^pull/$', uViews.pull_userPass, name='pull_userPass'),
+    url(r'^info/$', uViews.info, name='info'),
     path('', uViews.welcome, name='welcome'),
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('',include('facebook.urls')), # Navigate to create post first!

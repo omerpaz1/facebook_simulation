@@ -1,6 +1,6 @@
 from .models import *
 import random
-from properties import AF_COST,OF_COST,UL_Burden,UL_PS,SL_Burden,SL_PS,total_rounds
+from properties import _benefit,_burden,_privacy_loss,total_rounds
 from .models import Round,Status,Post,benefitRounds2
 import threading
 from . import views
@@ -103,13 +103,12 @@ def likes_on_LC(user_id,like_post):
         for r_i in LC_rounds:
             for l_i in r_i.likes_id:
                 member_id = get_user_like_id(l_i)
-                if member_id in user_friends and member_id != user_id:
+                if member_id in user_friends:
                     for j in LC_rounds:
                         if get_post_like_id(l_i) in j.posts_id:
                             user_likes_per_round.update({get_post_like_id(l_i) : r_i.round_number})
         return user_likes_per_round        
     if like_post == False:
-        user_friends = Friends.objects.filter(userid_id=user_id).first().myfriends    
         for r_i in LC_rounds:
             for f_i in user_friends:
                 posts_f_i = list(Post.objects.values_list('id', flat=True).filter(username_id=f_i))
@@ -179,14 +178,11 @@ def get_LC_rounds():
 def getMaxLL(likes_LC,no_likes_LC,friend_id):
     minLL = 1000
     tempPosts = []
-    atLestOneLike = False
-    all_posts = Post.objects.all()
     for post_like in likes_LC:
         all_likes = Post.likes.through.objects.all()
 
         for like in all_likes:
             if like.post_id == post_like and like.user_id == friend_id:
-                atLestOneLike = True
                 tempPosts.append(post_like)
         
         for p in tempPosts:
@@ -197,14 +193,12 @@ def getMaxLL(likes_LC,no_likes_LC,friend_id):
             except:
                 pass
             if LL < minLL:
+                print(liked_round-1,posted_round-1)
+                print(p)
+                print(f'minLL was:{minLL}')
                 minLL = LL
-
-    for i in no_likes_LC:
-        post_user_id = Post.objects.filter(id=i).first().username_id
-        if post_user_id == friend_id:
-            tempPosts.append(i) 
-    
-    return minLL, tempPosts , atLestOneLike
+                print(f'minLL now:{minLL}')
+    return minLL, tempPosts
 
 
 def cal_prob(no_likes_LC,likes_LC,user_friends):
@@ -215,32 +209,26 @@ def cal_prob(no_likes_LC,likes_LC,user_friends):
     
     # for the post in the LC.
     for friend_id in user_friends:
-        LL, tempPosts , atLestOneLike = getMaxLL(likes_LC,no_likes_LC,friend_id)
 
-        if not atLestOneLike:
-            for post_like in tempPosts:
-                random_num = random.uniform(0,1)
-                random_num = float('{0:.1f}'.format(random.uniform(0,1)))
-                if random_num <= BETWEEN_5_TO_LC: # prob of 0.1
-                    posts_ans.append(post_no_liked)
-        else:
-            for post_like in tempPosts:
-                # random number between [0,1]
-                random_num = random.uniform(0,1)
-                random_num = float('{0:.1f}'.format(random.uniform(0,1)))
-                if LL in RANGE_PROB_BETWEEN_1_TO_2:
-                    if random_num <= BETWEEN_1_TO_2:
-                        posts_ans.append(post_like)
-                        # print(f' LL = {LL} , random_num <= BETWEEN_1_TO_2 -> {random_num}')
-                elif LL in RANGE_PROB_BETWEEN_3_TO_5:
-                    if random_num <= BETWEEN_3_TO_5:
-                        posts_ans.append(post_like)
-                        # print(f' LL = {LL} , random_num <= BETWEEN_3_TO_5 -> {random_num}')
-                elif LL in RANGE_PROB_BETWEEN_5_TO_LC:
-                    if random_num <= BETWEEN_5_TO_LC:
-                        posts_ans.append(post_like)
-                        # print(f' LL = {LL} , random_num <= RANGE_PROB_BETWEEN_5_TO_LC -> {random_num}')
-    print(f"Posts picks = {posts_ans}\n")
+        LL, tempPosts  = getMaxLL(likes_LC,no_likes_LC,friend_id)
+
+        for post_like in tempPosts:
+            # random number between [0,1]
+            random_num = random.uniform(0,1)
+            random_num = float('{0:.1f}'.format(random.uniform(0,1)))
+            if LL in RANGE_PROB_BETWEEN_1_TO_2:
+                if random_num <= BETWEEN_1_TO_2:
+                    posts_ans.append(post_like)
+                    # print(f' LL = {LL} , random_num <= BETWEEN_1_TO_2 -> {random_num}')
+            elif LL in RANGE_PROB_BETWEEN_3_TO_5:
+                if random_num <= BETWEEN_3_TO_5:
+                    posts_ans.append(post_like)
+                    # print(f' LL = {LL} , random_num <= BETWEEN_3_TO_5 -> {random_num}')
+            elif LL in RANGE_PROB_BETWEEN_5_TO_LC:
+                if random_num <= BETWEEN_5_TO_LC:
+                    posts_ans.append(post_like)
+                    # print(f' LL = {LL} , random_num <= RANGE_PROB_BETWEEN_5_TO_LC -> {random_num}')
+        print(f"Posts picks = {posts_ans}\n")
     return posts_ans
 
 # covert from post id to post object
@@ -454,19 +442,21 @@ def UpdateScoreStatic(userID_ToUpdate):
                 userScore.burden = userScore.burden + burden_val
                 userScore.privacy_loss = userScore.privacy_loss + privacy_loss_val
             elif i.code_operation == "AF":
-                userScore.burden = userScore.burden + AF_COST
+                userScore.burden = userScore.burden + 0.6
             elif i.code_operation == "OF":
-                userScore.burden = userScore.burden + OF_COST
+                userScore.burden = userScore.burden + 1.2
             elif i.code_operation == "SL":
-                userScore.burden = userScore.burden + SL_Burden
-                userScore.privacy_loss = userScore.privacy_loss + SL_PS
+                burden_val,privacy_loss_val = UpDateScoreForLikes(i.post_id)
+                userScore.burden = userScore.burden + burden_val
+                userScore.privacy_loss = userScore.privacy_loss + privacy_loss_val
             elif i.code_operation == "UL":
-                userScore.burden = userScore.burden + UL_Burden
-                userScore.privacy_loss = userScore.privacy_loss + UL_PS
+                burden_val,privacy_loss_val = UpDateScoreForLikes(i.post_id)
+                userScore.burden = userScore.burden + burden_val
+                userScore.privacy_loss = userScore.privacy_loss + privacy_loss_val
 
             userScore.benefit = UpdateScoreForPosts(i.id_user)
     userScore.final_score = userScore.burden + userScore.benefit - userScore.privacy_loss
-    print(f"userScore.privacy_loss = {userScore.privacy_loss}, userScore.burden = {userScore.burden} , userScore.benefit = {userScore.benefit} , fina score = {userScore.final_score}")
+    print(f"userScore.privacy_loss = {userScore.privacy_loss}, userScore.burden = {userScore.burden} , userScore.benefit = {userScore.benefit}")
     userScore.save()
 
 def UpdateScoreForPosts(user_id):

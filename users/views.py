@@ -21,56 +21,38 @@ dic = {
 
 }
 
-def welcome(request):
-
-    allusers = User.objects.all()
-    Users_f = Users_free.objects.all()
+def info(request):
     if request.method == "POST":
-        return redirect('/login')
-    return render(request,'users/welcome.html')
+        return redirect('/waiting')
 
-def pull_userPass(request):
+    return render(request,'users/info.html')
+
+
+def welcome(request):
     user_pick = -1
     pass_pick = -1
     if request.method == "POST":
-
-        if request.POST.get("save_home"):
-            if user_pick != -1:
-                return redirect('/login')
         try:
             worker_id = request.POST.get('Worker_ID',False) 
+
             if len(worker_id) != 0:
-                username , user_id, password , to_alocate = get_info(str(worker_id))
+                username , user_id, password = get_info(str(worker_id))
                 is_valid = False
+                context = {
+                'user_pick' : username,
+                'user_id' : user_id,
+                }
+                UserF = User.objects.filter(id=user_id).first()
+                login(request,UserF)
+                return redirect('/waiting')
             else:
                 username = None
                 password = None
-                to_alocate = False
-                is_valid = True                
+                is_valid = True
         except:
-            username = None
-            password = None
-            to_alocate = False
-            is_valid = True
-            
-        if to_alocate == True:
-            update_user = Users_free.objects.filter(user_id=user_id).first()
-            update_user.worker_id = worker_id
-            update_user.save()
-        
+            pass
 
-
-        
-    user_pick = username
-    pass_pick = password
-
-
-    context = {
-            'user_pick' : user_pick,
-            'pass_pick' : pass_pick,
-            'is_valid' : is_valid,
-    }
-    return render(request,'users/welcome.html',context)
+    return render(request,'users/welcome.html')
 
 # return user and password
 def get_info(worker_id):
@@ -83,8 +65,7 @@ def get_info(worker_id):
             userid = i.user_id
             pass_user = dic.get(userid) 
             username = allusers.filter(id=userid).first()
-            to_alocate = False
-            return username , userid , pass_user , to_alocate
+            return username , userid , pass_user
 
     if userid == -1:
         for i in Users_f:
@@ -92,8 +73,10 @@ def get_info(worker_id):
                 alocate_user_id = i.user_id
                 pass_user = dic.get(alocate_user_id) 
                 username = allusers.filter(id=alocate_user_id).first()
-                to_alocate = True
-                return username , alocate_user_id , pass_user , to_alocate
+                update_user = Users_free.objects.filter(user_id=alocate_user_id).first()
+                update_user.worker_id = worker_id
+                update_user.save()
+                return username , alocate_user_id , pass_user
 
 
 @receiver(user_logged_in)

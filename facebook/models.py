@@ -93,6 +93,7 @@ class Status(models.Model):
     status = models.CharField(max_length=50,choices=all_status,default='I like Pizza',)
     has_link = models.BooleanField(default=False)
 
+
     PrivacyLoss = '0.1$'
     PrivacyLoss1 = '0.2$'
     PrivacyLoss2 = '0.3$'
@@ -179,6 +180,9 @@ class Status(models.Model):
         choices=all_benefit,
         default='0$',
     )
+
+    sumWithOutBenefit = models.FloatField(default=0)
+
     def __str__(self):
         return self.status
 
@@ -215,6 +219,7 @@ class WorkersInfo(models.Model):
     clear_info = models.CharField(max_length=100,default="None")
     tests_rounds_help = models.CharField(max_length=100,default="None")
     free_comments = models.TextField()
+    subCode = models.CharField(max_length=100,default="None")
 
 
     def __str__(self):

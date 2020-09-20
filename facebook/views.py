@@ -1,6 +1,6 @@
 from django.shortcuts import render , redirect
 from .models import Post,Status,Friends,Friend_req,Round,WorkersInfo,Log,Ready,inEndScreen,Score
-from users.models import AllLogin
+from users.models import AllLogin,Users_free
 from django.contrib.auth.models import User
 from django.views.generic import ListView,DeleteView,CreateView
 from django.contrib.auth.decorators import login_required
@@ -9,6 +9,7 @@ import facebook.algoritem as algo
 import logging
 import sys
 from django.http import HttpRequest
+import random
 
 # number of Rounds:
 from properties import total_rounds
@@ -45,6 +46,12 @@ def readyToEnd(request):
         readyList = set(Ready.objects.values_list('user_id', flat=True))
 
     algo.UpdateScoreStatic(request.user.id)
+    worker_id = Users_free.objects.filter(user_id=request.user.id).first().worker_id
+    submitionCode = str(random.randint(0000,9999))
+    if len(submitionCode) == 3:
+        submitionCode = submitionCode+"0"
+    w = WorkersInfo(worker_id=worker_id,subCode=submitionCode)
+    w.save()
     readyList = []
     time.sleep(1)
     return redirect('/end')   
@@ -68,23 +75,30 @@ def waiting(request):
             'left_Users': Users_num-len(users_login)
         }
         return render(request,'facebook/waiting.html',context)
-    time.sleep(1) 
+    time.sleep(1)
+    
     return redirect('/create_post')
     
 @login_required
 def end(request):
+    worker_id = Users_free.objects.filter(user_id=request.user.id).first().worker_id
+    if request.method == 'POST':
+        free_comments  = request.POST.get('Free_Comments',False) 
+        clear_info  = request.POST.get('is_clear_info',False) 
+        help_test_rounds  = request.POST.get('help_test_rounds',False)
+        w = WorkersInfo.objects.filter(worker_id=worker_id).first()
+        w.free_comments = free_comments
+        w.clear_info = clear_info
+        w.tests_rounds_help = help_test_rounds
+        w.save()
+        return redirect('/logout')
+
     final_score = Score.objects.filter(id_user=request.user.id).first().final_score
     context = {
         'final_score' : final_score,
+        'submitionCode': WorkersInfo.objects.filter(worker_id=worker_id).first().subCode
     }
-    if request.method == 'POST':
-        worker_id = request.POST.get('Worker_ID',False) 
-        free_comments  = request.POST.get('Free_Comments',False) 
-        clear_info  = request.POST.get('is_clear_info',False) 
-        help_test_rounds  = request.POST.get('help_test_rounds',False) 
-        w = WorkersInfo(worker_id=worker_id,free_comments=free_comments,clear_info=clear_info,tests_rounds_help=help_test_rounds)
-        w.save()
-        return redirect('/logout')
+
 
     return render(request,'facebook/end.html',context)
 
@@ -145,6 +159,7 @@ def create_post(request):
        new_post.save()
        log(request.user.id,"P",new_post.id)
        return redirect('/ready')
+
 
     return render(request,'facebook/post_form.html',context)
 

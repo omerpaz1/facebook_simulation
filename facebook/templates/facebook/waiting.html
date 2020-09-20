@@ -1,23 +1,121 @@
-{% extends "facebook/base.html" %}
+{% load static %}
 
-{% block content %}
-{% csrf_token %}
-<div class="card" style="width: 35rem; margin-top: 1.5em;">
-    <div class="card-header">
-      Users Left To Start: {{left_Users}}
-    </div>
-    <ul class="list-group list-group-flush">
-    {% if active_users|length > 0 %}
-    {%for user in allusers%}
-      {% if user.id in active_users %}
-    <li class="list-group-item">{{user.username}} - Logged in</li> 
-      {%endif%}
-    </ul>
-    {%endfor%}
-    <!-- <li class="list-group-item">Users Left To Start: {{left_Users}}</li>  -->
+<!DOCTYPE html>
+<html>
+<head>
 
-    {%endif%}
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'facebook/style.css' %}">
+
+    {% if title %}
+        <title>Facebook Simulation - {{title}}</title>
+    {% else %}
+        <title>Facebook Simulation</title>
+    {% endif %}
+</head>
+<body>
+  <header class="site-header">
+    
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top " style="background-color: #3B5998; flex-wrap: wrap;">
+        <a class="navbar-brand mr-4" style="color: aliceblue;">Facebook Simulator</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+       <div class="collapse navbar-collapse" id="navbarResponsive">
+         <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+           <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+             <a class="nav-link" href="index.html">
+               <i class="fa fa-fw fa-dashboard"></i>
+            </a>
+           </li>
+         </ul>
+         <ul class="navbar-nav sidenav-toggler">
+          {% if user.is_authenticated %}
+          <a class="text-center" style="color: aliceblue;">Login as: {{user.username}}</a>
+          {% endif %}
+        </ul>
+         <ul class="navbar-nav ml-auto">
+          {% if user.is_authenticated %}
+          <!-- <a class="nav-item nav-link" href="{% url 'facebook-home' %}">Home</a>
+          <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a> -->
+          {% else %}
+            <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+          {% endif %}
+         </ul>
+
+       </div>
+     </nav>
+     {% block content %}
+     {% csrf_token %}
+     <div class="col-md" style="margin-left: 27em;">
+     <h2 style="margin-top: 1em;" >Your are in the Waiting Room</h2>
+     <a style="font-size:30px" style="margin-top: 1em;" >Your Username On Facebook is:</a>
+     <a style="font-size:30px" class="text-primary"> {{user.username}}</a>
+     <br>
+     <a style="font-size:20px" class="text-black"> You will be transferred to the simultion session in a few moments, please wait</a>
 
 
-</div>
-{% endblock content %}
+     <div class="card" style="width: 35rem; margin-top: 1.5em;">
+
+         <div class="card-header">
+           Users Left To Start: {{left_Users}}
+         </div>
+         <ul class="list-group list-group-flush">
+         {% if active_users|length > 0 %}
+         {%for user in allusers%}
+           {% if user.id in active_users %}
+         <li class="list-group-item">{{user.username}} - Logged in</li> 
+           {%endif%}
+         </ul>
+         {%endfor%}
+         <!-- <li class="list-group-item">Users Left To Start: {{left_Users}}</li>  -->
+     
+         {%endif%}
+     
+     
+     </div>
+     {% endblock content %}
+
+
+                
+              
+    </header>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+  
+    <script>
+
+flag_waiting = true; // for debug mode - put it false
+      Time_waiting = 40
+
+if(flag_waiting){
+      if(location =='http://34.89.133.90/waiting/'){
+        WaitFun();            
+      }
+      }
+      function WaitFun() {
+      var width = 0;
+      var id = setInterval(frame, Time_waiting);
+      function frame() {
+        if (width >= Time_waiting) {
+            clearInterval(id);  
+            $(location).prop('href','/waiting');
+      
+        } else {
+            width++; 
+        }
+      }
+      }
+    </script>

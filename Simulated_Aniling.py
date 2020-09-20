@@ -15,11 +15,13 @@ from io import StringIO ## for Python 3
 from django.urls import resolve
 import random
 import facebook.algoritem as algo
-from timeit import default_timer as timer
-
+import math
 from properties import total_rounds
 from properties import Users_num
 from properties import agent_id
+from properties import temp,AF_COST,OF_COST,UL_COST,SL_COST
+from timeit import default_timer as timer
+
 
 # Users_num = 3
 
@@ -32,7 +34,7 @@ DEBUG = True
 # Agent info.
 userid = agent_id
 agent = User.objects.filter(id=userid).first()
-
+PostsIUsed = {}
 
 def MyRequest(method='GET',path=site_path, user=agent, params={}):
   """ Construct a fake request(WSGIRequest) object"""
@@ -97,8 +99,7 @@ this function will pick Unifromly from the specific operation that chooes in uni
 After that he will will send to A function that call 'ActionOperation' that send the Request.
 return - > Void
 '''
-def MakeMove(Possible_Operators):
-    move = PickMove(Possible_Operators)
+def GoToSuccessor(move):
     current_path = site_path
     if move == "OF":
         AgentRequest = MyRequest(method='GET',path=site_path+'home')
@@ -126,15 +127,31 @@ def MakeMove(Possible_Operators):
         like_post_Agent(AgentRequest,"UL")
         return "UL", PostToLike
 
-    elif move == "P":
-        StatusToPost = getStatusToPost()
+    elif move == "N":
+        log(agent.id,"N")
+        return "N", "None"
+
+def GoToSuccessorPost(statusID):
+        StatusToPost = getStatusToPost(statusID)
         AgentRequest = MyRequest(method='POST',path=current_path+'home' ,params={'user_option_on_feed': StatusToPost})
         home_Agent(AgentRequest)
         return "P", StatusToPost
 
+def getValuePerMove(move):
+    if move == "OF":
+        return OF_COST
+    elif move == "AF":
+        return AF_COST
+    elif move == "SL":
+        return SL_COST
+    elif move == "UL":
+        return UL_COST
+    elif move == "P":
+        key = max(PostsIUsed,key=PostsIUsed.get)
+        value = PostsIUsed.get(key)
+        return key,value
     elif move == "N":
-        log(agent.id,"N")
-        return "N", "None"
+        return 0 
 
 
 
@@ -151,15 +168,14 @@ def PickMove(Possible_Operators):
             MovePicked = move
         j+=1
     return MovePicked
-# 'OF': 0.6$, 'SL': , 'P':
 
 '''
 this function will return status from all the status in unfomly way.
 '''
-def getStatusToPost():
-    all_statuss = list(Status.objects.values_list('status', flat=True)) 
-    random_num = random.randint(0,len(all_statuss)-1) # unifom random in all the status.
-    return all_statuss[random_num]
+def getStatusToPost(statusID):
+    status = Status.objects.filter(id=statusID).first().status
+    PostsIUsed.pop(statusID)
+    return status
 
 '''
 this function will return from the optional 'people you may know' list one user id in unifomly way
@@ -181,6 +197,9 @@ this function will return post that optinal to friend to confirm in unimofly way
 def getFriendToConfirm(FriendRequests):
     random_num = random.randint(0,len(FriendRequests)-1) # unifom random in all the status.
     return FriendRequests[random_num]
+
+def acceptor(deltaH,temp):
+    return math.exp(deltaH/temp)
 
 
 # -----------------------------------------Start Simulation -----------------------------------
@@ -209,6 +228,8 @@ while(len(users_login) < Users_num):
 if(DEBUG):
     print("move from the waiting room to Create Post Page")
 
+start = timer()
+
 
 ''' 
 in the Create Post page.
@@ -217,11 +238,19 @@ in the Create Post page.
 if(DEBUG):
     print("Create Post in Create post page")
 
+# ini the status to list
+status = Status.objects.all()
+for i in status:
+    PostsIUsed.update({i.id : i.sumWithOutBenefit})
+
+
 # Create The First Round!
 algo.Post_on_feed(agent.id)
 time.sleep(2)
 current_path = site_path+'create_post'
-StatusToPost = getStatusToPost()
+
+key = max(PostsIUsed,key=PostsIUsed.get)
+StatusToPost = getStatusToPost(key)
 AgentRequest = MyRequest(method='POST',path=current_path ,params={'user_option': StatusToPost})
 create_post_Agent(AgentRequest)
 
@@ -239,6 +268,7 @@ AgentRequest = MyRequest(method='GET',path=current_path)
 # First_Possible_Operators = Get_Possible_Operators(userid,current_posts)
 users_ready = set(Ready.objects.values_list('user_id', flat=True))
 num_round = 1
+h = 0.0
 while(num_round != total_rounds):
     while(len(users_ready) != Users_num):        
         users_ready = set(Ready.objects.values_list('user_id', flat=True))
@@ -246,32 +276,57 @@ while(num_round != total_rounds):
             print("Join to Ready")
             Ready.objects.create(user=AgentRequest.user) #create new Ready User
     print("Out of ready, Make Move!")
+    timeRound = timer()
     current_posts = algo.Post_on_feed(agent.id)
     time.sleep(2)
     Ready.objects.all().delete()    
     readyList = []
+
     '''
     Do Here Algoritem and And Send a Request to the operation.
     '''
-    
     Possible_Operators = Get_Possible_Operators(userid,current_posts)
+
+    keys = list(Possible_Operators.keys())
+    random.shuffle(keys)
+    print("keys = ",keys)
+    for move in keys:
+        print("move = ",move)
+        if move == "P":
+            statusID,val = getValuePerMove(move) # return the value + the current value state
+        else:
+            val = getValuePerMove(move) # return the value + the current value state
+
+        h_new = h + val
+        print(f"h = {h} , val = {val} , h_new = {h_new}")
+        deltaH = round(h_new - h,2)
+        print(f"deltaH = {deltaH}")
+        i = total_rounds - num_round
+        ran = round(random.random(),2)
+        print("round(random.random(),2) < acceptor(deltaH,i) = ",ran,acceptor(deltaH,(i/total_rounds)))
+        if h_new - h > 0 or (ran < acceptor(deltaH,(i/total_rounds))): 
+            if move == "P":
+                oper,success = GoToSuccessorPost(statusID)
+            else:
+                oper,success = GoToSuccessor(move)
+            h = h_new
+            break
+
+
     print("Possible_Operators For The Current Round:\n")
     print(Possible_Operators)
     print('\n')
     
+    print("he did: ", oper,success)
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
     num_round+=1
+
     startRound = timer()
     print(f"num round = {num_round}")
     while(len(users_ready) < Users_num-1):
         users_ready = set(Ready.objects.values_list('user_id', flat=True))
     endRound = timer()
     print(f"Round Number {num_round}, took: {(endRound-startRound-6)/60} Minutes")
-
-
-
-    operand, value = MakeMove(Possible_Operators)
-    print(f'MakeMove Pick: Operator = {operand} , value = {value}\n')
 
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
     print('----------------  # End Round----------------\n')
@@ -286,5 +341,7 @@ time.sleep(5)
 Ready.objects.all().delete()    
 readyList = []
 
+end = timer()
 algo.UpdateScoreStatic(userid)
 print("Simulrator Finished")
+print("Total time simulation = ",(end-start)/60, "Minutes")

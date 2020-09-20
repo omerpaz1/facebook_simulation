@@ -47,36 +47,21 @@
      </nav>
      <div class="col-md" style="margin-left: 27em;">
       <div class="row">
-        <form action="{% url 'pull_userPass' %}" method="POST">
+        <form action="{% url 'welcome' %}" method="POST">
           {% csrf_token %}
           <div class="form-group">
               <h2 style="margin-top: 1em;" >Welcome To The Facebook Simulator</h2>
-            <input style="margin-top: 1em;"  type="text" class="form-control" name="Worker_ID" aria-describedby="emailHelp" placeholder="Your Amazon Worker ID">
+            <input style="margin-top: 1em;"  type="text" class="form-control" name="Worker_ID" aria-describedby="emailHelp" placeholder="Enter Your Amazon MT Worker ID">
             {% if is_valid %}
               <h10 class="text-danger">* invalid input!</h10>
             {% endif %}
           </div>
-          <button type="submit" name='pull' value='pull_val' class="btn btn-outline-secondary" >Submit</button>
-          <h2 class="text-info">Your Login Information:</h3>
-            <h4>Username: <span class="badge badge-secondary"> {{user_pick}} </span></h3>
-            <h4>Password: <span class="badge badge-secondary"> {{pass_pick}} </span></h3>
-            <h10 class="text-warning">* Please remeber the username and the password for the next page</h10>
-            <br>
-            <br>
 
-            <button type="submit" name="save_home" class="btn btn-primary" value="Save&Home">&nbsp;Save&Home</button>
+            <button type="submit" name="save_home" class="btn btn-primary" value="Save&Home">Submit</button>
           </form>
       </div>
     </div>
-                <!-- <div class="col-md" style="margin-left: 27em;">
-                  <div class="row">
-                    <form action="{% url 'welcome' %}" method="POST">
-                      {% csrf_token %}
-        
-                    </form>
-                  </div>
-                </div>
-            </div> -->
+
 
                 
               
@@ -91,5 +76,6 @@
     
   
     <script>
+
 
     </script>
