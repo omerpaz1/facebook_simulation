@@ -82,16 +82,9 @@ def waiting(request):
 @login_required
 def end(request):
     worker_id = Users_free.objects.filter(user_id=request.user.id).first().worker_id
-    if request.method == 'POST':
-        free_comments  = request.POST.get('Free_Comments',False) 
-        clear_info  = request.POST.get('is_clear_info',False) 
-        help_test_rounds  = request.POST.get('help_test_rounds',False)
-        w = WorkersInfo.objects.filter(worker_id=worker_id).first()
-        w.free_comments = free_comments
-        w.clear_info = clear_info
-        w.tests_rounds_help = help_test_rounds
-        w.save()
-        return redirect('/logout')
+    w = WorkersInfo.objects.filter(worker_id=worker_id).first()
+    w.id_user = request.user.id
+    w.save()
 
     final_score = Score.objects.filter(id_user=request.user.id).first().final_score
     context = {

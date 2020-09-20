@@ -216,9 +216,7 @@ class Ready(models.Model):
 
 class WorkersInfo(models.Model):
     worker_id = models.CharField(max_length=100)
-    clear_info = models.CharField(max_length=100,default="None")
-    tests_rounds_help = models.CharField(max_length=100,default="None")
-    free_comments = models.TextField()
+    id_user = models.IntegerField(User,default=0)
     subCode = models.CharField(max_length=100,default="None")
 
 
