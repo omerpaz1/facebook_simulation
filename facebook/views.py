@@ -33,6 +33,13 @@ def ready(request):
     time.sleep(5)
     return redirect('/home')
 
+def Pass(request):
+    if request.method == 'POST':
+        log(request.user.id,"N")
+        return redirect('/ready')
+    return render(request,'facebook/home.html')
+
+
 def readyToEnd(request):
     if len(Round.objects.all()) != total_rounds:
         return redirect('/ready')
@@ -64,7 +71,7 @@ def waiting(request):
     for i in users_login:
         set_users_login.add(i.user.id)
     users_login = set_users_login
-    while(len(users_login) < Users_num):
+    while(len(users_login) != Users_num):
         users_login = AllLogin.objects.all()
         for i in users_login:
             set_users_login.add(i.user.id)
@@ -105,26 +112,13 @@ def sortbyTime(e):
 
 @login_required
 def home(request):
-    posts = algo.Post_on_feed(request.user.id)
-    posts.sort(reverse=True,key=sortbyTime)
-    user_liked = posts_user_liked(request.user.id)
-    people_may_know = helper(request)
-    list_friend_req = myreqest(request.user.id)
-    
-
-    context = {
-        # 'posts' : Post.objects.order_by('-date_posted'),
-        'posts' : posts,
-        'mystatus' : Status.objects.all(),
-        'friends' : Friends.objects.filter(userid_id=request.user.id).first().myfriends,
-        'friends_requst' : list(set(Friend_req.objects.filter(userid_id=request.user.id).first().myfriends_req)),
-        'people_my_know' : people_may_know,
-        'users' : User.objects.all(),
-        'posts_user_liked' : user_liked,
-        'list_friend_req' : list_friend_req
-    }
     if request.method == 'POST':
-       user_post_option = request.POST.get('user_option_on_feed',False) 
+       user_post_option = request.POST.get('user_option_on_feed',False)
+       like = request.POST.get('post_id')
+       if like:
+            like_post(request,like)
+            return redirect('/ready')
+           
        user_post_name = request.user
        pick = Status.objects.get(status = user_post_option)
        new_post = Post(username = user_post_name ,status =pick)
@@ -133,6 +127,24 @@ def home(request):
        if len(Round.objects.all()) == total_rounds:
             return redirect('/readyToEnd')
        return redirect('/ready')
+       
+    posts = algo.Post_on_feed(request.user.id)
+    posts.sort(reverse=True,key=sortbyTime)
+    user_liked = posts_user_liked(request.user.id)
+    people_may_know = helper(request)
+    list_friend_req = myreqest(request.user.id)
+    
+
+    context = {
+        'posts' : posts,
+        'mystatus' : Status.objects.all(),
+        'friends_requst' : list(set(Friend_req.objects.filter(userid_id=request.user.id).first().myfriends_req)),
+        'people_my_know' : people_may_know,
+        'users' : User.objects.all(),
+        'posts_user_liked' : user_liked,
+        'list_friend_req' : list_friend_req
+    }
+
 
     return render(request,'facebook/feed.html',context)
 
@@ -159,10 +171,11 @@ def create_post(request):
     
 # function when user click on the "like" btn.
 
-def like_post(request):
-    if request.method == 'POST':
+def like_post(request,id):
+    if not id:
         post_like_id = request.POST.get('post_id',False)
-        post_like_id = Post.objects.get(id=post_like_id)
+    else:
+        post_like_id = Post.objects.get(id=id)
         post_like_id.likes.add(request.user)
         status_liked =  Status.objects.filter(id=post_like_id.status_id).first()
         if status_liked.has_link:
@@ -218,6 +231,7 @@ def addfriend(request ,user_requsted):
         current_user_table.myfriends.append(user_requsted.pk)
         user_confirm = Friends.objects.filter(userid_id=user_requsted.pk).first()
         user_confirm.myfriends.append(request.user.id)
+        log(request.user.id,f"OF({user_requsted.id})")
 
         current_user_table.save()
         user_confirm.save()
@@ -226,15 +240,15 @@ def addfriend(request ,user_requsted):
         if current_user.userid_id not in user_requsted.myfriends_req:
             user_requsted.myfriends_req.append(request.user.id)
             user_requsted.save()
-    log(request.user.id,"OF")
+            log(request.user.id,f"OF({user_requsted.userid_id})")
     #sads
 
 # comfirm both friend in the tables
 def confirm_friends(request,user_requsted):
     current_user_table = Friend_req.objects.filter(userid_id=request.user.id).first()
+    log(request.user.id,f"AF({user_requsted.id})")
     current_user_table.myfriends_req.remove(user_requsted.pk)
     current_user_table.save()
-    log(request.user.id,"AF")
 
     # add to the friends table of both sides.
     current_user_table = Friends.objects.filter(userid_id=request.user.id).first()

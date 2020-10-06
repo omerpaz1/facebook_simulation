@@ -55,7 +55,7 @@
      {% csrf_token %}
      <div class="col-md" style="margin-left: 27em;">
      <h2 style="margin-top: 1em;" >Your are in the Waiting Room</h2>
-     <a style="font-size:30px" style="margin-top: 1em;" >Your Username On Facebook is:</a>
+     <a style="font-size:30px" style="margin-top: 1em;" >Your Username On Facebook is:  </a>
      <a style="font-size:30px" class="text-primary"> {{user.username}}</a>
      <br>
      <a style="font-size:20px" class="text-black"> You will be transferred to the simultion session in a few moments, please wait</a>
@@ -74,7 +74,6 @@
            {%endif%}
          </ul>
          {%endfor%}
-         <!-- <li class="list-group-item">Users Left To Start: {{left_Users}}</li>  -->
      
          {%endif%}
      

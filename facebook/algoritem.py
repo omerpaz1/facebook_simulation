@@ -1,7 +1,7 @@
 from .models import *
 import random
 from properties import AF_COST,OF_COST,UL_Burden,UL_PS,SL_Burden,SL_PS,total_rounds
-from .models import Round,Status,Post,benefitRounds2
+from .models import Round,Status,Post,FeedPerUser,ScorePerRound
 import threading
 from . import views
 
@@ -21,9 +21,11 @@ RANGE_PROB_BETWEEN_3_TO_5 = range(3,5+1)
 RANGE_PROB_BETWEEN_5_TO_LC = range(5,LC+1)
 
 def Post_on_feed(user_id):
-    posts = add_posts_to_current_round(user_id)
-    UpDateScore(user_id,posts)
-    return convert_posts(posts)
+    posts_ans = add_posts_to_current_round(user_id)
+    UpDateScore(user_id,posts_ans)
+    myFeed = FeedPerUser.objects.filter(id_user=user_id).first()
+
+    return convert_posts(myFeed.feedPosts)
 
 
 '''
@@ -47,6 +49,8 @@ def add_posts_to_current_round(user_id):
 
     new_posts = get_new_posts(all_posts,all_rounds) 
     new_likes = get_new_likes(all_likes,all_rounds)
+
+
     for i in new_posts:
         new_round.posts_id.append(i)
     new_round.save()
@@ -63,10 +67,9 @@ def add_posts_to_current_round(user_id):
         if post in no_likes_LC:
             no_likes_LC.pop(post)
 
-    print(f'likes_LC = {likes_LC}')
-    print(f'no_likes_LC = {no_likes_LC}')
+
     user_friends = Friends.objects.filter(userid_id=user_id).first().myfriends    
-    return cal_prob(no_likes_LC,likes_LC,user_friends)
+    return cal_prob(no_likes_LC,likes_LC,user_friends,user_id)
 
 
 def get_new_posts(all_posts,all_rounds):
@@ -87,11 +90,11 @@ def get_new_likes(all_likes,all_rounds):
     for like in all_likes:
         flag = True
         for r_i in all_rounds:
-            if like.pk in r_i.likes_id:
+            if like.post_id in r_i.likes_id:
                 flag = False
                 break
         if flag:
-            new_likes.append(like.pk)
+            new_likes.append(like.post_id)
     return new_likes
 
 def likes_on_LC(user_id,like_post):
@@ -105,8 +108,8 @@ def likes_on_LC(user_id,like_post):
                 member_id = get_user_like_id(l_i)
                 if member_id in user_friends and member_id != user_id:
                     for j in LC_rounds:
-                        if get_post_like_id(l_i) in j.posts_id:
-                            user_likes_per_round.update({get_post_like_id(l_i) : r_i.round_number})
+                        if l_i in j.posts_id:
+                            user_likes_per_round.update({(l_i) : r_i.round_number})
         return user_likes_per_round        
     if like_post == False:
         user_friends = Friends.objects.filter(userid_id=user_id).first().myfriends    
@@ -134,15 +137,15 @@ def get_the_LC_rounds(begin,end):
 def get_user_like_id(like_id):
     all_likes = Post.likes.through.objects.all()
     for l_i in all_likes:
-        if l_i.pk == like_id:
+        if l_i.post_id == like_id:
             return l_i.user_id
 
-# return the current post_id of the like_id
-def get_post_like_id(like_id):
-    all_likes = Post.likes.through.objects.all()
-    for l_i in all_likes:
-        if l_i.pk == like_id:
-            return l_i.post_id
+# # return the current post_id of the like_id
+# def get_post_like_id(like_id):
+#     all_likes = Post.likes.through.objects.all()
+#     for l_i in all_likes:
+#         if l_i.pk == like_id:
+#             return l_i.post_id
 
 
 # return round number by given post id
@@ -178,6 +181,7 @@ def get_LC_rounds():
 
 def getMaxLL(likes_LC,no_likes_LC,friend_id):
     minLL = 1000
+    FriendLCPosts = []
     tempPosts = []
     atLestOneLike = False
     all_posts = Post.objects.all()
@@ -188,7 +192,9 @@ def getMaxLL(likes_LC,no_likes_LC,friend_id):
             if like.post_id == post_like and like.user_id == friend_id:
                 atLestOneLike = True
                 tempPosts.append(post_like)
-        
+                all_posts = Post.objects.all()
+                FriendLCPosts = get_My_Posts_LC(all_posts,get_LC_rounds(),friend_id)    
+
         for p in tempPosts:
             posted_round = get_post_round(p)
             liked_round = likes_LC[p]
@@ -198,16 +204,18 @@ def getMaxLL(likes_LC,no_likes_LC,friend_id):
                 pass
             if LL < minLL:
                 minLL = LL
-
+    noLikeTemp = []
     for i in no_likes_LC:
         post_user_id = Post.objects.filter(id=i).first().username_id
         if post_user_id == friend_id:
-            tempPosts.append(i) 
+            noLikeTemp.append(i) 
     
-    return minLL, tempPosts , atLestOneLike
+    return minLL, FriendLCPosts , atLestOneLike ,noLikeTemp
 
 
-def cal_prob(no_likes_LC,likes_LC,user_friends):
+def cal_prob(no_likes_LC,likes_LC,user_friends,user_id):
+    print("no_likes_LC =" ,no_likes_LC)
+    print("likes_LC =" ,likes_LC)
     posts_ans = []
     for post_no_liked in no_likes_LC: # about post with no like. same probability.
         if no_likes_LC[post_no_liked] == 0:
@@ -215,33 +223,99 @@ def cal_prob(no_likes_LC,likes_LC,user_friends):
     
     # for the post in the LC.
     for friend_id in user_friends:
-        LL, tempPosts , atLestOneLike = getMaxLL(likes_LC,no_likes_LC,friend_id)
+        if friend_id != user_id:
+            print("friend_id = ",friend_id)
+            LL, FriendLCPosts , atLestOneLike,noLikeTemp = getMaxLL(likes_LC,no_likes_LC,friend_id)
 
-        if not atLestOneLike:
-            for post_like in tempPosts:
-                random_num = random.uniform(0,1)
-                random_num = float('{0:.1f}'.format(random.uniform(0,1)))
-                if random_num <= BETWEEN_5_TO_LC: # prob of 0.1
-                    posts_ans.append(post_no_liked)
-        else:
-            for post_like in tempPosts:
-                # random number between [0,1]
-                random_num = random.uniform(0,1)
-                random_num = float('{0:.1f}'.format(random.uniform(0,1)))
-                if LL in RANGE_PROB_BETWEEN_1_TO_2:
-                    if random_num <= BETWEEN_1_TO_2:
-                        posts_ans.append(post_like)
-                        # print(f' LL = {LL} , random_num <= BETWEEN_1_TO_2 -> {random_num}')
-                elif LL in RANGE_PROB_BETWEEN_3_TO_5:
-                    if random_num <= BETWEEN_3_TO_5:
-                        posts_ans.append(post_like)
-                        # print(f' LL = {LL} , random_num <= BETWEEN_3_TO_5 -> {random_num}')
-                elif LL in RANGE_PROB_BETWEEN_5_TO_LC:
-                    if random_num <= BETWEEN_5_TO_LC:
-                        posts_ans.append(post_like)
-                        # print(f' LL = {LL} , random_num <= RANGE_PROB_BETWEEN_5_TO_LC -> {random_num}')
-    print(f"Posts picks = {posts_ans}\n")
+            if not atLestOneLike:
+                for no_like in noLikeTemp:
+                    random_num = random.uniform(0,1)
+                    random_num = float('{0:.1f}'.format(random.uniform(0,1)))
+                    if random_num <= BETWEEN_5_TO_LC: # prob of 0.1
+                        posts_ans.append(no_like)
+                        print("got post of friend, no like - BETWEEN_5_TO_LC =",no_like)
+            else:
+                for post_like in FriendLCPosts:
+                        # random number between [0,1]
+                    random_num = random.uniform(0,1)
+                    random_num = float('{0:.1f}'.format(random.uniform(0,1)))
+                    if LL in RANGE_PROB_BETWEEN_1_TO_2:
+                        if random_num < BETWEEN_1_TO_2:
+                            posts_ans.append(post_like)
+                            print("got post of friend, in like - BETWEEN_1_TO_2 =",post_like)
+                    elif LL in RANGE_PROB_BETWEEN_3_TO_5:
+                        if random_num < BETWEEN_3_TO_5:
+                            posts_ans.append(post_like)
+                            print("got post of friend, in like - BETWEEN_3_TO_5 =",post_like)
+                    elif LL in RANGE_PROB_BETWEEN_5_TO_LC:
+                        if random_num < BETWEEN_5_TO_LC:
+                            posts_ans.append(post_like)
+                            print("got post of friend, in like - BETWEEN_5_TO_LC =",post_like)
+
+    myFeed = FeedPerUser.objects.filter(id_user=user_id).first()
+
+    all_rounds = Round.objects.all()
+    current_round = Round.objects.filter(round_number=len(all_rounds)).first().round_number
+
+    if current_round > 1:
+        count = 0
+        for i in posts_ans:
+            postuserID = Post.objects.filter(id=i).first().username_id
+            if postuserID != user_id and i not in myFeed.feedPosts:
+                count+=1
+                break
+        if count == 0:
+            randomPost = getRandomPost(user_id,myFeed.feedPosts)
+            if randomPost != None:
+                posts_ans.append(randomPost)
+                print("Got random post from anyone =",randomPost)
+
+        for p in list(posts_ans):
+            if p not in myFeed.feedPosts:
+                myFeed.feedPosts.append(p)
+            else:
+                u = Post.objects.filter(id=p).first().username_id
+                if u != user_id:
+                    print("remove - > ",p)
+                    posts_ans.remove(p)
+    
+    posts_ans = set(posts_ans)
+    posts_ans = list(posts_ans)
+    myFeed.save()
+
     return posts_ans
+
+
+
+
+def get_Posts_LC(all_posts,all_rounds,user_id):
+    new_posts = []
+    for r_i in all_rounds:
+        for postid in r_i.posts_id:
+            postUserId = Post.objects.filter(id=postid).first().username_id
+            if postUserId != user_id:
+                new_posts.append(postid)
+
+    return new_posts
+
+def get_My_Posts_LC(all_posts,all_rounds,user_id):
+    new_posts = []
+    for r_i in all_rounds:
+        for postid in r_i.posts_id:
+            postUserId = Post.objects.filter(id=postid).first().username_id
+            if postUserId == user_id:
+                new_posts.append(postid)
+
+    return new_posts
+
+def getRandomPost(user_id,feedPosts):
+    all_posts = Post.objects.all()
+    allLCPosts = get_Posts_LC(all_posts,get_LC_rounds(),user_id)
+    random.shuffle(allLCPosts)
+    for i in allLCPosts:
+        if i not in feedPosts :
+            return i
+
 
 # covert from post id to post object
 def convert_posts(posts_LC):
@@ -335,81 +409,99 @@ def getUserByRound(argument,postUserID,PostID):
         userBene.save()
     elif argument == 2:
         userBene.round_2.append(PostID)
-        userBene.round_2=set(userBene.round_2)
-        userBene.round_2=list(userBene.round_2)
+        # userBene.round_2=set(userBene.round_2)
+        # userBene.round_2=list(userBene.round_2)
         userBene.save()
     elif argument == 3:
         userBene.round_3.append(PostID)
-        userBene.round_3=set(userBene.round_3)
-        userBene.round_3=list(userBene.round_3)
+        # userBene.round_3=set(userBene.round_3)
+        # userBene.round_3=list(userBene.round_3)
         userBene.save()
     elif argument == 4:
         userBene.round_4.append(PostID)
-        userBene.round_4=set(userBene.round_4)
-        userBene.round_4=list(userBene.round_4)
+        # userBene.round_4=set(userBene.round_4)
+        # userBene.round_4=list(userBene.round_4)
         userBene.save()
     elif argument == 5:
         userBene.round_5.append(PostID)
-        userBene.round_5=set(userBene.round_5)
-        userBene.round_5=list(userBene.round_5)
+        # userBene.round_5=set(userBene.round_5)
+        # userBene.round_5=list(userBene.round_5)
         userBene.save()
     elif argument == 6:
         userBene.round_6.append(PostID)
-        userBene.round_6=set(userBene.round_6)
-        userBene.round_6=list(userBene.round_6)
+        # userBene.round_6=set(userBene.round_6)
+        # userBene.round_6=list(userBene.round_6)
         userBene.save()
     elif argument == 7:
         userBene.round_7.append(PostID)
-        userBene.round_7=set(userBene.round_7)
-        userBene.round_7=list(userBene.round_7)
+        # userBene.round_7=set(userBene.round_7)
+        # userBene.round_7=list(userBene.round_7)
         userBene.save()
     elif argument == 8:
         userBene.round_8.append(PostID)
-        userBene.round_8=set(userBene.round_8)     
-        userBene.round_8=list(userBene.round_8)           
+        # userBene.round_8=set(userBene.round_8)     
+        # userBene.round_8=list(userBene.round_8)           
         userBene.save()
     elif argument == 9:
         userBene.round_9.append(PostID)
-        userBene.round_9=set(userBene.round_9)
-        userBene.round_9=list(userBene.round_9)
+        # userBene.round_9=set(userBene.round_9)
+        # userBene.round_9=list(userBene.round_9)
         userBene.save()
     elif argument == 10:
         userBene.round_10.append(PostID)
-        userBene.round_10=set(userBene.round_10)
-        userBene.round_10=list(userBene.round_10)
+        # userBene.round_10=set(userBene.round_10)
+        # userBene.round_10=list(userBene.round_10)
         userBene.save()
     elif argument == 11:
         userBene.round_11.append(PostID)
-        userBene.round_11=set(userBene.round_11)
-        userBene.round_11=list(userBene.round_11)
+        # userBene.round_11=set(userBene.round_11)
+        # userBene.round_11=list(userBene.round_11)
         userBene.save()
     elif argument == 12:
         userBene.round_12.append(PostID)
-        userBene.round_12=set(userBene.round_12)
-        userBene.round_12=list(userBene.round_12)
+        # userBene.round_12=set(userBene.round_12)
+        # userBene.round_12=list(userBene.round_12)
         userBene.save()
     elif argument == 13:
         userBene.round_13.append(PostID)
-        userBene.round_13=set(userBene.round_13)
-        userBene.round_13=list(userBene.round_13)
         userBene.save()
     elif argument == 14:
         userBene.round_14.append(PostID)
-        userBene.round_14=set(userBene.round_14)
-        userBene.round_14=list(userBene.round_14)
         userBene.save()
     elif argument == 15:
         userBene.round_15.append(PostID)
-        userBene.round_15=set(userBene.round_15)
-        userBene.round_15=list(userBene.round_15)
+        userBene.save()
+    elif argument == 16:
+        userBene.round_16.append(PostID)
+        userBene.save()
+    elif argument == 17:
+        userBene.round_17.append(PostID)
+        userBene.save()
+    elif argument == 18:
+        userBene.round_18.append(PostID)
+        userBene.save()
+    elif argument == 19:
+        userBene.round_19.append(PostID)
+        userBene.save()
+    elif argument == 20:
+        userBene.round_20.append(PostID)
         userBene.save()
 
-def UpDateScore(user_id,CurrentPostsOnRound):
-    for p in CurrentPostsOnRound:
+def UpDateScore(user_id,posts_ans):
+    myFeed = FeedPerUser.objects.filter(id_user=user_id).first()
+    print("*************************")
+    print("posts_ans = ",posts_ans)
+    print("*************************")
+    print("*************************")
+    print("myFeed.feedPosts  = ",myFeed.feedPosts)
+    print("*************************")
+    for p in posts_ans:
         roundNumber = int(len(Round.objects.all()))
         post = Post.objects.filter(id=p).first()
-        if post.username_id != user_id:
+        if post.username_id != user_id  :
+            print("in update score, post =",p,": ",Post.objects.filter(id=p).first())
             getUserByRound(roundNumber,post.username_id,p)
+
 
 
 def getRoundList(argument,postUserID): 
@@ -429,7 +521,12 @@ def getRoundList(argument,postUserID):
     12: userBene.round_12,
     13: userBene.round_13,
     14: userBene.round_14,
-    15: userBene.round_15
+    15: userBene.round_15,
+    16: userBene.round_16,
+    17: userBene.round_17,
+    18: userBene.round_18,
+    19: userBene.round_19,
+    20: userBene.round_20
     }
     return dic.get(argument)
 
@@ -445,45 +542,53 @@ will update heis Benefits Row.
 this function will update the score of user by static values that given on heis operation.(like,add friend etc..)
 '''
 def UpdateScoreStatic(userID_ToUpdate):
+    burden_ = 0
+    privacy_loss_op = 0
     userScore = Score.objects.filter(id_user=userID_ToUpdate).first()
     logs = Log.objects.all()
     for i in logs:
+        burden_ = 0
+        privacy_loss_op = 0
         if i.id_user == userID_ToUpdate:
+            ScorePerRound.objects.create(id_user=i.id_user,id_round=i.id_round)
             if i.code_operation == "P":
-                burden_val,privacy_loss_val = UpDateScoreForLikes(i.post_id)
-                userScore.burden = userScore.burden + burden_val
-                userScore.privacy_loss = userScore.privacy_loss + privacy_loss_val
-            elif i.code_operation == "AF":
-                userScore.burden = userScore.burden + AF_COST
-            elif i.code_operation == "OF":
-                userScore.burden = userScore.burden + OF_COST
+                burden_val = UpDateScoreForLikes(i.post_id)
+                burden_ =  burden_val
+            elif i.code_operation[:2] == "AF":
+                burden_ = AF_COST
+            elif i.code_operation[:2] == "OF":
+                burden_ = OF_COST
             elif i.code_operation == "SL":
-                userScore.burden = userScore.burden + SL_Burden
-                userScore.privacy_loss = userScore.privacy_loss + SL_PS
+                burden_ = SL_Burden
+                privacy_loss_op = SL_PS
             elif i.code_operation == "UL":
-                userScore.burden = userScore.burden + UL_Burden
-                userScore.privacy_loss = userScore.privacy_loss + UL_PS
+                burden_ = UL_Burden
+                privacy_loss_op = UL_PS
 
-            userScore.benefit = UpdateScoreForPosts(i.id_user)
-    userScore.final_score = userScore.burden + userScore.benefit - userScore.privacy_loss
+
+            benefit_,privacy_loss_ = UpdateScoreForPosts(i.id_user,i.id_round)
+            updateScoreBenefit(user_id=i.id_user,roundNumber=i.id_round,benefit=round((benefit_),2),privacyloss=round((privacy_loss_ + privacy_loss_op),2),burden=round((burden_),2))
+            userScore.benefit +=benefit_
+            userScore.privacy_loss += (privacy_loss_ + privacy_loss_op)
+            userScore.burden += burden_
+
+    userScore.final_score = (userScore.benefit + userScore.burden + userScore.privacy_loss )
     print(f"userScore.privacy_loss = {userScore.privacy_loss}, userScore.burden = {userScore.burden} , userScore.benefit = {userScore.benefit} , fina score = {userScore.final_score}")
     userScore.save()
 
-def UpdateScoreForPosts(user_id):
+def UpdateScoreForPosts(user_id,roundNum):
     benefit_val = 0
-    burden_val = 0
     privacy_loss_val = 0
 
     beneUsers = benefitRounds2.objects.all()
-    for i in range(1,total_rounds+1):
-        array = getRoundList(i,user_id)
-        if array:
-            for postID in array:
-                statusID = Post.objects.get(id=postID).status_id
-                status_info =  Status.objects.filter(id=statusID).first()
-                benefit_val+= float(status_info.benefit.replace('$', ''))
-
-    return round((benefit_val),2)
+    array = getRoundList(roundNum,user_id)
+    if array:
+        for postID in array:
+            statusID = Post.objects.get(id=postID).status_id
+            status_info =  Status.objects.filter(id=statusID).first()
+            benefit_val+= float(status_info.benefit.replace('$', ''))
+            privacy_loss_val += float(status_info.PrivacyLoss.replace('$', ''))
+    return round((benefit_val),2),-round((privacy_loss_val),2)
 
 def UpDateScoreForLikes(post_id):
     burden_val = 0
@@ -492,7 +597,15 @@ def UpDateScoreForLikes(post_id):
     statusID = Post.objects.get(id=post_id).status_id
     status_info =  Status.objects.filter(id=statusID).first()
     burden_val = float(status_info.burden.replace('$', ''))
-    privacy_loss_val = float(status_info.PrivacyLoss.replace('$', ''))
-    return round((burden_val),2),round((privacy_loss_val),2)
+    return -round((burden_val),2)
 
-    0
+    
+
+
+def updateScoreBenefit(user_id,roundNumber,benefit=0,privacyloss=0,burden=0):
+    scoreRound = ScorePerRound.objects.filter(id_user=user_id,id_round=roundNumber).first()
+    scoreRound.score = benefit + privacyloss + burden
+    scoreRound.save()
+
+
+

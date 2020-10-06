@@ -16,6 +16,29 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+       migrations.CreateModel(
+            name='benefitRounds2',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id_user', models.IntegerField(verbose_name=django.contrib.auth.models.User)),
+                ('round_1', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_2', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_3', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_4', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_5', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_6', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_7', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_8', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_9', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_10', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_11', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_12', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_13', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_14', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+                ('round_15', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=100), size=100)),
+            ],
+        ),
+
         migrations.CreateModel(
             name='Round',
             fields=[
@@ -25,7 +48,7 @@ class Migration(migrations.Migration):
                 ('likes_id', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(blank=True, unique=True), size=8), size=8)),
             ],
         ),
-        migrations.CreateModel(
+         migrations.CreateModel(
             name='Status',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

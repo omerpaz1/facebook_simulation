@@ -20,6 +20,8 @@ from properties import total_rounds
 from properties import Users_num
 from properties import agent_id
 from properties import temp,AF_COST,OF_COST,UL_COST,SL_COST
+from timeit import default_timer as timer
+
 
 # Users_num = 3
 
@@ -214,7 +216,7 @@ def getMaxSuccessor(Possible_Operators):
                 movePicked = move
         else:
             val = getValuePerMove(move) # return the value + the current value state
-            if maxVal < val:
+            if maxVal <= val:
                 maxVal = val
                 StatusMax = None
                 movePicked = move  
@@ -311,29 +313,29 @@ while(num_round != total_rounds):
 
     movePicked,StatusMax,maxVal = getMaxSuccessor(Possible_Operators)
     print(f'movePicked = {movePicked} ,StatusMax = {StatusMax} ,maxVal = {maxVal}')
-
-    if movePicked == "P":
-        oper,success = GoToSuccessorPost(StatusMax)
-    else:
-        oper,success = GoToSuccessor(movePicked)
-
-
-    print("Possible_Operators For The Current Round:\n")
-    print(Possible_Operators)
-    print('\n')
-    
-    print("HE DID: ", oper,success)
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
     num_round+=1
     startRound = timer()
     print(f"num round = {num_round}")
     while(len(users_ready) < Users_num-1):
         users_ready = set(Ready.objects.values_list('user_id', flat=True))
+    if movePicked == "P":
+        oper,success = GoToSuccessorPost(StatusMax)
+    else:
+        oper,success = GoToSuccessor(movePicked)
+
+    print("HE DID: ", oper,success)
+
+    print("Possible_Operators For The Current Round:\n")
+    print(Possible_Operators)
+    print('\n')
+    
+
     endRound = timer()
     print(f"Round Number {num_round}, took: {(endRound-startRound-6)/60} Minutes")
 
 
-    users_ready = set(Ready.objects.values_list('user_id', flat=True))
+    # users_ready = set(Ready.objects.values_list('user_id', flat=True))
     print('----------------  # End Round----------------\n')
 
 Ready.objects.create(user=AgentRequest.user) #create new Ready User

@@ -3,7 +3,7 @@ import django
 import sys
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.views import addfriend,inEndScreen,confirm_friends,like_post_Agent,home_Agent,log,create_post_Agent,ready,Round
+from facebook.views import *
 import time
 from django.contrib.auth.models import User
 from facebook.models import Post,Status,Friends,Friend_req,Ready
@@ -73,7 +73,7 @@ def Get_Possible_Operators(userid,current_posts):
         operations.update({'AF' : FriendRequests})
 
     # 3 -> SL
-    Optional_SAFE_LikePostsList,Optional_UN_SAFE_LikePostsList = algo.getOptionalLikePosts(userid,current_posts)
+    Optional_SAFE_LikePostsList,Optional_UN_SAFE_LikePostsList = getOptinalLikesPostsAll(userid,current_posts)
     if Optional_SAFE_LikePostsList: # if the there is posts optional to like.
         operations.update({'SL' : Optional_SAFE_LikePostsList})
     if Optional_UN_SAFE_LikePostsList:
@@ -86,6 +86,24 @@ def Get_Possible_Operators(userid,current_posts):
     operations.update({'N' : 'None'})
     return operations
 
+
+
+def getOptinalLikesPostsAll(userid,current_posts):
+    currentPostsOnFeed = algo.getIdPosts(current_posts)
+    Optional_SAFE_LikePostsList = []
+    Optional_UN_SAFE_LikePostsList = []
+    for p in currentPostsOnFeed: # about post with no like. same probability.]
+        post = Post.objects.filter(id=p).first()
+        if post.username_id != userid:
+                post_i_liked = post.likes.filter(id=userid).values_list('likes', flat=True).first()
+                if post_i_liked != None:
+                    continue
+                status =  Status.objects.filter(id=post.status_id).first()
+                if status.has_link:
+                    Optional_UN_SAFE_LikePostsList.append(p)
+                else:
+                    Optional_SAFE_LikePostsList.append(p)
+    return Optional_SAFE_LikePostsList,Optional_UN_SAFE_LikePostsList
 
 
 

@@ -205,7 +205,6 @@ class Round(models.Model):
     posts_id = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=8,),size=8,)
     likes_id = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=8,),size=8,)
 
-
 class Ready(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add= True)
@@ -232,6 +231,16 @@ class Log(models.Model):
     def __str__(self):
         return str(self.id_round) + ': ' + str(self.id_user) + ': ' + str(self.code_operation)+ ': ' + str(self.post_id)
 
+class ScorePerRound(models.Model):
+    id_user = models.IntegerField(User)
+    id_round = models.IntegerField(default=0)
+    score = models.FloatField(default=0)
+
+    def __str__(self):
+        return str(self.id_round) + ': ' + str(self.id_user) + ': ' + str(self.score)
+
+
+
 class Score(models.Model):
     id_user = models.IntegerField(User)
     burden = models.FloatField(default=0)
@@ -242,24 +251,36 @@ class Score(models.Model):
     def __str__(self):
         return str(self.id_user) + ': ' + str(self.burden) + ': ' + str(self.benefit)+ ': ' + str(self.privacy_loss)+ ': ' + str(self.final_score)
 
+class FeedPerUser(models.Model):
+    id_user = models.IntegerField(User)
+    feedPosts = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+
+    def __str__(self):
+        return str(self.id_user) + ': ' + str(self.feedPosts)
 
 class benefitRounds2(models.Model):
     id_user = models.IntegerField(User)
-    round_1 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_2 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_3 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_4 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_5 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_6 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_7 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_8 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_9 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_10 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_11 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_12 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_13 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_14 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
-    round_15 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True),size=100,),size=100,)
+    round_1 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_2 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_3 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_4 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_5 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_6 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_7 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_8 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_9 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_10 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_11 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_12 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_13 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_14 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_15 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_16 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_17 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_18 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_19 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+    round_20 = ArrayField(ArrayField(models.IntegerField(unique=True,blank=True,default=None),size=100,default=None),size=100,default=None)
+
     def __str__(self):
         return str(self.id_user)
 

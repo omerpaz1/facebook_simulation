@@ -10,8 +10,11 @@ urlpatterns = [
     path('readyToEnd/', views.readyToEnd, name='facebook-readyToEnd'),
     path('home/', views.home, name='facebook-home'),
     path('create_post/', views.create_post, name='facebook-create-post'),
+    url(r'like/$', views.like_post, name='like_post'),
+    url(r'^like/(?P<id>\w+)/$',views.like_post, name='like_post'),
     url(r'^connent/(?P<operation>.+)/(?P<pk>\w+)/$', views.manage_friends, name='manage_friends'),
-    url(r'^like/$',views.like_post, name='like_post'),
+    url(r'^Pass/$', views.Pass, name='Pass'),
+
 ]
 
 

@@ -51,7 +51,7 @@
           {% csrf_token %}
           <div class="form-group">
               <h2 style="margin-top: 1em;" >Welcome To The Facebook Simulator</h2>
-            <input style="margin-top: 1em;"  type="text" class="form-control" name="Worker_ID" aria-describedby="emailHelp" placeholder="Enter Your Amazon MT Worker ID">
+            <input style="margin-top: 1em;"  type="text" class="form-control" name="Worker_ID" aria-describedby="emailHelp" placeholder="Enter Your MTurk ID">
             {% if is_valid %}
               <h10 class="text-danger">* invalid input!</h10>
             {% endif %}

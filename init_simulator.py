@@ -3,7 +3,7 @@ import sys
 import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'facebook_simulation.settings')
 django.setup()
-from facebook.models import Post,Status,Friends,Friend_req,Round,Ready,Log,WorkersInfo,Score,inEndScreen,benefitRounds2
+from facebook.models import Post,Status,Friends,Friend_req,Round,Ready,Log,WorkersInfo,Score,inEndScreen,benefitRounds2,FeedPerUser,ScorePerRound
 from users.models import Profile
 from django.contrib.auth.models import User
 from users.models import AllLogin,Users_free
@@ -57,13 +57,21 @@ def init_friends():
         f = Friends(userid_id=user.id,myfriends=[])
         f.save()
 
+def init_feedPerUser():
+    allusers = User.objects.all()
+    FeedPerUser.objects.all().delete()
+    for i in users:
+        user = allusers.filter(username=i).first()
+        f = FeedPerUser(id_user=user.id,feedPosts=[])
+        f.save()
+
 # must do first after change db!
 def init_benefitRounds():
     allusers = User.objects.all()
     benefitRounds2.objects.all().delete()
     for i in users:
         user = allusers.filter(username=i).first()
-        f = benefitRounds2(id_user=user.id,round_1=[],round_2=[],round_3=[],round_4=[],round_5=[],round_6=[],round_7=[],round_8=[],round_9=[],round_10=[],round_11=[],round_12=[],round_13=[],round_14=[],round_15=[])
+        f = benefitRounds2(id_user=user.id,round_1=[],round_2=[],round_3=[],round_4=[],round_5=[],round_6=[],round_7=[],round_8=[],round_9=[],round_10=[],round_11=[],round_12=[],round_13=[],round_14=[],round_15=[],round_16=[],round_17=[],round_18=[],round_19=[],round_20=[])
         f.save()
 
 # must do first after change db!
@@ -187,6 +195,9 @@ def unReady_all():
 def delete_operation_info():
     Log.objects.all().delete()
 
+def delete_ScorePerRound():
+    ScorePerRound.objects.all().delete()
+
 def delete_workers_info():
     WorkersInfo.objects.all().delete()
 
@@ -206,10 +217,12 @@ if __name__ == "__main__":
     # init_users_free() 
     init_benefitRounds()
     init_users_score()
+    init_feedPerUser()
     '''
     # init DB for next simulation.
     # '''
     delete_all_rounds()
+    delete_ScorePerRound()
     delete_all_posts()    
     delete_all_likes()
     delete_friend_req()

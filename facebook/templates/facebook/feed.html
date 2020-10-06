@@ -33,22 +33,16 @@
             </div>
 </div>
 <div  class="text-center mb-3">Feed</div>  
-
-</form>
-
+  
 
 {% for post in posts %}
-{% for f in friends %}
-    <!-- {% if post.username_id == f %} -->
 <div class="card mb-3"  style="width: 35rem">
         <article class="media content-section">
           <img class="rounded-circle article-img" src="{{ post.username.profile.image.url }}">
           <div class="media-body">
             <div class="article-metadata">
-              <form method="get" action="{% url 'manage_friends' operation='friend_requset' pk=post.username_id  %}">
                 <!-- adding here the add friend button -->
                 <a class="mr-2">{{ post.username }} </a>
-              </form>
             </div>
             <a class="article-content">{{ post.status }} </a>
             <!-- if we want with like to post-detail -->
@@ -56,31 +50,29 @@
         </article>
         <div>
     <div class="card-body">
-  <form action="{% url 'like_post' %}" method="POST">
-    {% csrf_token %}
-    {%if post.id not in posts_user_liked %}
-    {%if post.username_id is not user.id%}
-    <button type="submit" name='post_id' value="{{ post.id }}" class="btn btn-outline-secondary" > <img class="img-responsive" src="/media/1.png">Like </button>
-    {%else%}
-    <button type="button" name='post_id' value="{{ post.id }}" class="btn btn-outline-secondary" > <img class="img-responsive" src="/media/1.png">
-      Like </button>
-    {%endif%}
-    {{post.total_likes}}
-    {%else%}
-    <button type="button" class="btn btn-primary"> <img class="img-responsive" src="/media/1.png">Like</button>
-    {{post.total_likes}}
-    {%endif%}
-  </form>
-  </div>
-  {%if post.status.has_link %}
-  <div class="text-center">This post has link</div>
-  {%endif%}
+      <form action="{% url 'like_post' %}" method="POST">
+        {% csrf_token %}
+        {%if post.id not in posts_user_liked %}
+        {%if post.username_id is not user.id%}
+        <button type="submit" id='like' name='post_id' value="{{ post.id }}" class="btn btn-outline-secondary" > <img class="img-responsive" src="/media/1.png">Like </button>
+        {%else%}
+        <button type="button" id='like' class="btn btn-outline-secondary" > <img class="img-responsive" src="/media/1.png">
+          Like </button>
+        {%endif%}
+        {{post.total_likes}}
+        {%else%}
+        <button type="button" id='like' class="btn btn-primary"> <img class="img-responsive" src="/media/1.png">Like</button>
+        {{post.total_likes}}
+        {%endif%}
+      </form>
+      </div>
+      {%if post.status.has_link %}
+      <div class="text-center">This post has link</div>
+      {%endif%}
+</div>
+</div>
 
-</div>
-</div>
-        <!-- {%endif%} -->
-    {% endfor %}
-  {% endfor %}
+  {%endfor%}
 
 
 {% endblock %}

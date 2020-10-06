@@ -305,6 +305,10 @@ while(num_round != total_rounds):
         ran = round(random.random(),2)
         print("round(random.random(),2) < acceptor(deltaH,i) = ",ran,acceptor(deltaH,(i/total_rounds)))
         if h_new - h > 0 or (ran < acceptor(deltaH,(i/total_rounds))): 
+            users_ready = set(Ready.objects.values_list('user_id', flat=True))
+            num_round+=1
+            while(len(users_ready) < Users_num-1):
+                users_ready = set(Ready.objects.values_list('user_id', flat=True))
             if move == "P":
                 oper,success = GoToSuccessorPost(statusID)
             else:
@@ -312,21 +316,18 @@ while(num_round != total_rounds):
             h = h_new
             break
 
+    print("he did: ", oper,success)
+    print(f"num round = {num_round}")
 
     print("Possible_Operators For The Current Round:\n")
     print(Possible_Operators)
     print('\n')
     
-    print("he did: ", oper,success)
-    users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    num_round+=1
 
-    startRound = timer()
-    print(f"num round = {num_round}")
-    while(len(users_ready) < Users_num-1):
-        users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    endRound = timer()
-    print(f"Round Number {num_round}, took: {(endRound-startRound-6)/60} Minutes")
+    # startRound = timer()
+
+    # endRound = timer()
+    # print(f"Round Number {num_round}, took: {(endRound-startRound-6)/60} Minutes")
 
     users_ready = set(Ready.objects.values_list('user_id', flat=True))
     print('----------------  # End Round----------------\n')
