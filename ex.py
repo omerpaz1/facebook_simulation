@@ -15,9 +15,26 @@ from properties import *
 import random
 from timeit import default_timer as timer
 import time
+import itertools
+import RandomActions as RA
+def getRandomOpeartion2Players(data):
+    random.shuffle(data)
+    return data[0][0],data[0][1]
 
+def getChlids(po):
+    anslist = []
+    mylist = []
+    for o in po:
+        l = []
+        for key,value in o.items():
+            l.append(key)
+        mylist.append(l)
 
+    for element in itertools.product(*mylist):
+        anslist.append(element)
+    return anslist
 
 if __name__ == '__main__':
-    user_liked = posts_user_liked(3)
-    print(user_liked)
+    random_num = random.uniform(0,1)
+    random_num = float('{0:.1f}'.format(random.uniform(0,1)))
+    print(random_num)

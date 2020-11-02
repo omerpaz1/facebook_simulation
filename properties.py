@@ -20,11 +20,11 @@ Parameters:
 '''
 #SNIR TEST
 # total rounds for the simulation. can be in range [1,infinty]
-total_rounds = 5
+total_rounds = 20
 # number of LC Rounds.
 LC = 6
 # number of users that will be in the simulationץ can be in range [2,5]
-Users_num = 2
+Users_num = 4
 # the agent user id can be in    ragne [2,6]
 agent_id = 2 # if change the agent id -> run this in the init_simulator: init_users_free() 
 

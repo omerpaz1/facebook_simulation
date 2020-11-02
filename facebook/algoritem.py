@@ -3,7 +3,7 @@ import random
 from properties import AF_COST,OF_COST,UL_Burden,UL_PS,SL_Burden,SL_PS,total_rounds
 from .models import Round,Status,Post,FeedPerUser,ScorePerRound
 import threading
-from . import views
+# from . import views
 
 LC = 10
 adminUser = 1 # omerpaz user
@@ -54,7 +54,6 @@ def add_posts_to_current_round(user_id):
     for i in new_posts:
         new_round.posts_id.append(i)
     new_round.save()
-
     for i in new_likes:
         new_round.likes_id.append(i)
     new_round.save()
@@ -214,8 +213,6 @@ def getMaxLL(likes_LC,no_likes_LC,friend_id):
 
 
 def cal_prob(no_likes_LC,likes_LC,user_friends,user_id):
-    print("no_likes_LC =" ,no_likes_LC)
-    print("likes_LC =" ,likes_LC)
     posts_ans = []
     for post_no_liked in no_likes_LC: # about post with no like. same probability.
         if no_likes_LC[post_no_liked] == 0:
@@ -224,7 +221,6 @@ def cal_prob(no_likes_LC,likes_LC,user_friends,user_id):
     # for the post in the LC.
     for friend_id in user_friends:
         if friend_id != user_id:
-            print("friend_id = ",friend_id)
             LL, FriendLCPosts , atLestOneLike,noLikeTemp = getMaxLL(likes_LC,no_likes_LC,friend_id)
 
             if not atLestOneLike:
@@ -233,7 +229,6 @@ def cal_prob(no_likes_LC,likes_LC,user_friends,user_id):
                     random_num = float('{0:.1f}'.format(random.uniform(0,1)))
                     if random_num <= BETWEEN_5_TO_LC: # prob of 0.1
                         posts_ans.append(no_like)
-                        print("got post of friend, no like - BETWEEN_5_TO_LC =",no_like)
             else:
                 for post_like in FriendLCPosts:
                         # random number between [0,1]
@@ -242,15 +237,12 @@ def cal_prob(no_likes_LC,likes_LC,user_friends,user_id):
                     if LL in RANGE_PROB_BETWEEN_1_TO_2:
                         if random_num < BETWEEN_1_TO_2:
                             posts_ans.append(post_like)
-                            print("got post of friend, in like - BETWEEN_1_TO_2 =",post_like)
                     elif LL in RANGE_PROB_BETWEEN_3_TO_5:
                         if random_num < BETWEEN_3_TO_5:
                             posts_ans.append(post_like)
-                            print("got post of friend, in like - BETWEEN_3_TO_5 =",post_like)
                     elif LL in RANGE_PROB_BETWEEN_5_TO_LC:
                         if random_num < BETWEEN_5_TO_LC:
                             posts_ans.append(post_like)
-                            print("got post of friend, in like - BETWEEN_5_TO_LC =",post_like)
 
     myFeed = FeedPerUser.objects.filter(id_user=user_id).first()
 
@@ -276,7 +268,6 @@ def cal_prob(no_likes_LC,likes_LC,user_friends,user_id):
             else:
                 u = Post.objects.filter(id=p).first().username_id
                 if u != user_id:
-                    print("remove - > ",p)
                     posts_ans.remove(p)
     
     posts_ans = set(posts_ans)
@@ -360,6 +351,8 @@ def getPeopleMayKnow(user_id):
     PeopleMayKnow = []
     all_users = list(User.objects.values_list('id', flat=True))
     all_users.remove(adminUser)
+    all_users.remove(6)
+    all_users.remove(7)
     for _id in all_users:
         if _id != user_id:
             friends_req = list(Friend_req.objects.filter(userid_id=_id).first().myfriends_req)
@@ -371,6 +364,7 @@ def getPeopleMayKnow(user_id):
     for i in PeopleMayKnow:
         if i in my_friends_req:
             PeopleMayKnow.remove(i)
+    print(user_id,"People = ",PeopleMayKnow)
     return PeopleMayKnow
 
 '''
@@ -489,12 +483,6 @@ def getUserByRound(argument,postUserID,PostID):
 
 def UpDateScore(user_id,posts_ans):
     myFeed = FeedPerUser.objects.filter(id_user=user_id).first()
-    print("*************************")
-    print("posts_ans = ",posts_ans)
-    print("*************************")
-    print("*************************")
-    print("myFeed.feedPosts  = ",myFeed.feedPosts)
-    print("*************************")
     for p in posts_ans:
         roundNumber = int(len(Round.objects.all()))
         post = Post.objects.filter(id=p).first()

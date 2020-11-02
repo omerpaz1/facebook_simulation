@@ -20,7 +20,8 @@ from properties import Users_num
 
 # Users_num = 3
 
-def ready(request):        
+def ready(request):
+
     readyList = set(Ready.objects.values_list('user_id', flat=True))
     if request.user.id not in readyList:
         Ready.objects.create(user=request.user) #create new Ready User
@@ -32,6 +33,7 @@ def ready(request):
     readyList = []
     time.sleep(5)
     return redirect('/home')
+
 
 def Pass(request):
     if request.method == 'POST':
@@ -112,22 +114,17 @@ def sortbyTime(e):
 
 @login_required
 def home(request):
-    if request.method == 'POST':
-       user_post_option = request.POST.get('user_option_on_feed',False)
-       like = request.POST.get('post_id')
-       if like:
-            like_post(request,like)
-            return redirect('/ready')
-           
-       user_post_name = request.user
-       pick = Status.objects.get(status = user_post_option)
-       new_post = Post(username = user_post_name ,status =pick)
-       new_post.save()
-       log(request.user.id,"P",new_post.id)
-       if len(Round.objects.all()) == total_rounds:
-            return redirect('/readyToEnd')
-       return redirect('/ready')
-       
+    # if request.method == 'POST':
+    #    user_post_option = request.POST.get('user_option',False)
+    #    user_post_name = request.user
+    #    pick = Status.objects.get(status = user_post_option)
+    #    new_post = Post(username = user_post_name ,status =pick)
+    #    new_post.save()
+    #    log(request.user.id,"P",new_post.id)
+    #    if len(Round.objects.all()) == total_rounds:
+    #         return redirect('/readyToEnd')
+    #    return redirect('/ready')
+    
     posts = algo.Post_on_feed(request.user.id)
     posts.sort(reverse=True,key=sortbyTime)
     user_liked = posts_user_liked(request.user.id)
@@ -138,6 +135,7 @@ def home(request):
     context = {
         'posts' : posts,
         'mystatus' : Status.objects.all(),
+        # 'friends' : Friends.objects.filter(userid_id=request.user.id).first().myfriends,
         'friends_requst' : list(set(Friend_req.objects.filter(userid_id=request.user.id).first().myfriends_req)),
         'people_my_know' : people_may_know,
         'users' : User.objects.all(),
@@ -163,6 +161,10 @@ def create_post(request):
        new_post = Post(username = user_post_name ,status = pick)
        new_post.save()
        log(request.user.id,"P",new_post.id)
+       
+       if len(Round.objects.all()) == total_rounds:
+            return redirect('/readyToEnd')
+
        return redirect('/ready')
 
 
@@ -171,20 +173,18 @@ def create_post(request):
     
 # function when user click on the "like" btn.
 
-def like_post(request,id):
-    if not id:
-        post_like_id = request.POST.get('post_id',False)
+def like_post(request,id_post):
+    # id_post  = request.POST.get('id_post')
+    post_like_id = Post.objects.get(id=id_post)
+    post_like_id.likes.add(request.user)
+    status_liked =  Status.objects.filter(id=post_like_id.status_id).first()
+    if status_liked.has_link:
+        log(request.user.id,"UL",post_like_id.id)
     else:
-        post_like_id = Post.objects.get(id=id)
-        post_like_id.likes.add(request.user)
-        status_liked =  Status.objects.filter(id=post_like_id.status_id).first()
-        if status_liked.has_link:
-            log(request.user.id,"UL",post_like_id.id)
-        else:
-            log(request.user.id,"SL",post_like_id.id)
+        log(request.user.id,"SL",post_like_id.id)
 
-        if len(Round.objects.all()) == total_rounds:
-            return redirect('/readyToEnd')
+    if len(Round.objects.all()) == total_rounds:
+        return redirect('/readyToEnd')
 
     return redirect('/ready')
 

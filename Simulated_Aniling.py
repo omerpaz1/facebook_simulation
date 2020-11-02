@@ -85,7 +85,7 @@ def Get_Possible_Operators(userid,current_posts):
     operations.update({'P' : algo.getAllStatus()})
 
     # 5 -> N
-    operations.update({'N' : 'None'})
+    # operations.update({'N' : 'None'})
     return operations
 
 
@@ -286,10 +286,10 @@ while(num_round != total_rounds):
     Do Here Algoritem and And Send a Request to the operation.
     '''
     Possible_Operators = Get_Possible_Operators(userid,current_posts)
-
     keys = list(Possible_Operators.keys())
     random.shuffle(keys)
     print("keys = ",keys)
+    flag = False
     for move in keys:
         print("move = ",move)
         if move == "P":
@@ -314,7 +314,23 @@ while(num_round != total_rounds):
             else:
                 oper,success = GoToSuccessor(move)
             h = h_new
+            flag = True
             break
+
+    if not flag:
+        users_ready = set(Ready.objects.values_list('user_id', flat=True))
+        num_round+=1
+        while(len(users_ready) < Users_num-1):
+            users_ready = set(Ready.objects.values_list('user_id', flat=True))
+
+        log(agent.id,"N")
+        print("not flag, pick N")
+        oper = "N"
+        success = 0
+        h_new = h + 0
+        h = h_new
+
+
 
     print("he did: ", oper,success)
     print(f"num round = {num_round}")

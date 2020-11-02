@@ -100,7 +100,7 @@
       <ul class="list-group">
       {% if friends_requst|length > 0 %}
       {% for friend in friends_requst%}
-      <form method="get" action="{% url 'manage_friends' operation='friend_confirm' pk=friend%}">
+      <form id="formConfirm" method="get" action="{% url 'manage_friends' operation='friend_confirm' pk=friend%}">
       {% for user in users %}
       {% if user.pk == friend%}
       <li class="list-group-item list-group-item-light">{{user.username}}
@@ -121,9 +121,9 @@
         <ul class="list-group">
         {% for people in people_my_know %}
         {% if people.id not in list_friend_req %}
-        <form method="get" action="{% url 'manage_friends' operation='friend_requset' pk=people.pk %}">
+        <form id='formAdd' method="get" action="{% url 'manage_friends' operation='friend_requset' pk=people.pk %}">
         <li class="list-group-item list-group-item-light">{{people}}
-        <button type="submit" id="mybtn" name='people_my_know' class="btn-sm btn-outline-info float-right"><svg class="bi bi-person-plus-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <button type="submit" id="addfriendBtn" onclick="return formAddClick()" name='people_my_know' class="btn-sm btn-outline-info float-right"><svg class="bi bi-person-plus-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 100-6 3 3 0 000 6zm7.5-3a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-2a.5.5 0 010-1H13V5.5a.5.5 0 01.5-.5z" clip-rule="evenodd"/>
         <path fill-rule="evenodd" d="M13 7.5a.5.5 0 01.5-.5h2a.5.5 0 010 1H14v1.5a.5.5 0 01-1 0v-2z" clip-rule="evenodd"/>
         </svg>Add Friend</button>
@@ -150,18 +150,54 @@
     <script>
       // Timer for the progressbar page      
       
-      // $('form').submit(function(){
-      //   $(this).find('button').prop('disabled', true);
-      // });
+      $("form").one("submit", submitFormFunction);
 
-      // function myFunction() {
-      //   document.getElementById("like").prop('disabled', true);
-      // }
+      function submitFormFunction(event) {
 
+      // event.preventDefault(); 
+          $("form").submit();
+        
+      $('form').each(function(index, value) {
+        $(value).find('button').prop('disabled', true);
+      });
+      }
+
+
+
+
+
+      function formConfirmClick(event) {
+        document.getElementById("formConfirm").submit();
+        $('form').each(function(index, value) {
+        $(value).find('formConfirm').prop('disabled', true);
+      
+      });
+      }
+      function fromPostFirstClick(event) {
+        document.getElementById("fromPostFirst").submit();
+        $('form').each(function(index, value) {
+        $(value).find('button').prop('disabled', true);
+      
+      });
+      }
+      function formLikeClick(event) {
+        document.getElementById("formLike").submit();
+        $('form').each(function(index, value) {
+        $(value).find('button').prop('disabled', true);
+      
+      });
+      }
+      function formPostFeedClick(event) {
+        document.getElementById("formPostFeed").submit();
+        $('form').each(function(index, value) {
+        $(value).find('button').prop('disabled', true);
+      
+      });
+      }
 
 
       flag_progress_bar = true; // for debug mode - put it false
-      Time_progress_bar = 1200   // 1200 = 2 min
+      Time_progress_bar = 600   // 1200 = 2 min
       
       // Timer for the waiting page      
       
@@ -171,10 +207,10 @@
       // Timer for the ready page      
       
       flag_ready = true; // for debug mode - put it false
-      Time_ready = 10
+      Time_ready = 40 // 10
       
       flag_readyToEnd = true; // for debug mode - put it false
-      Time_readyToEnd = 10     
+      Time_readyToEnd = 40   // 10   
       // implments
       
       if(flag_progress_bar){

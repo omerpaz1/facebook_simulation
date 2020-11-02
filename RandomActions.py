@@ -21,8 +21,6 @@ from properties import total_rounds
 from properties import Users_num
 from properties import agent_id
 
-# Users_num = 3
-
 # site path 
 site_path = 'http://34.89.133.90/'
 
@@ -46,7 +44,6 @@ def MyRequest(method='GET',path=site_path, user=agent, params={}):
   req.content_params = params
   return req
 AgentRequest = MyRequest(method='POST',path=site_path+'login')
-
 
 '''
 this function will return list of the name of the relevant operations.
@@ -80,7 +77,7 @@ def Get_Possible_Operators(userid,current_posts):
         operations.update({'UL' : Optional_UN_SAFE_LikePostsList})
 
     # 4 -> P
-    operations.update({'P' : algo.getAllStatus()})
+    operations.update({'P' : "Posts"})
 
     # 5 -> N
     operations.update({'N' : 'None'})
@@ -115,40 +112,49 @@ this function will pick Unifromly from the specific operation that chooes in uni
 After that he will will send to A function that call 'ActionOperation' that send the Request.
 return - > Void
 '''
-def MakeMove(Possible_Operators):
-    move = PickMove(Possible_Operators)
+def MakeMove(userid,move,Possible_Operators):
     current_path = site_path
     if move == "OF":
-        AgentRequest = MyRequest(method='GET',path=site_path+'home')
+        userObj = User.objects.filter(id=userid).first()
+        AgentRequest = MyRequest(method='GET',user= userObj, path=site_path+'home')
         userIdToAdd = getFriendToAdd(Possible_Operators[move])
         userObj = User.objects.filter(id=userIdToAdd).first()
         addfriend(AgentRequest,userObj)
+        print("OF", userIdToAdd)
         return "OF", userIdToAdd
 
     elif move == "AF":
-        AgentRequest = MyRequest(method='GET',path=site_path+'home')
+        userObj = User.objects.filter(id=userid).first()
+        AgentRequest = MyRequest(method='GET',user= userObj,path=site_path+'home')
         userToConfirm = getFriendToConfirm(Possible_Operators[move])
         userObj = User.objects.filter(id=userToConfirm).first()
         confirm_friends(AgentRequest,userObj)
+        print("AF", userToConfirm)
         return "AF", userToConfirm
 
     elif move == "SL":
+        userObj = User.objects.filter(id=userid).first()
         PostToLike = getPostToLike(Possible_Operators[move])
-        AgentRequest = MyRequest(method='POST',path=site_path+'home',params={'post_id': PostToLike})
+        AgentRequest = MyRequest(method='POST',path=site_path+'home',user= userObj,params={'post_id': PostToLike})
         like_post_Agent(AgentRequest,"SL")
+        print("SL", PostToLike)
         return "SL", PostToLike
 
     elif move == "UL":
+        userObj = User.objects.filter(id=userid).first()
         PostToLike = getPostToLike(Possible_Operators[move])
-        AgentRequest = MyRequest(method='POST',path=site_path+'home',params={'post_id': PostToLike})
+        AgentRequest = MyRequest(method='POST',path=site_path+'home',user= userObj,params={'post_id': PostToLike})
         like_post_Agent(AgentRequest,"UL")
+        print("UL", PostToLike)
         return "UL", PostToLike
 
     elif move == "P":
-        StatusToPost = getStatusToPost()
-        AgentRequest = MyRequest(method='POST',path=current_path+'home' ,params={'user_option_on_feed': StatusToPost})
+        userObj = User.objects.filter(id=userid).first()
+        StatusToPost,StatusToPostID = getStatusToPost()
+        AgentRequest = MyRequest(method='POST',path=current_path+'home' ,user= userObj,params={'user_option_on_feed': StatusToPost})
         home_Agent(AgentRequest)
-        return "P", StatusToPost
+        print("P", StatusToPost, StatusToPostID)
+        return "P", StatusToPostID
 
     elif move == "N":
         log(agent.id,"N")
@@ -176,7 +182,14 @@ this function will return status from all the status in unfomly way.
 def getStatusToPost():
     all_statuss = list(Status.objects.values_list('status', flat=True)) 
     random_num = random.randint(0,len(all_statuss)-1) # unifom random in all the status.
-    return all_statuss[random_num]
+    statusPick = all_statuss[random_num]
+    return statusPick,Status.objects.filter(status=statusPick).first().id
+
+def getStatusToPostID():
+    all_statuss = list(Status.objects.values_list('status', flat=True)) 
+    random_num = random.randint(0,len(all_statuss)-1) # unifom random in all the status.
+    statusPick = all_statuss[random_num]
+    return Status.objects.filter(status=statusPick).first().id
 
 '''
 this function will return from the optional 'people you may know' list one user id in unifomly way
@@ -198,110 +211,3 @@ this function will return post that optinal to friend to confirm in unimofly way
 def getFriendToConfirm(FriendRequests):
     random_num = random.randint(0,len(FriendRequests)-1) # unifom random in all the status.
     return FriendRequests[random_num]
-
-
-# -----------------------------------------Start Simulation -----------------------------------
-
-# # Log in into the Web Page
-if(DEBUG):
-    print("Try to login to site")
-
-try:
-    login_logger(AgentRequest,AgentRequest,AgentRequest.user)
-except:
-    print('problem with log in')
-
-if(DEBUG):
-    print("Login successful to site")
-
-
-#  waiting to start simulation
-if(DEBUG):
-    print("Waiting in the Wait page")
-users_login = AllLogin.objects.all()
-while(len(users_login) < Users_num):
-    users_login = AllLogin.objects.all()
-    time.sleep(2)
-
-if(DEBUG):
-    print("move from the waiting room to Create Post Page")
-
-
-''' 
-in the Create Post page.
-'''
-
-if(DEBUG):
-    print("Create Post in Create post page")
-
-# Create The First Round!
-algo.Post_on_feed(agent.id)
-time.sleep(2)
-current_path = site_path+'create_post'
-StatusToPost = getStatusToPost()
-AgentRequest = MyRequest(method='POST',path=current_path ,params={'user_option': StatusToPost})
-create_post_Agent(AgentRequest)
-
-
-if(DEBUG):
-    print("Join to the ready room for the first time.")
-
-''' 
-Send For the First time the Agent to the Ready Room
-'''
-current_path = site_path+'ready'
-AgentRequest = MyRequest(method='GET',path=current_path)
-
-
-# First_Possible_Operators = Get_Possible_Operators(userid,current_posts)
-users_ready = set(Ready.objects.values_list('user_id', flat=True))
-num_round = 1
-while(num_round != total_rounds):
-    while(len(users_ready) != Users_num):        
-        users_ready = set(Ready.objects.values_list('user_id', flat=True))
-        if agent_id not in users_ready and len(users_ready) != Users_num:
-            print("Join to Ready")
-            Ready.objects.create(user=AgentRequest.user) #create new Ready User
-    print("Out of ready, Make Move!")
-    current_posts = algo.Post_on_feed(agent.id)
-    time.sleep(2)
-    Ready.objects.all().delete()    
-    readyList = []
-    '''
-    Do Here Algoritem and And Send a Request to the operation.
-    '''
-    
-    Possible_Operators = Get_Possible_Operators(userid,current_posts)
-    print("Possible_Operators For The Current Round:\n")
-    print(Possible_Operators)
-    print('\n')
-    
-    users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    num_round+=1
-    startRound = timer()
-    print(f"num round = {num_round}")
-    while(len(users_ready) < Users_num-1):
-        users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    endRound = timer()
-    print(f"Round Number {num_round}, took: {(endRound-startRound-6)/60} Minutes")
-
-
-
-    operand, value = MakeMove(Possible_Operators)
-    print(f'MakeMove Pick: Operator = {operand} , value = {value}\n')
-
-    users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    print('----------------  # End Round----------------\n')
-
-Ready.objects.create(user=AgentRequest.user) #create new Ready User
-users_ready = set(Ready.objects.values_list('user_id', flat=True))
-
-while(len(users_ready) != Users_num):        
-        users_ready = set(Ready.objects.values_list('user_id', flat=True))
-
-time.sleep(5)
-Ready.objects.all().delete()    
-readyList = []
-
-algo.UpdateScoreStatic(userid)
-print("Simulrator Finished")

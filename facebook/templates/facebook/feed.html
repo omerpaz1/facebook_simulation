@@ -5,8 +5,7 @@
 
  {% block content %} 
  
-
- <form action='' method="POST">
+ <form id='formPostFeed' method="POST" action="{% url 'facebook-create-post' %}">
   {% csrf_token %}
  <div class="card text-white bg-secondary mb-3" style="width: 35rem; margin-top: 1.5em;">    
             <article class="media content-section text-white bg-secondary mb-3">
@@ -18,7 +17,7 @@
                 <div >What's on your mind, {{user.username}}?</div>
               </br>
                 <div class="btn-group">
-                  <select class="form-control form-control" name='user_option_on_feed'>
+                  <select class="form-control form-control" name='user_option'>
                     {% for status in mystatus %}
                     <option value ='{{ status.status }}'> {{ status.status }} ( PrivacyLoss: {{status.PrivacyLoss}} , Burden: {{status.burden}} , Benefit: {{status.benefit}} )</option>
                     {% endfor%}
@@ -32,6 +31,7 @@
                 </div>
             </div>
 </div>
+ </form>
 <div  class="text-center mb-3">Feed</div>  
   
 
@@ -48,31 +48,29 @@
             <!-- if we want with like to post-detail -->
           </div>
         </article>
-        <div>
+    <form id="formLike" method="POST" action="{% url 'like_post' id_post=post.id %}">
+    {% csrf_token %}
     <div class="card-body">
-      <form action="{% url 'like_post' %}" method="POST">
-        {% csrf_token %}
-        {%if post.id not in posts_user_liked %}
-        {%if post.username_id is not user.id%}
-        <button type="submit" id='like' name='post_id' value="{{ post.id }}" class="btn btn-outline-secondary" > <img class="img-responsive" src="/media/1.png">Like </button>
-        {%else%}
-        <button type="button" id='like' class="btn btn-outline-secondary" > <img class="img-responsive" src="/media/1.png">
-          Like </button>
-        {%endif%}
-        {{post.total_likes}}
-        {%else%}
-        <button type="button" id='like' class="btn btn-primary"> <img class="img-responsive" src="/media/1.png">Like</button>
-        {{post.total_likes}}
-        {%endif%}
-      </form>
-      </div>
-      {%if post.status.has_link %}
-      <div class="text-center">This post has link</div>
+      {%if post.id not in posts_user_liked %}
+      {%if post.username_id is not user.id%}
+      <button type="submit" id='post_id' value="{{ post.id }}" class="btn btn-outline-secondary" > <img class="img-responsive" src="/media/1.png">Like </button>
+      {%else%}
+      <button type="button" class="btn btn-outline-secondary" > <img class="img-responsive" src="/media/1.png">
+        Like </button>
       {%endif%}
-</div>
+      {{post.total_likes}}
+      {%else%}
+      <button type="button" class="btn btn-primary"> <img class="img-responsive" src="/media/1.png">Like</button>
+      {{post.total_likes}}
+      {%endif%}
+    </form>
+
+
+    </div>
+
 </div>
 
-  {%endfor%}
+{%endfor%}
 
 
 {% endblock %}
