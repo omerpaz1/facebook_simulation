@@ -15,7 +15,7 @@ try:
 except:
     flag = False
 
-users = ['Riley','Jordan','Parker','Harley','Kendall','Quinn']
+users = ['Riley','Jordan','Parker','Harley','Kendall','Quinn',"Oliver","Logan","Ori"]
 status = ['I like Pizza',
         'i hate emojis',
 	    'What is the meaning of life',
@@ -47,7 +47,7 @@ status = ['I like Pizza',
             'Look! a new haircut',
             'funny vines www.youtube.com/Fu11y75'
            ]
-profile_pic = ['img_A','img_B','img_C','img_D','img_E']
+profile_pic = ['img_A','img_B','img_C','img_D','img_E','img_F','img_G','img_H']
 # must do first after change db!
 def init_friends():
     allusers = User.objects.all()
@@ -125,6 +125,11 @@ def delete_friends():
     friends5 = Friends.objects.filter(userid_id=5).first()
     friends6 = Friends.objects.filter(userid_id=6).first()
     friends7 = Friends.objects.filter(userid_id=7).first()
+    friends8 = Friends.objects.filter(userid_id=8).first()
+    friends9 = Friends.objects.filter(userid_id=9).first()
+    friends10 = Friends.objects.filter(userid_id=10).first()
+   
+
 
     # friends1.myfriends.clear()
     friends2.myfriends.clear()
@@ -133,6 +138,9 @@ def delete_friends():
     friends5.myfriends.clear()
     friends6.myfriends.clear()
     friends7.myfriends.clear()
+    friends8.myfriends.clear()
+    friends9.myfriends.clear()
+    friends10.myfriends.clear()
 
     # friends1.myfriends.append(1) # omerpaz
     friends2.myfriends.append(2)
@@ -141,6 +149,9 @@ def delete_friends():
     friends5.myfriends.append(5)
     friends6.myfriends.append(6)
     friends7.myfriends.append(7)
+    friends8.myfriends.append(8)
+    friends9.myfriends.append(9)
+    friends10.myfriends.append(10)
 
 
     # friends1.save()
@@ -150,6 +161,9 @@ def delete_friends():
     friends5.save()
     friends6.save()
     friends7.save()
+    friends8.save()
+    friends9.save()
+    friends10.save()
 
 def delete_friend_req():
     # friends1 = Friend_req.objects.filter(userid_id=1).first()
@@ -159,6 +173,9 @@ def delete_friend_req():
     friends5 = Friend_req.objects.filter(userid_id=5).first()
     friends6 = Friend_req.objects.filter(userid_id=6).first()
     friends7 = Friend_req.objects.filter(userid_id=7).first()
+    friends8 = Friend_req.objects.filter(userid_id=8).first()
+    friends9 = Friend_req.objects.filter(userid_id=9).first()
+    friends10 = Friend_req.objects.filter(userid_id=10).first()
 
 
     # friends1.myfriends_req.clear()
@@ -168,6 +185,10 @@ def delete_friend_req():
     friends5.myfriends_req.clear()
     friends6.myfriends_req.clear()
     friends7.myfriends_req.clear()
+    friends8.myfriends_req.clear()
+    friends9.myfriends_req.clear()
+    friends10.myfriends_req.clear()
+
 
     # friends1.save()
     friends2.save()
@@ -176,6 +197,9 @@ def delete_friend_req():
     friends5.save()
     friends6.save()
     friends7.save()
+    friends8.save()
+    friends9.save()
+    friends10.save()
 
 def delete_all_rounds():
     Round.objects.all().delete()
@@ -211,13 +235,13 @@ if __name__ == "__main__":
     '''
     use this init only when chagne DB.
     '''
-    # init_friends()
+    init_friends()
     # init_friends_requst()
     # init_status()
     # init_users_free() 
-    init_benefitRounds()
-    init_users_score()
-    init_feedPerUser()
+    # init_benefitRounds()
+    # init_users_score()
+    # init_feedPerUser()
     '''
     # init DB for next simulation.
     # '''

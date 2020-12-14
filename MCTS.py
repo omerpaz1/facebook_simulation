@@ -23,13 +23,11 @@ from properties import Users_num
 from properties import agent_id
 from properties import site_path
 
-import math
-
-
 # Users_num = 3
 
 # site path 
 # site_path = 'http://34.89.133.90/'
+PostsIUsed = {}
 
 # DEBUG mode for the prints
 DEBUG = True
@@ -37,7 +35,16 @@ DEBUG = True
 # Agent info.
 userid = agent_id
 agent = User.objects.filter(id=userid).first()
-PostsIUsed = {}
+
+
+probOperator = {
+        "P" :  [0.35,0.65],
+        "AF" : [0.15,0.35],
+        "OF" : [0.65,0.85],
+        "N" :  [0.85,1],
+        "SL" : [0.05,0.15],
+        "UL" : [0.00,0.05],
+}
 
 def MyRequest(method='GET',path=site_path, user=agent, params={}):
   """ Construct a fake request(WSGIRequest) object"""
@@ -78,7 +85,7 @@ def Get_Possible_Operators(userid,current_posts):
         operations.update({'AF' : FriendRequests})
 
     # 3 -> SL
-    Optional_SAFE_LikePostsList,Optional_UN_SAFE_LikePostsList = algo.getOptionalLikePosts(userid,current_posts)
+    Optional_SAFE_LikePostsList,Optional_UN_SAFE_LikePostsList = getOptinalLikesPostsAll(userid,current_posts)
     if Optional_SAFE_LikePostsList: # if the there is posts optional to like.
         operations.update({'SL' : Optional_SAFE_LikePostsList})
     if Optional_UN_SAFE_LikePostsList:
@@ -93,15 +100,25 @@ def Get_Possible_Operators(userid,current_posts):
 
 
 
+def getOptinalLikesPostsAll(userid,current_posts):
+    currentPostsOnFeed = algo.getIdPosts(current_posts)
+    Optional_SAFE_LikePostsList = []
+    Optional_UN_SAFE_LikePostsList = []
+    for p in currentPostsOnFeed: # about post with no like. same probability.]
+        post = Post.objects.filter(id=p).first()
+        if post.username_id != userid:
+                post_i_liked = post.likes.filter(id=userid).values_list('likes', flat=True).first()
+                if post_i_liked != None:
+                    continue
+                status =  Status.objects.filter(id=post.status_id).first()
+                if status.has_link:
+                    Optional_UN_SAFE_LikePostsList.append(p)
+                else:
+                    Optional_SAFE_LikePostsList.append(p)
+    return Optional_SAFE_LikePostsList,Optional_UN_SAFE_LikePostsList
 
-'''
-this function will get all the possible operators that the agent can do in the round.
-first, MakeMove will call the function 'PickMove' from the legal moves in the Possible_Operators list.
-after he pick a move he send to a function that call 'UnifromPickFromOption'.
-this function will pick Unifromly from the specific operation that chooes in uniformly 
-After that he will will send to A function that call 'ActionOperation' that send the Request.
-return - > Void
-'''
+
+
 def GoToSuccessor(move):
     current_path = site_path
     if move == "OF":
@@ -140,37 +157,22 @@ def GoToSuccessorPost(statusID):
         home_Agent(AgentRequest)
         return "P", StatusToPost
 
-def getValuePerMove(move):
-    if move == "OF":
-        return OF_COST
-    elif move == "AF":
-        return AF_COST
-    elif move == "SL":
-        return SL_COST
-    elif move == "UL":
-        return UL_COST
-    elif move == "P":
-        key = max(PostsIUsed,key=PostsIUsed.get)
-        value = PostsIUsed.get(key)
-        return key,value
-    elif move == "N":
-        return 0 
 
+class Node: 
 
+    def __init__(self):
+        self.data = []
+        self.SimulateScore = 0
+        self.PostID = 0
+        self.TrueScoreAgent = 0
+        self.AgnetOperator = "P"
+        self.countParents = 0
+        self.parent = None
+        self.operator = "-1"
 
-'''
-this function will pick from the possible opeation one type of operation.. like (AF , N , P, LS , CF)
-'SizeOfOp' will be the size of the possible operations for the round.
-'''
-def PickMove(Possible_Operators):
-    SizeOfOp = len(Possible_Operators)
-    random_num = random.randint(0,len(Possible_Operators)-1)
-    j = 0
-    for move in Possible_Operators:
-        if j is random_num:
-            MovePicked = move
-        j+=1
-    return MovePicked
+    def __str__(self):
+        return f'[data: {self.data} ,score: {self.score} ,parent: {self.parent} ,operator: {self.operator}]'
+
 
 '''
 this function will return status from all the status in unfomly way.
@@ -201,35 +203,83 @@ def getFriendToConfirm(FriendRequests):
     random_num = random.randint(0,len(FriendRequests)-1) # unifom random in all the status.
     return FriendRequests[random_num]
 
-def acceptor(deltaH,temp):
-    return math.exp(deltaH/1*temp)
+def getValuePerMove(move):
+    if move == "OF":
+        return OF_COST
+    elif move == "AF":
+        return AF_COST
+    elif move == "SL":
+        return SL_COST
+    elif move == "UL":
+        return UL_COST
+    elif move == "P":
+        key = max(PostsIUsed,key=PostsIUsed.get)
+        value = PostsIUsed.get(key)
+        return key,value
+    elif move == "N":
+        return 0 
 
+def getRandomOperation(ValidOperation):
+    # ValidOperation = ["P","AF","OF","SL","UL","N"]
+    random_num = random.uniform(0,1)
+    random_num = float('{0:.2f}'.format(random.uniform(0,1)))
+    for i in ValidOperation:
+        if random_num >= probOperator.get(i)[0] and random_num <= probOperator.get(i)[1]:
+            return i
+    return "N"
 
-def getMaxSuccessor(Possible_Operators):
-    keys = list(Possible_Operators.keys())
-    maxVal = 0
-    StatusMax = None
-    movePicked = ""
-    for move in keys:
-        if move == "P":
-            statusID,val = getValuePerMove(move) # return the value + the current value state
-            if maxVal < val:
-                maxVal = val
-                StatusMax = statusID
-                movePicked = move
+postUse = []
+
+def Simulate(UserOperation,operators,num_round):
+    SimulateScore = 0
+    SimulatePath = ""
+    DeepSize = 5
+    postUse = []
+    diff = total_rounds - num_round 
+    if diff < 5:
+        DeepSize = diff
+    for i in range(0,DeepSize):
+        j = getRandomOperation(operators)
+        if j == "P":
+            key,value = getStatusNotUsed(postUse)
+            postUse.append(key)
+            SimulateScore += value
+            SimulatePath += "~> P("+str(key)+")"
         else:
-            val = getValuePerMove(move) # return the value + the current value state
-            if maxVal <= val:
-                maxVal = val
-                StatusMax = None
-                movePicked = move  
-    
-    return movePicked,StatusMax,maxVal
+            SimulateScore += getValuePerMove(j)
+            SimulatePath += "~>"+j+""
+    print("Simulate =",SimulatePath)
+    print("Score of the Simulate =",SimulateScore)
+    return SimulateScore
 
+def NodeP(parent,operator):
+    n1 = Node()
+    n1.parent = parent
+    n1.countParents = parent.countParents + 1
+    if operator == "P":
+        key = max(PostsIUsed,key=PostsIUsed.get)
+        statusID = Status.objects.filter(id=key).first().status
+        n1.PostID = statusID
+        n1.operator = str(parent.operator) + "->" + "[P("+str(statusID)+")]"
+        n1.TrueScoreAgent += parent.TrueScoreAgent + PostsIUsed.get(key)
+        print(n1.operator)
+        return n1
+    else:
+        value = getValuePerMove(operator)
+        n1.operator = str(parent.operator) + "->" + "[("+str(operator)+")]"
+        n1.TrueScoreAgent += parent.TrueScoreAgent + value
+        print(n1.operator)
+        return n1
+    return n1
 
-
-    
-
+def getStatusNotUsed(iUsed):
+    myp = PostsIUsed.copy()
+    sot = sorted(myp,key=myp.get,reverse=True)
+    for key in sot:
+        if key not in iUsed:
+            return key,myp.get(key)
+    return -1
+        
 
 # -----------------------------------------Start Simulation -----------------------------------
 
@@ -262,20 +312,25 @@ if(DEBUG):
 in the Create Post page.
 '''
 
-if(DEBUG):
-    print("Create Post in Create post page")
-
-# ini the status to list
 status = Status.objects.all()
 for i in status:
     PostsIUsed.update({i.id : i.sumWithOutBenefit})
 
+allStatusValues = {}
+status = Status.objects.all()
+for i in status:
+    allStatusValues.update({i.id : i.sumWithOutBenefit})
+
+if(DEBUG):
+    print("Create Post in Create post page")
+
 
 # Create The First Round!
-algo.Post_on_feed(agent.id)
+current_posts = algo.Post_on_feed(agent.id)
 time.sleep(2)
 current_path = site_path+'create_post'
 
+timePerRound = []
 AgentTimeStart = timer()
 key = max(PostsIUsed,key=PostsIUsed.get)
 StatusToPost = getStatusToPost(key)
@@ -287,6 +342,9 @@ mylog = Log.objects.filter(id_user=agent_id).last()
 mylog.TimeTookInSec = AgentTimeTook
 mylog.save()
 
+
+# Add to Timer
+
 if(DEBUG):
     print("Join to the ready room for the first time.")
 
@@ -296,11 +354,15 @@ Send For the First time the Agent to the Ready Room
 current_path = site_path+'ready'
 AgentRequest = MyRequest(method='GET',path=current_path)
 
-
-# First_Possible_Operators = Get_Possible_Operators(userid,current_posts)
+start = Node()
+First_Possible_Operators = Get_Possible_Operators(userid,current_posts)
 users_ready = set(Ready.objects.values_list('user_id', flat=True))
 num_round = 1
-h = 0.0
+start.data.append(First_Possible_Operators)
+myPath = []
+myPath.append(start)
+start.operator += str(start.operator) + "->" + "[P("+str(StatusToPost)+")]"
+
 
 while(num_round != total_rounds):
     while(len(users_ready) != Users_num):        
@@ -313,42 +375,67 @@ while(num_round != total_rounds):
     time.sleep(2)
     Ready.objects.all().delete()    
     readyList = []
-
     '''
     Do Here Algoritem and And Send a Request to the operation.
     '''
-    users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    while(len(users_ready) < Users_num-1):
-        users_ready = set(Ready.objects.values_list('user_id', flat=True))
-    AgentTimeStart = timer()
+    
     Possible_Operators = Get_Possible_Operators(userid,current_posts)
-    movePicked,StatusMax,maxVal = getMaxSuccessor(Possible_Operators)
-    print(f'movePicked = {movePicked} ,StatusMax = {StatusMax} ,maxVal = {maxVal}')
+    print("Possible_Operators For The Current Round:\n")
+    print(Possible_Operators)
+    print('\n')
+    
+    users_ready = set(Ready.objects.values_list('user_id', flat=True))
     num_round+=1
     startRound = timer()
     print(f"num round = {num_round}")
-    if movePicked == "P":
-        oper,success = GoToSuccessorPost(StatusMax)
-    else:
-        oper,success = GoToSuccessor(movePicked)
+    while(len(users_ready) < Users_num-1):
+        users_ready = set(Ready.objects.values_list('user_id', flat=True))
+    endRound = timer()
+    tookTime = (endRound-startRound)/60
+    print(f"Round Number {num_round}, took: {tookTime} Minutes")
+    # Add to Timer
 
-    print("HE DID: ", oper,success)
+    # Implments MCTS
+    AgentTimeStart = timer()
+    operators = list(Possible_Operators.keys())
+    j = 0
+    SimulateMax = -100
+    AgentMaxOperation = ''
+    node = myPath.pop()
+    MaxNode = node
+    for i in operators:
+        n = NodeP(node,i)
+        SimulateScore = Simulate(i,operators,num_round)
+        n.SimulateScore = n.TrueScoreAgent + SimulateScore
+        if n.SimulateScore > SimulateMax:
+            MaxNode = n              
+            SimulateMax = n.SimulateScore
+            AgentMaxOperation = i
+        j+=1
+
+    myPath.append(MaxNode)
+
+    print(operators)
+    print("AgentMaxOperation = ",AgentMaxOperation)
+    if AgentMaxOperation == "P":
+        statusID,val = getValuePerMove("P") # return the value + the current value state
+        move,value = GoToSuccessorPost(statusID)
+       
+    else:
+        move,value = GoToSuccessor(AgentMaxOperation)
+
     AgentTimeEnd = timer()
     AgentTimeTook = (AgentTimeEnd-AgentTimeStart)/60
     print(f"(Agent) Round Number {num_round}, took: {AgentTimeTook} Minutes")
     mylog = Log.objects.filter(id_user=agent_id).last()
     mylog.TimeTookInSec = AgentTimeTook
     mylog.save()
-    print("Possible_Operators For The Current Round:\n")
-    print(Possible_Operators)
-    print('\n')
-    
-
-    endRound = timer()
-    print(f"Round Number {num_round}, took: {(endRound-startRound-6)/60} Minutes")
+    # End MCTS
 
 
-    # users_ready = set(Ready.objects.values_list('user_id', flat=True))
+    print(f'MakeMove Pick: Operator = {move} , value = {value}\n')
+
+    users_ready = set(Ready.objects.values_list('user_id', flat=True))
     print('----------------  # End Round----------------\n')
 
 Ready.objects.create(user=AgentRequest.user) #create new Ready User
@@ -362,4 +449,7 @@ Ready.objects.all().delete()
 readyList = []
 
 algo.UpdateScoreStatic(userid)
+node = myPath.pop()
+print("MaxNode Path = ",node.operator)
+print("Score Agent = ",node.TrueScoreAgent)
 print("Simulrator Finished")

@@ -150,6 +150,8 @@
     <script>
       // Timer for the progressbar page      
       
+      const site_path = "http://34.107.23.0"
+
       $("form").one("submit", submitFormFunction);
 
       function submitFormFunction(event) {
@@ -216,9 +218,9 @@
       if(flag_progress_bar){
       var progressBar = $('.progress');
       var progressNumber = 0;
-      if(location =='http://34.89.133.90/create_post/'){
+      if(location == site_path+'/create_post/'){
         StartBarProgres();
-      }else if(location =='http://34.89.133.90/home/'){
+      }else if(location ==site_path+'/home/'){
         StartBarProgres();
       }
       }
@@ -242,7 +244,7 @@
       
       
       if(flag_waiting){
-      if(location =='http://34.89.133.90/waiting/'){
+      if(location ==site_path+'/waiting/'){
         WaitFun();            
       }
       }
@@ -261,7 +263,7 @@
       }
       
       if(flag_ready){
-      if(location =='http://34.89.133.90/ready/'){
+      if(location ==site_path+'/ready/'){
         ReadyFun();            
       }
       }
@@ -280,7 +282,7 @@
       }
 
       if(flag_readyToEnd){
-      if(location =='http://34.89.133.90/readyToEnd/'){
+      if(location ==site_path+'/readyToEnd/'){
         ReadyToEndFun();            
       }
       }

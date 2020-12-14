@@ -18,8 +18,6 @@ from properties import agent_id
 # total users To the Simulation:
 from properties import Users_num
 
-# Users_num = 3
-
 def ready(request):
 
     readyList = set(Ready.objects.values_list('user_id', flat=True))
@@ -114,23 +112,12 @@ def sortbyTime(e):
 
 @login_required
 def home(request):
-    # if request.method == 'POST':
-    #    user_post_option = request.POST.get('user_option',False)
-    #    user_post_name = request.user
-    #    pick = Status.objects.get(status = user_post_option)
-    #    new_post = Post(username = user_post_name ,status =pick)
-    #    new_post.save()
-    #    log(request.user.id,"P",new_post.id)
-    #    if len(Round.objects.all()) == total_rounds:
-    #         return redirect('/readyToEnd')
-    #    return redirect('/ready')
-    
+
     posts = algo.Post_on_feed(request.user.id)
     posts.sort(reverse=True,key=sortbyTime)
     user_liked = posts_user_liked(request.user.id)
     people_may_know = helper(request)
     list_friend_req = myreqest(request.user.id)
-    
 
     context = {
         'posts' : posts,
@@ -209,7 +196,7 @@ def manage_friends(request,operation,pk):
 def helper(request):
     friends = Friends.objects.filter(userid_id=request.user.id).first().myfriends
     friends_requst = list(set(Friend_req.objects.filter(userid_id=request.user.id).first().myfriends_req))
-    users = User.objects.all()
+    users = User.objects.all().order_by('id')[1:Users_num+1]
     friend_my_know = []
     for c_user in users:
         if c_user.pk not in friends_requst:

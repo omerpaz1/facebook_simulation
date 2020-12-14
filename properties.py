@@ -20,11 +20,11 @@ Parameters:
 '''
 #SNIR TEST
 # total rounds for the simulation. can be in range [1,infinty]
-total_rounds = 20
+total_rounds = 4
 # number of LC Rounds.
-LC = 6
+LC = 5
 # number of users that will be in the simulationץ can be in range [2,5]
-Users_num = 4
+Users_num = 5
 # the agent user id can be in    ragne [2,6]
 agent_id = 2 # if change the agent id -> run this in the init_simulator: init_users_free() 
 
@@ -44,4 +44,4 @@ SL_COST = SL_Burden + SL_PS
 UL_COST = UL_Burden + UL_PS
 NONE_COST = 0
 
-site_path = "http://34.89.133.90/"
+site_path = "http://34.107.23.0/"

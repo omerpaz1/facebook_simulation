@@ -2,6 +2,7 @@ from .models import *
 import random
 from properties import AF_COST,OF_COST,UL_Burden,UL_PS,SL_Burden,SL_PS,total_rounds
 from .models import Round,Status,Post,FeedPerUser,ScorePerRound
+from properties import Users_num
 import threading
 # from . import views
 
@@ -138,13 +139,6 @@ def get_user_like_id(like_id):
     for l_i in all_likes:
         if l_i.post_id == like_id:
             return l_i.user_id
-
-# # return the current post_id of the like_id
-# def get_post_like_id(like_id):
-#     all_likes = Post.likes.through.objects.all()
-#     for l_i in all_likes:
-#         if l_i.pk == like_id:
-#             return l_i.post_id
 
 
 # return round number by given post id
@@ -351,8 +345,9 @@ def getPeopleMayKnow(user_id):
     PeopleMayKnow = []
     all_users = list(User.objects.values_list('id', flat=True))
     all_users.remove(adminUser)
-    all_users.remove(6)
-    all_users.remove(7)
+    for i in reversed(range(Users_num+2,11)):
+        all_users.remove(i)
+    # all_users.remove(7)
     for _id in all_users:
         if _id != user_id:
             friends_req = list(Friend_req.objects.filter(userid_id=_id).first().myfriends_req)
@@ -364,7 +359,6 @@ def getPeopleMayKnow(user_id):
     for i in PeopleMayKnow:
         if i in my_friends_req:
             PeopleMayKnow.remove(i)
-    print(user_id,"People = ",PeopleMayKnow)
     return PeopleMayKnow
 
 '''
@@ -561,7 +555,7 @@ def UpdateScoreStatic(userID_ToUpdate):
             userScore.burden += burden_
 
     userScore.final_score = (userScore.benefit + userScore.burden + userScore.privacy_loss )
-    print(f"userScore.privacy_loss = {userScore.privacy_loss}, userScore.burden = {userScore.burden} , userScore.benefit = {userScore.benefit} , fina score = {userScore.final_score}")
+    print(f"userScore.privacy_loss = {userScore.privacy_loss}, userScore.burden = {userScore.burden} , userScore.benefit = {userScore.benefit} , final score = {userScore.final_score}")
     userScore.save()
 
 def UpdateScoreForPosts(user_id,roundNum):

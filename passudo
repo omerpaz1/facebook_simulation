@@ -1,0 +1,45 @@
+Simulated annealing
+
+currentNode := startNode
+For k = 0 through kmax (exclusive):
+    T ← temperature( (k+1)/kmax )
+    Pick a random neighbour, nextNode ← neighbour(s)
+    If P(E(s), E(nextNode), T) ≥ random(0, 1):
+        currentNode ← nextNode
+Output: the final state currentNode
+
+---------------------------------------------------------------------------------
+Hill climbing
+
+currentNode := startNode
+for round = 1 through roundmax:
+    L := NEIGHBORS(currentNode)
+            nextEval := −INF
+            nextNode := NUL
+        for all opeartion in L do:
+            if EVAL(x) > nextEval then
+                nextNode := x
+                nextEval := EVAL(x)
+
+        if nextEval ≤ EVAL(currentNode) then
+            //Return current node since no better neighbors exist
+            return currentNode
+        currentNode := nextNode
+---------------------------------------------------------------------------------
+
+Monkey
+
+currentNode := startNode
+for round = 1 through roundmax:
+    L := NEIGHBORS(currentNode)
+            nextEval := −INF
+            nextNode := NUL
+            nextNode := getRandomOpeartion(L)
+            nextEval := EVAL(nextNode)
+            if nextEval ≤ EVAL(currentNode) then
+                return currentNode
+            currentNode := nextNode
+
+
+---------------------------------------------------------------------------------
+

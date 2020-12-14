@@ -19,6 +19,8 @@ import math
 from properties import total_rounds
 from properties import Users_num
 from properties import agent_id
+from properties import site_path
+
 from properties import temp,AF_COST,OF_COST,UL_COST,SL_COST
 from timeit import default_timer as timer
 
@@ -26,7 +28,7 @@ from timeit import default_timer as timer
 # Users_num = 3
 
 # site path 
-site_path = 'http://34.89.133.90/'
+# site_path = 'http://34.89.133.90/'
 
 # DEBUG mode for the prints
 DEBUG = True

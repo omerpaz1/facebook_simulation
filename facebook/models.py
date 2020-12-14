@@ -227,6 +227,7 @@ class Log(models.Model):
     id_round = models.IntegerField(default=0)
     code_operation = models.CharField(max_length=10)
     post_id = models.IntegerField(default=0)
+    TimeTookInSec = models.FloatField(default=0)
 
     def __str__(self):
         return str(self.id_round) + ': ' + str(self.id_user) + ': ' + str(self.code_operation)+ ': ' + str(self.post_id)

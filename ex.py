@@ -17,24 +17,15 @@ from timeit import default_timer as timer
 import time
 import itertools
 import RandomActions as RA
-def getRandomOpeartion2Players(data):
-    random.shuffle(data)
-    return data[0][0],data[0][1]
+import numpy
+# from Util import toExel
 
-def getChlids(po):
-    anslist = []
-    mylist = []
-    for o in po:
-        l = []
-        for key,value in o.items():
-            l.append(key)
-        mylist.append(l)
 
-    for element in itertools.product(*mylist):
-        anslist.append(element)
-    return anslist
 
 if __name__ == '__main__':
-    random_num = random.uniform(0,1)
-    random_num = float('{0:.1f}'.format(random.uniform(0,1)))
-    print(random_num)
+    Users_num = 3
+    users = User.objects.all().order_by('id')[1:4]
+    for i in users:
+        print(i ," id: ",i.id)
+    # for i in reversed(range(Users_num+2,11)):
+    #     print(i)
