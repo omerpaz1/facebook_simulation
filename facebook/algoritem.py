@@ -347,7 +347,12 @@ def getPeopleMayKnow(user_id):
     all_users.remove(adminUser)
     for i in reversed(range(Users_num+2,11)):
         all_users.remove(i)
+    # all_users.remove(6)
     # all_users.remove(7)
+    # all_users.remove(8)
+    # all_users.remove(9)
+    # all_users.remove(10)
+
     for _id in all_users:
         if _id != user_id:
             friends_req = list(Friend_req.objects.filter(userid_id=_id).first().myfriends_req)

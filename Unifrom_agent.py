@@ -239,11 +239,16 @@ if(DEBUG):
 # Create The First Round!
 algo.Post_on_feed(agent.id)
 time.sleep(2)
+AgentTimeStart = timer()
 current_path = site_path+'create_post'
 StatusToPost = getStatusToPost()
 AgentRequest = MyRequest(method='POST',path=current_path ,params={'user_option': StatusToPost})
 create_post_Agent(AgentRequest)
-
+AgentTimeEnd = timer()
+AgentTimeTook = (AgentTimeEnd-AgentTimeStart)/60
+mylog = Log.objects.filter(id_user=agent_id).last()
+mylog.TimeTookInSec = AgentTimeTook
+mylog.save()
 
 if(DEBUG):
     print("Join to the ready room for the first time.")
@@ -288,8 +293,14 @@ while(num_round != total_rounds):
     print(f"Round Number {num_round}, took: {(endRound-startRound-6)/60} Minutes")
 
 
-
+    AgentTimeStart = timer()
     operand, value = MakeMove(Possible_Operators)
+    AgentTimeEnd = timer()
+    AgentTimeTook = (AgentTimeEnd-AgentTimeStart)/60
+    print(f"(Agent) Round Number {num_round}, took: {AgentTimeTook} Minutes")
+    mylog = Log.objects.filter(id_user=agent_id).last()
+    mylog.TimeTookInSec = AgentTimeTook
+    mylog.save()
     print(f'MakeMove Pick: Operator = {operand} , value = {value}\n')
 
     users_ready = set(Ready.objects.values_list('user_id', flat=True))

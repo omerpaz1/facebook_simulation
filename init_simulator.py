@@ -38,7 +38,7 @@ status = ['I like Pizza',
             'Meat is murder www.vegetables.com/Vg99j47',
     	    'Here in Vegas',
 	    'I lost weight :)',
-	    'What is "change" ?!',
+	    'What is change ?!',
             'Wanted waiter for www.MCdonalds.com/Kl46d12',
             'Happy birthday to Liel 25!',
     	    'Watching Game of Thrones tonight',
@@ -235,13 +235,13 @@ if __name__ == "__main__":
     '''
     use this init only when chagne DB.
     '''
-    init_friends()
+    # init_friends()
     # init_friends_requst()
     # init_status()
-    # init_users_free() 
-    # init_benefitRounds()
-    # init_users_score()
-    # init_feedPerUser()
+    init_users_free() 
+    init_benefitRounds()
+    init_users_score()
+    init_feedPerUser()
     '''
     # init DB for next simulation.
     # '''
